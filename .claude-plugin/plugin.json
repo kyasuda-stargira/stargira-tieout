@@ -8,6 +8,11 @@
     "url": "https://stargira.com"
   },
   "homepage": "https://stargira.com",
+  "repository": "https://github.com/kyasuda-stargira/stargira-tieout",
+  "documentationUrl": "https://github.com/kyasuda-stargira/stargira-tieout#readme",
+  "supportUrl": "https://www.stargira.com/#contact",
+  "privacyPolicyUrl": "https://www.stargira.com/privacy-tieout",
+  "termsOfServiceUrl": "https://github.com/kyasuda-stargira/stargira-tieout/blob/main/LICENSE",
   "license": "Apache-2.0",
   "keywords": [
     "financial-model",
