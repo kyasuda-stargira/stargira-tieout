@@ -21,8 +21,7 @@
     "saas",
     "project-finance",
     "power",
-    "lending",
-    "payments"
+    "lending"
   ],
   "skills": [
     "./skill/"
