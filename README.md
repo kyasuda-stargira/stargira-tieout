@@ -1,8 +1,34 @@
-# Financial Model Generator
+# Stargira Tie-Out: three-statement model builder for Claude Code
 
-Builds a three-statement financial model (P&L, balance sheet, cash flow) as an Excel
-workbook from two small YAML files. Every number you can change sits on one
-Assumptions sheet. Every other cell is a formula.
+Ask Claude for a financial model. Stargira Tie-Out asks you a few questions, builds a
+three-statement model (P&L, balance sheet and cash flow) in Excel, and checks that it
+ties out in every period: the balance sheet balances and cash agrees.
+
+There are three templates: a SaaS company, a power project (a utility-scale solar plant
+with project finance), and a business that earns on a balance it holds, such as a
+lending book. Each workbook opens on a Dashboard sheet of charts.
+
+## Install and start
+
+1. In Claude Code, add **Stargira Tie-Out** from Anthropic's plugin directory.
+2. It needs Python 3.9 or later with two packages: `pip install openpyxl pyyaml`.
+   The `formulas` package is optional; the checker uses it if it is installed.
+3. Ask Claude for a financial model, or run `/stargira-tieout:financial-model`.
+   Anything you don't answer uses the template's default.
+
+Everything runs on your own computer. The plugin sends nothing anywhere and collects no
+data (see [What runs where](#what-runs-where) and the
+[privacy notice](https://www.stargira.com/privacy-tieout)). Questions or bugs: use the
+[contact form](https://www.stargira.com/#contact).
+
+Nobody reviews what the plugin builds: treat the result as your own draft. For a model
+going to an investor or lender, Stargira Advisors offers a paid build with an
+independent re-computation and a named reviewer's sign-off.
+
+## How it works
+
+The plugin builds each workbook from two small YAML files. Every number you can change
+sits on one Assumptions sheet. Every other cell is a formula.
 
 ## The four rules every model follows
 
