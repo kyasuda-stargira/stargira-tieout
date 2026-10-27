@@ -1,0 +1,4 @@
+openpyxl>=3.1
+pyyaml>=6.0
+# optional: a second, independent evaluator for verify_model.py
+formulas>=1.3

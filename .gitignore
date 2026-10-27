@@ -1,0 +1,21 @@
+# Build output: rebuild from schema + answers, never commit
+output/*.xlsx
+*.xlsx.tmp
+~$*.xlsx
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+env/
+
+# OS / editor
+.DS_Store
+
+# Session scratch
+.session-logs/
+
+# Held back from the public repo (engagement work and service-only verticals)
+projects/
+engine/build_structured_credit.py

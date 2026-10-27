@@ -1,0 +1,250 @@
+# Balance-type Financial Model — v0.2 (full 3-statement)
+#
+# For businesses that earn on a balance they hold (for example a lending book, a
+# deposit or payments platform, or assets under management) and must hold capital
+# against it.
+#
+# Build:  python engine/build_model.py verticals/balance.yaml answers/balance_base.yaml
+#
+# 7 domains, 28 assumptions.
+# Generator emits: Assumptions, Timeline, Balance_Ramp, Revenue, OpEx,
+# Working_Capital, PnL, Forward_Cash, Balance_Sheet, Cash_Flow, KPI, _Manifest.
+
+meta:
+  schema_version: "0.2"
+  vertical: balance
+  slice: full_3_statement
+
+assumptions:
+
+  # ── 1. Entity & Jurisdiction ──────────────────────────────────────────────
+
+  - id: entity_name
+    label: "Entity legal name"
+    section: "1. Entity"
+    unit: text
+    default: "NewCo"
+
+  - id: reporting_currency
+    label: "Reporting currency"
+    section: "1. Entity"
+    unit: text
+    default: "USD"
+
+  - id: local_currency
+    label: "Local (regulatory) currency"
+    section: "1. Entity"
+    unit: text
+    default: "USD"
+
+  - id: fx_rate_local_to_reporting
+    label: "FX rate: 1 local = ? reporting"
+    section: "1. Entity"
+    unit: ratio
+    default: 1.00
+
+  - id: fiscal_year_end_month
+    label: "Fiscal year end month (1-12)"
+    section: "1. Entity"
+    unit: integer
+    default: 12
+
+  - id: corporate_tax_rate
+    label: "Effective corporate tax rate"
+    section: "1. Entity"
+    unit: percent
+    default: 0.25   # placeholder: UK main rate, as in the SaaS and power templates
+
+  # ── 2. Timeline ───────────────────────────────────────────────────────────
+
+  - id: launch_anchor_date
+    label: "First operating month (launch)"
+    section: "2. Timeline"
+    unit: date
+    default: "2026-07-01"
+
+  - id: pre_launch_periods
+    label: "Pre-launch months for setup OpEx"
+    section: "2. Timeline"
+    unit: integer
+    default: 2
+
+  - id: monthly_periods
+    label: "Monthly periods including pre-launch"
+    section: "2. Timeline"
+    unit: integer
+    default: 10
+
+  - id: quarterly_periods
+    label: "Quarterly periods after monthly phase"
+    section: "2. Timeline"
+    unit: integer
+    default: 24
+
+  # ── 3. Balance ────────────────────────────────────────────────────────────
+
+  # Balance ramp = piecewise-linear through 3 milestones (launch -> m1 -> m2 -> m3).
+  # Milestone YEARS are inputs too, so the ramp's knee points are user-controlled,
+  # not hardcoded in the generator.
+  - id: balance_launch
+    label: "Balance (AUM) at launch ($M)"
+    section: "3. Balance"
+    unit: usd_millions
+    default: 0.00
+
+  - id: balance_milestone1_year
+    label: "Milestone 1 — year"
+    section: "3. Balance"
+    unit: integer
+    default: 1
+
+  - id: balance_milestone1_value
+    label: "Milestone 1 — balance target ($M)"
+    section: "3. Balance"
+    unit: usd_millions
+    default: 10.00
+
+  - id: balance_milestone2_year
+    label: "Milestone 2 — year"
+    section: "3. Balance"
+    unit: integer
+    default: 3
+
+  - id: balance_milestone2_value
+    label: "Milestone 2 — balance target ($M)"
+    section: "3. Balance"
+    unit: usd_millions
+    default: 100.00
+
+  - id: balance_milestone3_year
+    label: "Milestone 3 — year"
+    section: "3. Balance"
+    unit: integer
+    default: 6
+
+  - id: balance_milestone3_value
+    label: "Milestone 3 — balance target ($M)"
+    section: "3. Balance"
+    unit: usd_millions
+    default: 1000.00
+
+  # ── 4. Revenue ────────────────────────────────────────────────────────────
+
+  - id: asset_yield_rate
+    label: "Blended yield on the balance (annual)"
+    section: "4. Revenue"
+    unit: percent
+    default: 0.0425
+
+  - id: transaction_fee_bps
+    label: "Transaction fee (bps per transaction)"
+    section: "4. Revenue"
+    unit: bps
+    default: 10
+
+  - id: transaction_velocity
+    label: "Transaction velocity (turns per year)"
+    section: "4. Revenue"
+    unit: ratio
+    default: 12
+
+  - id: other_revenue_annual
+    label: "Other revenue ($M per year)"
+    section: "4. Revenue"
+    unit: usd_millions
+    default: 0.00
+
+  # ── 5. OpEx ───────────────────────────────────────────────────────────────
+
+  - id: opex_prelaunch_monthly
+    label: "Monthly OpEx during pre-launch ($M)"
+    section: "5. OpEx"
+    unit: usd_millions
+    default: 0.30
+
+  - id: opex_initial_monthly
+    label: "Monthly OpEx at launch ($M)"
+    section: "5. OpEx"
+    unit: usd_millions
+    default: 0.50
+
+  - id: opex_terminal_monthly
+    label: "Monthly OpEx in final period ($M)"
+    section: "5. OpEx"
+    unit: usd_millions
+    default: 3.00
+
+  # ── 6. Working Capital ────────────────────────────────────────────────────
+
+  - id: ar_days
+    label: "Accounts receivable days"
+    section: "6. Working Capital"
+    unit: integer
+    default: 30
+
+  - id: ap_days
+    label: "Accounts payable days"
+    section: "6. Working Capital"
+    unit: integer
+    default: 30
+
+  - id: prepaid_months
+    label: "Prepaid expenses (months of forward OpEx)"
+    section: "6. Working Capital"
+    unit: integer
+    default: 1
+
+  - id: accrued_expense_pct
+    label: "Accrued expenses (fraction of monthly OpEx)"
+    section: "6. Working Capital"
+    unit: percent
+    default: 0.10
+
+  # ── 7. Cash & Capital Policy ──────────────────────────────────────────────
+
+  - id: minimum_operating_cash
+    label: "Minimum operating cash floor ($M)"
+    section: "7. Cash & Capital"
+    unit: usd_millions
+    default: 5.00
+
+  - id: dividend_payout_ratio
+    label: "Dividend payout ratio (% of net income)"
+    section: "7. Cash & Capital"
+    unit: percent
+    default: 1.00
+
+  - id: initial_seed_deposit
+    label: "Initial seed deposit ($M, e.g. min share capital)"
+    section: "7. Cash & Capital"
+    unit: usd_millions
+    default: 0.66
+
+  # ── 8. Regulatory Own Funds (capital buffer) ──────────────────────────────
+  # Own-funds requirement = MAX(floor, pct x end-of-period balance), so the
+  # buffer scales with AUM. It is a separate asset, funded by equity, and a
+  # second use of cash in the injection waterfall.
+
+  - id: own_funds_floor
+    label: "Own-funds floor ($M, fixed regulatory minimum)"
+    section: "8. Own Funds"
+    unit: usd_millions
+    default: 0.35
+
+  - id: own_funds_pct
+    label: "Own-funds requirement (% of balance / AUM)"
+    section: "8. Own Funds"
+    unit: percent
+    default: 0.02
+
+derived_sheets:
+  - timeline
+  - balance_ramp
+  - revenue
+  - opex
+  - working_capital
+  - pnl
+  - forward_cash
+  - balance_sheet
+  - cash_flow
+  - kpi

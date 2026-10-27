@@ -1,0 +1,2 @@
+# Power project base case: runs verticals/power_project.yaml on its defaults.
+# Add `id: value` lines here to override any input for this case.

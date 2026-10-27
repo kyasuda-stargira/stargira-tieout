@@ -1,0 +1,14 @@
+{
+  "name": "stargira",
+  "owner": {
+    "name": "Stargira Advisors Ltd",
+    "url": "https://stargira.com"
+  },
+  "description": "Stargira Advisors' Claude Code plugins.",
+  "plugins": [
+    {
+      "name": "stargira-tieout",
+      "source": "./"
+    }
+  ]
+}

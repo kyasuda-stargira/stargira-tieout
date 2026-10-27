@@ -1,0 +1,174 @@
+# B2B SaaS — vertical schema template, v1.1
+#
+# Archetype: subscription (subscribers × ARPU, cohort adds/churn), opex-heavy,
+# staged-equity financed. Defaults are a seed-to-Series-A B2B SaaS selling in
+# USD to mid-market customers across two plan tiers; every default is a starting
+# point the user tweaks in answers/<case>.yaml or directly on the Assumptions sheet.
+# Benchmark sources noted inline. Same grammar as balance.yaml.
+#
+# Build:  python engine/build_model.py verticals/saas.yaml answers/saas_base.yaml
+# v1.1: headcount ramp years are inputs (hc_ramp_start_year / hc_ramp_end_year).
+
+meta:
+  schema_version: "1.1"
+  vertical: saas
+  archetypes: [subscription]
+  modules: [entity_timeline, scenario, revenue_subscription, opex_sm, opex_headcount,
+            opex_rd_ga, deferred_revenue, raises_captable, working_capital, cash_policy]
+
+# ── Scenario switch ──────────────────────────────────────────────────────────
+# One cell (g_scenario) scales the axes chosen at interview: churn & ARPU,
+# plus new-logo adds as a secondary demand axis.
+scenarios:
+  - { id: Base, code: 1, churn_delta_pp: 0.0,  arpu_mult: 1.00, adds_mult: 1.00 }
+  - { id: Bear, code: 2, churn_delta_pp: +0.7, arpu_mult: 0.90, adds_mult: 0.75 }
+  - { id: Bull, code: 3, churn_delta_pp: -0.3, arpu_mult: 1.08, adds_mult: 1.25 }
+
+assumptions:
+
+  # ── 1. Entity & Timeline ───────────────────────────────────────────────────
+  - { id: g_entity_name,        label: "Company name",                          section: "1. Entity",   unit: text,         default: "NewCo SaaS Ltd" }
+  - { id: g_reporting_ccy,      label: "Reporting currency",                    section: "1. Entity",   unit: text,         default: "USD" }
+  - { id: g_tax_rate,           label: "Corporate tax rate",                    section: "1. Entity",   unit: percent,      default: 0.25 }   # UK main rate 25%; loss-making early years shielded by carryforwards
+  - { id: g_nol_opening,        label: "Opening tax losses carried fwd ($M)",   section: "1. Entity",   unit: usd_millions, default: 0.0 }
+  - { id: g_scenario,           label: "Scenario (1=Base 2=Bear 3=Bull)",       section: "1. Entity",   unit: integer,      default: 1 }
+  - { id: g_model_start_date,   label: "Model start (first monthly period)",    section: "2. Timeline", unit: date,         default: "2027-01-01" }
+  - { id: g_monthly_periods,    label: "Monthly periods before quarterly",      section: "2. Timeline", unit: integer,      default: 10 }     # startup default 10M+24Q
+  - { id: g_quarterly_periods,  label: "Quarterly periods after monthly",       section: "2. Timeline", unit: integer,      default: 24 }
+  - { id: g_opening_customers,  label: "Customers at model start (total)",      section: "2. Timeline", unit: integer,      default: 20 }
+  - { id: g_opening_arr,        label: "Opening ARR ($M)",                      section: "2. Timeline", unit: usd_millions, default: 0.25 }
+
+  # ── 2. Customer acquisition (cohort adds — piecewise milestones, never a CAGR) ─
+  # New-logo adds per month, interpolated piecewise-linear between milestones.
+  # Tier A = core plan (mid-market), Tier B = enterprise plan.
+  - { id: adds_a_m1_year,       label: "Tier A adds — milestone 1 (year)",      section: "3. Acquisition", unit: ratio,     default: 1.0 }
+  - { id: adds_a_m1_value,      label: "Tier A adds/month at milestone 1",      section: "3. Acquisition", unit: ratio,     default: 4.0 }
+  - { id: adds_a_m2_year,       label: "Tier A adds — milestone 2 (year)",      section: "3. Acquisition", unit: ratio,     default: 3.0 }
+  - { id: adds_a_m2_value,      label: "Tier A adds/month at milestone 2",      section: "3. Acquisition", unit: ratio,     default: 15.0 }
+  - { id: adds_a_m3_year,       label: "Tier A adds — milestone 3 (year)",      section: "3. Acquisition", unit: ratio,     default: 7.0 }
+  - { id: adds_a_m3_value,      label: "Tier A adds/month at milestone 3",      section: "3. Acquisition", unit: ratio,     default: 35.0 }
+  - { id: adds_b_m1_year,       label: "Tier B adds — milestone 1 (year)",      section: "3. Acquisition", unit: ratio,     default: 1.0 }
+  - { id: adds_b_m1_value,      label: "Tier B adds/month at milestone 1",      section: "3. Acquisition", unit: ratio,     default: 0.0 }
+  - { id: adds_b_m2_year,       label: "Tier B adds — milestone 2 (year)",      section: "3. Acquisition", unit: ratio,     default: 3.0 }
+  - { id: adds_b_m2_value,      label: "Tier B adds/month at milestone 2",      section: "3. Acquisition", unit: ratio,     default: 2.0 }
+  - { id: adds_b_m3_year,       label: "Tier B adds — milestone 3 (year)",      section: "3. Acquisition", unit: ratio,     default: 7.0 }
+  - { id: adds_b_m3_value,      label: "Tier B adds/month at milestone 3",      section: "3. Acquisition", unit: ratio,     default: 6.0 }
+  - { id: adds_pipeline_lag_m,  label: "Sales cycle lag, signed→live (months)", section: "3. Acquisition", unit: integer,   default: 1 }
+  - { id: adds_seasonality_q4,  label: "Q4 adds uplift (× monthly run-rate)",   section: "3. Acquisition", unit: ratio,     default: 1.15 }   # B2B budget-flush effect; placeholder — check
+
+  # ── 3. Churn & retention ───────────────────────────────────────────────────
+  - { id: churn_logo_a_monthly, label: "Tier A monthly logo churn",             section: "4. Churn",    unit: percent,      default: 0.015 }  # ~1.5%/mo ≈ 17%/yr gross logo churn, SMB/mid-market B2B norm (SaaS Capital surveys)
+  - { id: churn_logo_b_monthly, label: "Tier B monthly logo churn",             section: "4. Churn",    unit: percent,      default: 0.007 }  # enterprise churns roughly half of mid-market; placeholder — check
+  - { id: churn_y1_uplift,      label: "Churn uplift in customer's year 1 (×)", section: "4. Churn",    unit: ratio,        default: 1.5 }    # young cohorts churn faster
+  - { id: exp_net_expansion_mo, label: "Net $ expansion on retained base (%/mo)", section: "4. Churn",  unit: percent,      default: 0.005 }  # ~6%/yr upsell+seats net of downgrades
+  - { id: nrr_target_note,      label: "Implied NRR check target",              section: "4. Churn",    unit: percent,      default: 1.00 }   # KPI check only; ~100% is median for private B2B SaaS (SaaS Capital 2024) — model derives actual NRR
+  - { id: churn_ramp_end_year,  label: "Churn improves linearly until (year)",  section: "4. Churn",    unit: ratio,        default: 4.0 }
+  - { id: churn_terminal_mult,  label: "Terminal churn (× year-1 rate)",        section: "4. Churn",    unit: ratio,        default: 0.75 }   # retention improves with product maturity
+
+  # ── 4. Pricing / ARPU ──────────────────────────────────────────────────────
+  - { id: arpu_a_monthly,       label: "Tier A ARPA ($/customer/month)",        section: "5. Pricing",  unit: per_unit,     default: 850.0 }  # ~$10k ACV mid-market entry plan
+  - { id: arpu_b_monthly,       label: "Tier B ARPA ($/customer/month)",        section: "5. Pricing",  unit: per_unit,     default: 4200.0 } # ~$50k ACV enterprise plan
+  - { id: arpu_escalator,       label: "List-price escalator (%/yr)",           section: "5. Pricing",  unit: percent,      default: 0.03 }   # annual uplift at renewal
+  - { id: arpu_discount_new,    label: "Avg discount on new deals (% off list)", section: "5. Pricing", unit: percent,      default: 0.10 }
+  - { id: rev_services_pct,     label: "Services/implementation rev (% of new ACV)", section: "5. Pricing", unit: percent,  default: 0.08 }   # one-off, recognised over onboarding
+  - { id: rev_services_margin,  label: "Services gross margin",                 section: "5. Pricing",  unit: percent,      default: 0.20 }
+
+  # ── 5. Cost of revenue (gross margin build) ────────────────────────────────
+  - { id: cogs_hosting_pct,     label: "Hosting/infra (% of subscription rev)", section: "6. COGS",     unit: percent,      default: 0.08 }
+  - { id: cogs_support_pct,     label: "Customer support (% of subscription rev)", section: "6. COGS",  unit: percent,      default: 0.07 }
+  - { id: cogs_thirdparty_pct,  label: "Embedded 3rd-party licences (% of rev)", section: "6. COGS",    unit: percent,      default: 0.03 }
+  - { id: cogs_gm_floor_note,   label: "Implied subscription GM check",         section: "6. COGS",     unit: percent,      default: 0.80 }   # KPI check; ~75-80% is healthy B2B SaaS gross margin (KeyBanc/OpenView-class surveys)
+
+  # ── 6. Sales & Marketing (CAC-driven) ──────────────────────────────────────
+  # S&M spend is derived: new ARR booked × variable acquisition ratio, plus a fixed
+  # marketing base, plus sales and CS salaries. CAC KPIs count all of these except CS.
+  - { id: sm_cac_ratio_a,       label: "Tier A variable acquisition spend ($ per $1 new ARR)", section: "7. S&M", unit: ratio, default: 1.2 }    # ads, events, commissions; excludes sales salaries and the fixed marketing base, which are added separately; placeholder — check
+  - { id: sm_cac_ratio_b,       label: "Tier B variable acquisition spend ($ per $1 new ARR)", section: "7. S&M", unit: ratio, default: 1.6 }    # enterprise sales-led motion is dearer
+  - { id: sm_cac_improve_yr,    label: "CAC ratio improvement (%/yr)",          section: "7. S&M",      unit: percent,      default: 0.05 }   # efficiency gains as brand/channel matures
+  - { id: sm_marketing_base,    label: "Fixed marketing programme spend ($k/mo)", section: "7. S&M",    unit: per_unit,     default: 25.0 }
+  - { id: sm_payback_note,      label: "CAC payback check target (months)",     section: "7. S&M",      unit: integer,      default: 18 }     # KPI check only
+  - { id: sm_commission_pct,    label: "Sales commission (% of new ACV, in CAC)", section: "7. S&M",    unit: percent,      default: 0.10 }
+  - { id: sm_commission_amort,  label: "Commission amortisation period (months)", section: "7. S&M",    unit: integer,      default: 36 }     # capitalised contract costs, ASC 606 / IFRS 15
+
+  # ── 7. Headcount (roles table: count ramp × loaded salary × start period) ──
+  # Loaded salary = base × (1 + oncost). Each role holds its ramp-start count from
+  # its first hire until hc_ramp_start_year, then ramps linearly to its ramp-end
+  # count at hc_ramp_end_year, then holds.
+  - { id: hc_oncost_pct,        label: "Employer on-costs (% of base salary)",  section: "8. Headcount", unit: percent,     default: 0.18 }
+  - { id: hc_salary_inflation,  label: "Salary inflation (%/yr)",               section: "8. Headcount", unit: percent,     default: 0.035 }
+  - { id: hc_ramp_start_year,   label: "Headcount ramp starts (year)",          section: "8. Headcount", unit: ratio,       default: 1.0 }
+  - { id: hc_ramp_end_year,     label: "Headcount ramp ends (year)",            section: "8. Headcount", unit: ratio,       default: 4.0 }
+  # Role: Engineering
+  - { id: hc_eng_start_month,   label: "Engineering — first hire (month #)",    section: "8. Headcount", unit: integer,     default: 1 }
+  - { id: hc_eng_count_m1,      label: "Engineering — headcount at ramp start", section: "8. Headcount", unit: integer,     default: 4 }
+  - { id: hc_eng_count_m2,      label: "Engineering — headcount at ramp end",   section: "8. Headcount", unit: integer,     default: 14 }
+  - { id: hc_eng_salary,        label: "Engineering — avg base salary ($k/yr)", section: "8. Headcount", unit: per_unit,    default: 120.0 }
+  # Role: Product & Design
+  - { id: hc_prod_start_month,  label: "Product — first hire (month #)",        section: "8. Headcount", unit: integer,     default: 1 }
+  - { id: hc_prod_count_m1,     label: "Product — headcount at ramp start",     section: "8. Headcount", unit: integer,     default: 1 }
+  - { id: hc_prod_count_m2,     label: "Product — headcount at ramp end",       section: "8. Headcount", unit: integer,     default: 4 }
+  - { id: hc_prod_salary,       label: "Product — avg base salary ($k/yr)",     section: "8. Headcount", unit: per_unit,    default: 115.0 }
+  # Role: Sales (AEs; commissions sit in S&M section 7)
+  - { id: hc_sales_start_month, label: "Sales — first hire (month #)",          section: "8. Headcount", unit: integer,     default: 4 }
+  - { id: hc_sales_count_m1,    label: "Sales — headcount at ramp start",       section: "8. Headcount", unit: integer,     default: 2 }
+  - { id: hc_sales_count_m2,    label: "Sales — headcount at ramp end",         section: "8. Headcount", unit: integer,     default: 8 }
+  - { id: hc_sales_salary,      label: "Sales — avg base salary ($k/yr, OTE base)", section: "8. Headcount", unit: per_unit, default: 90.0 }
+  # Role: Customer Success
+  - { id: hc_cs_start_month,    label: "CS — first hire (month #)",             section: "8. Headcount", unit: integer,     default: 6 }
+  - { id: hc_cs_count_m1,       label: "CS — headcount at ramp start",          section: "8. Headcount", unit: integer,     default: 1 }
+  - { id: hc_cs_count_m2,       label: "CS — headcount at ramp end",            section: "8. Headcount", unit: integer,     default: 6 }
+  - { id: hc_cs_salary,         label: "CS — avg base salary ($k/yr)",          section: "8. Headcount", unit: per_unit,    default: 75.0 }
+  # Role: G&A (founders/ops/finance)
+  - { id: hc_ga_start_month,    label: "G&A — first hire (month #)",            section: "8. Headcount", unit: integer,     default: 1 }
+  - { id: hc_ga_count_m1,       label: "G&A — headcount at ramp start",         section: "8. Headcount", unit: integer,     default: 2 }
+  - { id: hc_ga_count_m2,       label: "G&A — headcount at ramp end",           section: "8. Headcount", unit: integer,     default: 5 }
+  - { id: hc_ga_salary,         label: "G&A — avg base salary ($k/yr)",         section: "8. Headcount", unit: per_unit,    default: 95.0 }
+
+  # ── 8. R&D and G&A (non-headcount) ─────────────────────────────────────────
+  - { id: rd_tools_per_eng,     label: "Dev tools & cloud (non-prod) per engineer ($k/yr)", section: "9. R&D/G&A", unit: per_unit, default: 8.0 }
+  - { id: rd_capitalise_pct,    label: "Development cost capitalised (%)",      section: "9. R&D/G&A",  unit: percent,      default: 0.00 }   # default: expense all; toggle for IFRS capitalisers
+  - { id: rd_amort_years,       label: "Capitalised dev amortisation (years)",  section: "9. R&D/G&A",  unit: integer,      default: 3 }
+  - { id: ga_office_per_head,   label: "Office & facilities per head ($k/yr)",  section: "9. R&D/G&A",  unit: per_unit,     default: 4.0 }
+  - { id: ga_software_per_head, label: "Internal SaaS stack per head ($k/yr)",  section: "9. R&D/G&A",  unit: per_unit,     default: 2.5 }
+  - { id: ga_prof_fees,         label: "Legal / accounting / audit ($k/yr)",    section: "9. R&D/G&A",  unit: per_unit,     default: 90.0 }
+  - { id: ga_insurance,         label: "Insurance (D&O, cyber, E&O) ($k/yr)",   section: "9. R&D/G&A",  unit: per_unit,     default: 35.0 }
+  - { id: ga_other_pct_rev,     label: "Other G&A (% of revenue)",              section: "9. R&D/G&A",  unit: percent,      default: 0.02 }
+  - { id: ga_escalation,        label: "Non-people opex escalation (%/yr)",     section: "9. R&D/G&A",  unit: percent,      default: 0.025 }
+
+  # ── 9. Billings & deferred revenue ─────────────────────────────────────────
+  # Revenue recognised rateably; cash billed up-front for annual-prepay share.
+  - { id: bill_annual_share,    label: "Customers on annual prepay (%)",        section: "10. Billings", unit: percent,     default: 0.60 }   # mid-market B2B annual-contract norm; placeholder — check
+  - { id: bill_annual_disc,     label: "Discount for annual prepay",            section: "10. Billings", unit: percent,     default: 0.10 }
+  - { id: bill_monthly_share,   label: "Customers billed monthly (%)",          section: "10. Billings", unit: percent,     default: 0.40 }   # must sum with annual share to 100%
+  - { id: bill_bad_debt_pct,    label: "Bad debt (% of billings)",              section: "10. Billings", unit: percent,     default: 0.005 }
+
+  # ── 10. Raises & cap table (2 rounds) ──────────────────────────────────────
+  - { id: cap_founders_shares,  label: "Founder shares at start (000s)",        section: "11. Raises",  unit: integer,      default: 10000 }
+  - { id: cap_esop_pct,         label: "ESOP pool (% fully diluted, pre-A)",    section: "11. Raises",  unit: percent,      default: 0.10 }
+  - { id: raise1_month,         label: "Round 1 (Seed) — close (month #)",      section: "11. Raises",  unit: integer,      default: 1 }
+  - { id: raise1_amount,        label: "Round 1 (Seed) — gross proceeds ($M)",  section: "11. Raises",  unit: usd_millions, default: 3.0 }
+  - { id: raise1_premoney,      label: "Round 1 (Seed) — pre-money ($M)",       section: "11. Raises",  unit: usd_millions, default: 12.0 }
+  - { id: raise1_fees_pct,      label: "Round 1 — transaction fees (% of gross)", section: "11. Raises", unit: percent,     default: 0.02 }
+  - { id: raise2_month,         label: "Round 2 (Series A) — close (month #)",  section: "11. Raises",  unit: integer,      default: 22 }
+  - { id: raise2_amount,        label: "Round 2 (Series A) — gross proceeds ($M)", section: "11. Raises", unit: usd_millions, default: 10.0 }
+  - { id: raise2_premoney,      label: "Round 2 (Series A) — pre-money ($M)",   section: "11. Raises",  unit: usd_millions, default: 40.0 }
+  - { id: raise2_fees_pct,      label: "Round 2 — transaction fees (% of gross)", section: "11. Raises", unit: percent,     default: 0.02 }
+  - { id: cap_unplanned_price_mult, label: "Unplanned funding share price (× Round 2 price)", section: "11. Raises", unit: ratio, default: 1.0 } # prices the funding gap in the cap table
+  - { id: raise2_arr_gate,      label: "Series A sanity gate — min ARR at close ($M)", section: "11. Raises", unit: usd_millions, default: 1.0 } # KPI flag only, does not block build
+
+  # ── 11. Working capital ────────────────────────────────────────────────────
+  - { id: wc_ar_days,           label: "AR days (B2B invoice terms)",           section: "12. WC",      unit: integer,      default: 45 }
+  - { id: wc_ap_days,           label: "AP days",                               section: "12. WC",      unit: integer,      default: 30 }
+  - { id: wc_prepaid_months,    label: "Prepaid expenses (months of non-people opex)", section: "12. WC", unit: integer,    default: 2 }
+  - { id: wc_accrued_pct,       label: "Accrued liabilities (% of monthly opex)", section: "12. WC",    unit: percent,      default: 0.50 }
+
+  # ── 12. Cash policy ────────────────────────────────────────────────────────
+  - { id: cash_min_operating,   label: "Min operating cash ($M)",               section: "13. Cash",    unit: usd_millions, default: 0.5 }
+  - { id: cash_buffer_months,   label: "Dynamic buffer (months of fwd OpEx)",   section: "13. Cash",    unit: integer,      default: 3 }
+  - { id: cash_opening,         label: "Opening cash at model start ($M)",      section: "13. Cash",    unit: usd_millions, default: 0.4 }
+  - { id: cash_runway_alert_m,  label: "Runway alert threshold (months)",       section: "13. Cash",    unit: integer,      default: 9 }
+  - { id: cash_interest_rate,   label: "Interest earned on cash balances",      section: "13. Cash",    unit: percent,      default: 0.035 }
+
+# ── KPI sheet spec (all formula-derived, no literals) ────────────────────────
+kpis: [arr, mrr, nrr, grr, logo_churn_annual, cac_payback_months, ltv_cac,
+       burn_multiple, rule_of_40, gross_margin, magic_number, runway_months]

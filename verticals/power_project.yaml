@@ -1,0 +1,98 @@
+# Power Project (IPP) — vertical schema template, v1.2
+#
+# Archetype: capacity (capacity × utilisation × tariff), capex-heavy, project-debt financed.
+# Defaults are utility-scale solar PV; every default is a starting
+# point the user tweaks in answers/<case>.yaml or directly on the Assumptions sheet.
+# Benchmark sources noted inline. Same grammar as balance.yaml.
+#
+# Build:  python engine/build_model.py verticals/power_project.yaml answers/power_base.yaml
+# v1.1: adds kpi_discount_rate (LCOE needs one). Debt is sized by gearing and repaid in
+#       proportion to EBITDA over the tenor; fin_target_dscr is a test on the result,
+#       not a sizing rule.
+# v1.2: default PPA tariff 38 -> 58 $/MWh. At 38 the base case was uneconomic (LCOE ~45,
+#       minimum DSCR 0.76). The new value is a placeholder, not a market quote.
+
+meta:
+  schema_version: "1.2"
+  vertical: power_project
+  archetypes: [capacity]
+  modules: [entity_timeline, scenario, revenue_capacity, opex_direct, opex_headcount,
+            capex_depreciation, debt, working_capital, cash_policy, curves]
+
+# ── Scenario switch ──────────────────────────────────────────────────────────
+# One cell (g_scenario) scales the axes chosen at interview: tariff, capacity factor, capex.
+scenarios:
+  - { id: Base, code: 1, tariff_mult: 1.00, cf_delta_pp: 0.0,  capex_mult: 1.00 }
+  - { id: Bear, code: 2, tariff_mult: 0.85, cf_delta_pp: -2.0, capex_mult: 1.15 }
+  - { id: Bull, code: 3, tariff_mult: 1.10, cf_delta_pp: +1.5, capex_mult: 0.95 }
+
+assumptions:
+
+  # ── 1. Entity & Timeline ───────────────────────────────────────────────────
+  - { id: g_entity_name,        label: "Project company name",                section: "1. Entity",   unit: text,         default: "NewCo Power SPV" }
+  - { id: g_reporting_ccy,      label: "Reporting currency",                  section: "1. Entity",   unit: text,         default: "USD" }
+  - { id: g_tax_rate,           label: "Corporate tax rate",                  section: "1. Entity",   unit: percent,      default: 0.25 }   # placeholder: UK main rate 25%, as the SaaS template; tax is on book profit (book depreciation is the only deduction), losses carried forward
+  - { id: g_tax_holiday_years,  label: "Tax holiday (years from COD)",        section: "1. Entity",   unit: integer,      default: 0 }
+  - { id: g_scenario,           label: "Scenario (1=Base 2=Bear 3=Bull)",     section: "1. Entity",   unit: integer,      default: 1 }
+  - { id: g_fc_start_date,      label: "Financial close / construction start", section: "2. Timeline", unit: date,        default: "2027-01-01" }
+  - { id: g_construction_qtrs,  label: "Construction period (quarters)",      section: "2. Timeline", unit: integer,      default: 8 }
+  - { id: g_operating_years,    label: "Operating period (years)",            section: "2. Timeline", unit: integer,      default: 25 }
+
+  # ── 2. Plant ───────────────────────────────────────────────────────────────
+  - { id: plant_capacity_mw,    label: "Nameplate capacity (MW-AC)",          section: "3. Plant",    unit: ratio,        default: 100.0 }
+  - { id: plant_cf_year1,       label: "Capacity factor before availability, yr 1", section: "3. Plant", unit: percent,     default: 0.24 }   # utility PV, single-axis tracking; output = this x availability, so enter a net figure only with availability at 100%
+  - { id: plant_degradation,    label: "Annual output degradation",           section: "3. Plant",    unit: percent,      default: 0.005 }  # 0.5%/yr, panel warranty standard
+  - { id: plant_availability,   label: "Plant availability (x capacity factor)", section: "3. Plant",  unit: percent,      default: 0.98 }   # share of hours the plant can run; set to 100% if the capacity factor above is already net of downtime
+
+  # ── 3. Revenue ─────────────────────────────────────────────────────────────
+  - { id: rev_ppa_share,        label: "Output contracted under PPA (%)",     section: "4. Revenue",  unit: percent,      default: 1.00 }
+  - { id: rev_ppa_tariff,       label: "PPA tariff, year 1 ($/MWh)",          section: "4. Revenue",  unit: per_unit,     default: 58.0 }   # placeholder, not a market quote: set when tax defaulted to 0%, as the lowest whole number clearing fin_target_dscr (1.30x) at the default 100 MW, capex and gearing. With 25% tax the minimum is 1.37x, because the DSCR test leaves out the first-year working-capital build-up; not retuned
+  - { id: rev_merchant_price,   label: "Merchant price, year 1 ($/MWh)",      section: "4. Revenue",  unit: per_unit,     default: 55.0 }   # scales the merchant_price_path curve's shape
+  - { id: rev_capacity_payment, label: "Capacity payment ($/MW-year, 000s)",  section: "4. Revenue",  unit: per_unit,     default: 0.0 }
+
+  # ── 4. Direct costs ────────────────────────────────────────────────────────
+  - { id: opex_fixed_om,        label: "Fixed O&M ($/MW-year, 000s)",         section: "5. Direct costs", unit: per_unit, default: 12.0 }   # NREL ATB-class utility PV
+  - { id: opex_var_om,          label: "Variable O&M ($/MWh)",                section: "5. Direct costs", unit: per_unit, default: 0.0 }
+  - { id: opex_insurance_pct,   label: "Insurance (% of capex / yr)",         section: "5. Direct costs", unit: percent,  default: 0.004 }
+  - { id: opex_land_lease,      label: "Land lease ($k / yr)",                section: "5. Direct costs", unit: per_unit, default: 150.0 }
+  - { id: opex_asset_mgmt,      label: "Asset management & admin ($k / yr)",  section: "5. Direct costs", unit: per_unit, default: 300.0 }
+  - { id: opex_escalation,      label: "OpEx escalation (%/yr)",              section: "5. Direct costs", unit: percent,  default: 0.02 }
+
+  # ── 5. Capex & Depreciation ────────────────────────────────────────────────
+  - { id: capex_epc_per_mw,     label: "EPC capex ($k per MW)",               section: "6. Capex",    unit: per_unit,     default: 620.0 }  # utility PV all-in EPC
+  - { id: capex_dev_pct,        label: "Development cost (% of EPC)",         section: "6. Capex",    unit: percent,      default: 0.05 }
+  - { id: capex_grid,           label: "Grid connection ($M)",                section: "6. Capex",    unit: usd_millions, default: 4.0 }
+  - { id: capex_contingency,    label: "Contingency (% of EPC + dev + grid)", section: "6. Capex",    unit: percent,      default: 0.05 }
+  - { id: depn_life_years,      label: "Depreciation life (years)",           section: "6. Capex",    unit: integer,      default: 25 }
+  - { id: depn_salvage_pct,     label: "Salvage value (% of capex)",          section: "6. Capex",    unit: percent,      default: 0.00 }
+
+  # ── 6. Financing ───────────────────────────────────────────────────────────
+  - { id: fin_gearing,          label: "Debt / total capex (gearing)",        section: "7. Financing", unit: percent,     default: 0.75 }
+  - { id: fin_debt_rate,        label: "Debt all-in rate",                    section: "7. Financing", unit: percent,     default: 0.055 }
+  - { id: fin_debt_tenor,       label: "Debt tenor from COD (years)",         section: "7. Financing", unit: integer,     default: 18 }
+  - { id: fin_idc_capitalised,  label: "Capitalise IDC during construction (1=yes)", section: "7. Financing", unit: integer, default: 1 }
+  - { id: fin_dsra_months,      label: "DSRA (months of debt service)",       section: "7. Financing", unit: integer,     default: 6 }
+  - { id: fin_target_dscr,      label: "Target minimum DSCR (test)",          section: "7. Financing", unit: ratio,       default: 1.30 }
+
+  # ── 7. Working capital & cash policy ──────────────────────────────────────
+  - { id: wc_ar_days,           label: "AR days (offtaker payment terms)",    section: "8. WC",       unit: integer,      default: 45 }
+  - { id: wc_ap_days,           label: "AP days",                             section: "8. WC",       unit: integer,      default: 30 }
+  - { id: cash_min_operating,   label: "Min operating cash ($M)",             section: "9. Cash",     unit: usd_millions, default: 2.0 }
+  - { id: cash_distribution_lockup, label: "Distribution lock-up if DSCR below", section: "9. Cash",  unit: ratio,        default: 1.10 }
+
+  # ── 8. KPIs ────────────────────────────────────────────────────────────────
+  - { id: kpi_discount_rate,    label: "Discount rate for LCOE",              section: "10. KPIs",    unit: percent,      default: 0.07 }   # placeholder; set to the project's cost of capital
+
+# ── Curves (year-indexed "paste a path" tables) ───────────────────────────────
+curves:
+  tariff_escalation:      # multiplier on year-1 tariff; default flat
+    - { year: 1, mult: 1.000 }
+    - { year: 5, mult: 1.000 }
+    - { year: 25, mult: 1.000 }
+  merchant_price_path:    # $/MWh path if rev_ppa_share < 1; rescaled so year 1 = rev_merchant_price
+    - { year: 1, price: 55.0 }
+    - { year: 10, price: 62.0 }
+    - { year: 25, price: 70.0 }
+
+# ── KPI sheet spec (all formula-derived, no literals) ────────────────────────
+kpis: [lcoe, dscr_min, dscr_avg, equity_irr, project_irr, payback_years, ebitda_margin]
