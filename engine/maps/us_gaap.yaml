@@ -1,0 +1,225 @@
+# US-GAAP tag map: SEC companyfacts tags -> Tie-Out's standard chart of accounts.
+#
+# Each line lists its tags in priority order. For each year the first tag with an
+# annual 10-K / 10-K/A value wins. Within that tag the statement's source filing
+# wins (see anchors), else the latest filing (restatements). Companies use
+# different tags, hence the fallback lists.
+# kind: flow  = a value over the fiscal year (start..end about one year)
+#       stock = a balance at fiscal year end (instant)
+# Only tags with the same meaning go in one list. A narrower tag (for example
+# Depreciation without amortisation) is left out rather than mixed in.
+
+meta:
+  standard: us-gaap
+  unit: USD
+  forms: ["10-K", "10-K/A"]
+  flow_days: [350, 380]     # 52/53-week years run 364 or 371 days
+  max_years: 10
+  min_years: 3
+
+lines:
+  # Profit and loss ------------------------------------------------------------
+  revenue:
+    {statement: pl, kind: flow, label: Revenue,
+     tags: [Revenues, RevenueFromContractWithCustomerExcludingAssessedTax,
+            SalesRevenueNet, RevenueFromContractWithCustomerIncludingAssessedTax,
+            SalesRevenueGoodsNet]}
+  cogs:
+    {statement: pl, kind: flow, label: Cost of revenue,
+     tags: [CostOfRevenue, CostOfGoodsAndServicesSold, CostOfGoodsSold,
+            CostOfGoodsAndServiceExcludingDepreciationDepletionAndAmortization]}
+  gross_profit:
+    {statement: pl, kind: flow, label: Gross profit, tags: [GrossProfit]}
+  rnd:
+    {statement: pl, kind: flow, label: Research and development,
+     tags: [ResearchAndDevelopmentExpense,
+            ResearchAndDevelopmentExpenseExcludingAcquiredInProcessCost]}
+  sga:
+    {statement: pl, kind: flow, label: Selling, general and administrative,
+     tags: [SellingGeneralAndAdministrativeExpense]}
+  opex_total:
+    {statement: pl, kind: flow, label: Total operating expenses, tags: [OperatingExpenses]}
+  da:
+    {statement: pl, kind: flow, label: Depreciation and amortisation,
+     tags: [DepreciationDepletionAndAmortization, DepreciationAmortizationAndAccretionNet,
+            DepreciationAndAmortization],
+     # No standard tag: the company's own cash-flow line, read from the 10-K's
+     # statement page (fetch_filings.py step 4), when exactly one of its own rows
+     # there names both words (Microsoft: DepreciationAmortizationAndOther).
+     extension: {statement: cf, words: [Depreciation, Amortization]}}
+  ebit:
+    {statement: pl, kind: flow, label: Operating income (EBIT), tags: [OperatingIncomeLoss]}
+  interest_expense:
+    {statement: pl, kind: flow, label: Interest expense,
+     tags: [InterestExpense, InterestExpenseNonoperating, InterestExpenseDebt]}
+  pretax_income:
+    {statement: pl, kind: flow, label: Income before tax,
+     tags: [IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest,
+            IncomeLossFromContinuingOperationsBeforeIncomeTaxesMinorityInterestAndIncomeLossFromEquityMethodInvestments]}
+  tax:
+    {statement: pl, kind: flow, label: Income tax, tags: [IncomeTaxExpenseBenefit]}
+  net_income_incl_nci:
+    {statement: pl, kind: flow, label: Net income incl. non-controlling interests,
+     tags: [ProfitLoss]}
+  net_income_nci:
+    {statement: pl, kind: flow, label: Net income to non-controlling interests,
+     tags: [NetIncomeLossAttributableToNoncontrollingInterest]}
+  net_income:
+    {statement: pl, kind: flow, label: Net income to shareholders,
+     tags: [NetIncomeLoss, NetIncomeLossAvailableToCommonStockholdersBasic]}
+
+  # Balance sheet ----------------------------------------------------------------
+  cash:
+    {statement: bs, kind: stock, label: Cash and cash equivalents,
+     tags: [CashAndCashEquivalentsAtCarryingValue, Cash]}
+  cash_and_sti:
+    {statement: bs, kind: stock, label: Cash and short-term investments (one line),
+     tags: [CashCashEquivalentsAndShortTermInvestments]}
+  short_term_investments:
+    {statement: bs, kind: stock, label: Short-term investments,
+     tags: [MarketableSecuritiesCurrent, ShortTermInvestments, AvailableForSaleSecuritiesDebtSecuritiesCurrent]}
+  receivables:
+    {statement: bs, kind: stock, label: Receivables,
+     tags: [AccountsReceivableNetCurrent, ReceivablesNetCurrent]}
+  inventory:
+    {statement: bs, kind: stock, label: Inventory, tags: [InventoryNet]}
+  current_assets:
+    {statement: bs, kind: stock, label: Total current assets, tags: [AssetsCurrent]}
+  ppe:
+    {statement: bs, kind: stock, label: Property, plant and equipment (net),
+     tags: [PropertyPlantAndEquipmentNet]}
+  noncurrent_assets:
+    {statement: bs, kind: stock, label: Total non-current assets, tags: [AssetsNoncurrent]}
+  total_assets:
+    {statement: bs, kind: stock, label: Total assets, tags: [Assets]}
+  payables:
+    {statement: bs, kind: stock, label: Accounts payable, tags: [AccountsPayableCurrent]}
+  current_liabilities:
+    {statement: bs, kind: stock, label: Total current liabilities, tags: [LiabilitiesCurrent]}
+  short_term_borrowings:
+    {statement: bs, kind: stock, label: Short-term borrowings and commercial paper,
+     tags: [ShortTermBorrowings, CommercialPaper]}
+  current_portion_ltd:
+    {statement: bs, kind: stock, label: Current portion of long-term debt,
+     tags: [LongTermDebtCurrent]}
+  long_term_debt:
+    {statement: bs, kind: stock, label: Long-term debt,
+     tags: [LongTermDebtNoncurrent, LongTermDebtAndCapitalLeaseObligations]}
+  noncurrent_liabilities:
+    {statement: bs, kind: stock, label: Total non-current liabilities, tags: [LiabilitiesNoncurrent]}
+  total_liabilities:
+    {statement: bs, kind: stock, label: Total liabilities, tags: [Liabilities]}
+  temporary_equity:
+    {statement: bs, kind: stock, label: Temporary (mezzanine) equity,
+     tags: [TemporaryEquityCarryingAmountIncludingPortionAttributableToNoncontrollingInterests,
+            RedeemableNoncontrollingInterestEquityCarryingAmount]}
+  equity_parent:
+    {statement: bs, kind: stock, label: Shareholders' equity, tags: [StockholdersEquity]}
+  nci:
+    {statement: bs, kind: stock, label: Non-controlling interests, tags: [MinorityInterest]}
+  total_equity:
+    {statement: bs, kind: stock, label: Total equity incl. non-controlling interests,
+     tags: [StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest]}
+  liabilities_and_equity:
+    {statement: bs, kind: stock, label: Total liabilities and equity,
+     tags: [LiabilitiesAndStockholdersEquity]}
+  retained_earnings:
+    {statement: bs, kind: stock, label: Retained earnings, tags: [RetainedEarningsAccumulatedDeficit]}
+
+  # Cash flow --------------------------------------------------------------------
+  cfo:
+    {statement: cf, kind: flow, label: Cash from operations,
+     tags: [NetCashProvidedByUsedInOperatingActivities,
+            NetCashProvidedByUsedInOperatingActivitiesContinuingOperations]}
+  capex:
+    {statement: cf, kind: flow, label: Capital expenditure,
+     tags: [PaymentsToAcquirePropertyPlantAndEquipment, PaymentsToAcquireProductiveAssets]}
+  cfi:
+    {statement: cf, kind: flow, label: Cash from investing,
+     tags: [NetCashProvidedByUsedInInvestingActivities,
+            NetCashProvidedByUsedInInvestingActivitiesContinuingOperations]}
+  dividends_paid:
+    {statement: cf, kind: flow, label: Dividends paid,
+     tags: [PaymentsOfDividends, PaymentsOfDividendsCommonStock]}
+  buybacks:
+    {statement: cf, kind: flow, label: Share buybacks, tags: [PaymentsForRepurchaseOfCommonStock]}
+  cff:
+    {statement: cf, kind: flow, label: Cash from financing,
+     tags: [NetCashProvidedByUsedInFinancingActivities,
+            NetCashProvidedByUsedInFinancingActivitiesContinuingOperations]}
+  fx_effect:
+    {statement: cf, kind: flow, label: Exchange-rate effect on cash,
+     tags: [EffectOfExchangeRateOnCashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents,
+            EffectOfExchangeRateOnCashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsIncludingDisposalGroupAndDiscontinuedOperations,
+            EffectOfExchangeRateOnCashAndCashEquivalents,
+            EffectOfExchangeRateOnCashAndCashEquivalentsContinuingOperations]}
+  net_change_cash:
+    {statement: cf, kind: flow, label: Net change in cash,
+     tags: [CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffect,
+            CashAndCashEquivalentsPeriodIncreaseDecrease]}
+  end_cash_cf:
+    {statement: cf, kind: stock, label: Closing cash (cash flow statement),
+     tags: [CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents,
+            CashAndCashEquivalentsAtCarryingValue]}
+
+# Not chart lines; used by the tie-out only.
+dividends_declared_tags: [DividendsCommonStockCash, DividendsCommonStock, DividendsCash, Dividends]
+# Restricted cash: a total tag if tagged, else the sum of the current and
+# non-current parts that are tagged.
+restricted_cash:
+  total: [RestrictedCash, RestrictedCashAndCashEquivalents]
+  parts:
+    - [RestrictedCashCurrent, RestrictedCashAndCashEquivalentsAtCarryingValue]
+    - [RestrictedCashNoncurrent, RestrictedCashAndCashEquivalentsNoncurrent]
+# The statement each tie-out reads from one filing where it can: per year, the
+# latest 10-K reporting this line's value is that statement's source filing, and
+# every other line of the statement is read from the same filing if it is there.
+anchors: {pl: net_income, bs: total_assets, cf: cfo}
+
+# Banks and insurers. Their statements have no current/non-current split and no
+# cost of sales, so the chart above does not fit. A company this rule catches is
+# routed to the bank or insurer map (`route`, judged on 10-K values in the
+# selected years) when exactly one route matches. One that matches both goes
+# where its saved SEC SIC code says (below). One that matches no route, or both
+# with no deciding SIC code, is refused with `message` and the reason.
+# Securities firms are refused (`broker_dealer`) until a broker-dealer template
+# exists. Broker-dealer holding companies (Goldman Sachs,
+# Morgan Stanley) file as bank holding companies and hold deposits, so the bank
+# route catches them first. The SEC SIC code decides, when fetch_filings.py saved
+# it beside the companyfacts file (<TICKER>_sic.json). Without it, the latest year
+# with deposits decides: deposits below `max_deposits_to_assets` of total assets,
+# and loans (when tagged) below `max_loans_to_assets`. FY2016-FY2025: GS and MS
+# deposits 14.4-30.9% of assets, loans 5.8-18.9%; JPM, USB, PNC, WFC, C and BAC
+# deposits 51.9-82.1%, loans 26.5-60.5%.
+# Set enabled: false to build such a company on the chart above.
+unsupported:
+  enabled: true
+  message: >-
+    not supported yet: this looks like a financial company. Its statements have
+    no current/non-current split and no cost of sales, so Tie-Out's standard
+    chart does not fit it.
+  # When both routes match, a saved SEC SIC code breaks the tie: `sic` lists the
+  # codes, `sic_prefix` a code family. Citi (C, SIC 6021) files both
+  # PremiumsEarnedNet and Deposits. With no SIC, or another code, it is refused.
+  route:
+    - {sector: insurer, map: us_gaap_insurer.yaml, any_present: [PremiumsEarnedNet],
+       sic_prefix: "63"}                # 63xx: insurance carriers
+    - {sector: bank, map: us_gaap_bank.yaml, any_present: [Deposits],
+       sic: ["6021", "6022", "6029", "6035", "6036"]}   # commercial banks, savings institutions
+  broker_dealer:
+    sic: ["6211"]                       # Security Brokers, Dealers & Flotation Companies
+    max_deposits_to_assets: 0.40
+    max_loans_to_assets: 0.25
+    message: >-
+      not supported yet: this is a securities firm ({detail}). Tie-Out has no
+      broker-dealer template yet; the bank template's drivers do not fit it.
+  require_absent: [AssetsCurrent]      # no value in any selected year
+  any_present:                          # any 10-K value at all
+    - InterestAndDividendIncomeOperating
+    - InterestIncomeExpenseNet
+    - InterestAndFeeIncomeLoansAndLeases
+    - Deposits
+    - ProvisionForLoanLeaseAndOtherLosses
+    - PremiumsEarnedNet
+    - PolicyholderBenefitsAndClaimsIncurredNet
+    - LiabilityForFuturePolicyBenefits

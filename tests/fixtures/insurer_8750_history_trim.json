@@ -1,0 +1,1522 @@
+{
+ "chart_notes": [
+  "life insurer (J-GAAP 生命保険業 format).",
+  "premiums is 保険料等収入 (insurance premiums and other, incl. reinsurance income), as filed.",
+  "claims is 保険金等支払金 (claims, annuities, benefits and surrender payments PAID); the change in reserves is the separate line reserve_change.",
+  "reserve_change = reserve_provision (責任準備金等繰入額, in 経常費用) - reserve_reversal (責任準備金等戻入額, in 経常収益). Because a reversal sits inside total_revenue, use reserve_provision, not reserve_change, when building up total_expenses.",
+  "investment_income is 資産運用収益, gross and incl. realised gains; investment_expenses (資産運用費用) is the matching expense line.",
+  "opex is derived: 経常費用 - claims - reserve_provision - investment_expenses. It holds 事業費 (admin_expenses) and その他経常費用.",
+  "policyholder_dividend_provision (契約者配当準備金繰入額) is below extraordinary items, outside total_expenses, unlike US policyholder dividends.",
+  "pretax_income = 経常利益 + extraordinary items - policyholder_dividend_provision.",
+  "policy_reserves is the filed total 保険契約準備金 (支払備金 + 責任準備金 + 契約者配当準備金); future_policy_benefits, policyholder_account_balances and unearned_premiums are not split out in J-GAAP and stay empty.",
+  "cash is 現金及び預貯金; the cash flow statement ends on 現金及び現金同等物. The tie-out uses the filing's own reconciliation note only if it foots, else flags.",
+  "equity_parent is derived (株主資本 + その他の包括利益累計額)."
+ ],
+ "cik": "E06141",
+ "credit": [
+  "出典：EDINET閲覧（提出）サイト（https://disclosure2.edinet-fsa.go.jp/WZEK0040.aspx?S100YC7A, https://disclosure2.edinet-fsa.go.jp/WZEK0040.aspx?S100TQJ1）、PDL1.0（https://www.digital.go.jp/resources/open_data/public_data_license_v1.0）",
+  "EDINET閲覧（提出）サイトのデータをもとにStargira Tie-Out（Stargira Advisors Ltd）により加工。Processed with Stargira Tie-Out (Stargira Advisors Ltd): the filed figures are re-arranged into Tie-Out's chart of accounts and shown in millions of yen; this is not the government's original data."
+ ],
+ "currency": "JPY",
+ "edinet_code": "E06141",
+ "entity": "Daiichi Life Group, Inc. (株式会社第一ライフグループ)",
+ "filing_id_label": "docID",
+ "flags": [
+  {
+   "check": "cash",
+   "fy": 2023,
+   "reason": "CFO + CFI + CFF + FX = net change off by -2,000,000 (within the rounding of the four filed figures, each shown to 1,000,000; the filed figures themselves do not add)"
+  }
+ ],
+ "insurer_type": "life",
+ "lines": {
+  "accumulated_oci": {
+   "2023": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "ValuationAndTranslationAdjustments",
+    "val": 907483000000
+   },
+   "2024": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "ValuationAndTranslationAdjustments",
+    "val": 2009761000000
+   },
+   "2025": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "ValuationAndTranslationAdjustments",
+    "val": 1597788000000
+   },
+   "2026": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "ValuationAndTranslationAdjustments",
+    "val": 1983792000000
+   }
+  },
+  "admin_expenses": {
+   "2023": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "ProjectExpensesINS",
+    "val": 841698000000
+   },
+   "2024": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "ProjectExpensesINS",
+    "val": 926325000000
+   },
+   "2025": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "ProjectExpensesINS",
+    "val": 988092000000
+   },
+   "2026": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "ProjectExpensesINS",
+    "val": 1048234000000
+   }
+  },
+  "buybacks": {
+   "2023": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "PurchaseOfTreasuryStockFinCF",
+    "val": 120000000000
+   },
+   "2024": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "PurchaseOfTreasuryStockFinCF",
+    "val": 120000000000
+   },
+   "2025": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "PurchaseOfTreasuryStockFinCF",
+    "val": 101849000000
+   },
+   "2026": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "PurchaseOfTreasuryStockFinCF",
+    "val": 107597000000
+   }
+  },
+  "capex": {
+   "2023": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "PurchaseOfPropertyPlantAndEquipmentInvCF",
+    "val": 117860000000
+   },
+   "2024": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "PurchaseOfPropertyPlantAndEquipmentInvCF",
+    "val": 51139000000
+   },
+   "2025": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "PurchaseOfPropertyPlantAndEquipmentInvCF",
+    "val": 60115000000
+   },
+   "2026": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "PurchaseOfPropertyPlantAndEquipmentInvCF",
+    "val": 77168000000
+   }
+  },
+  "cash": {
+   "2023": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "CashAndDepositsAssetsINS",
+    "val": 1619087000000
+   },
+   "2024": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "CashAndDepositsAssetsINS",
+    "val": 2064416000000
+   },
+   "2025": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "CashAndDepositsAssetsINS",
+    "val": 1889228000000
+   },
+   "2026": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "CashAndDepositsAssetsINS",
+    "val": 1974671000000
+   }
+  },
+  "cff": {
+   "2023": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "NetCashProvidedByUsedInFinancingActivities",
+    "val": -325447000000
+   },
+   "2024": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "NetCashProvidedByUsedInFinancingActivities",
+    "val": -145763000000
+   },
+   "2025": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "NetCashProvidedByUsedInFinancingActivities",
+    "val": -73570000000
+   },
+   "2026": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "NetCashProvidedByUsedInFinancingActivities",
+    "val": -127230000000
+   }
+  },
+  "cfi": {
+   "2023": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "NetCashProvidedByUsedInInvestmentActivities",
+    "val": 310460000000
+   },
+   "2024": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "NetCashProvidedByUsedInInvestmentActivities",
+    "val": -601649000000
+   },
+   "2025": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "NetCashProvidedByUsedInInvestmentActivities",
+    "val": -980460000000
+   },
+   "2026": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "NetCashProvidedByUsedInInvestmentActivities",
+    "val": -926255000000
+   }
+  },
+  "cfo": {
+   "2023": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "NetCashProvidedByUsedInOperatingActivities",
+    "val": -132492000000
+   },
+   "2024": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "NetCashProvidedByUsedInOperatingActivities",
+    "val": 997377000000
+   },
+   "2025": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "NetCashProvidedByUsedInOperatingActivities",
+    "val": 592578000000
+   },
+   "2026": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "NetCashProvidedByUsedInOperatingActivities",
+    "val": 792158000000
+   }
+  },
+  "claims": {
+   "2023": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "InsuranceClaimsAndOtherOEINS",
+    "val": 6548179000000
+   },
+   "2024": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "InsuranceClaimsAndOtherOEINS",
+    "val": 6756863000000
+   },
+   "2025": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "InsuranceClaimsAndOtherOEINS",
+    "val": 6581327000000
+   },
+   "2026": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "InsuranceClaimsAndOtherOEINS",
+    "val": 6447114000000
+   }
+  },
+  "claims_reserve": {
+   "2023": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "OutstandingClaimsLiabilitiesINS",
+    "val": 1353999000000
+   },
+   "2024": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "OutstandingClaimsLiabilitiesINS",
+    "val": 1460832000000
+   },
+   "2025": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "OutstandingClaimsLiabilitiesINS",
+    "val": 1426541000000
+   },
+   "2026": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "OutstandingClaimsLiabilitiesINS",
+    "val": 1624508000000
+   }
+  },
+  "debt": {
+   "2023": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "ShortTermBondsPayable + BondsPayable",
+    "val": 949674000000
+   },
+   "2024": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "ShortTermBondsPayable + BondsPayable",
+    "val": 975286000000
+   },
+   "2025": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "ShortTermBondsPayable + BondsPayable",
+    "val": 1194998000000
+   },
+   "2026": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "ShortTermBondsPayable + BondsPayable",
+    "val": 1345159000000
+   }
+  },
+  "dividend_reserve": {
+   "2023": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "ReserveForDividendsToPolicyholdersLiabilitiesINS",
+    "val": 423403000000
+   },
+   "2024": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "ReserveForDividendsToPolicyholdersLiabilitiesINS",
+    "val": 422642000000
+   },
+   "2025": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "ReserveForDividendsToPolicyholdersLiabilitiesINS",
+    "val": 432050000000
+   },
+   "2026": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "ReserveForDividendsToPolicyholdersLiabilitiesINS",
+    "val": 437856000000
+   }
+  },
+  "dividends_paid": {
+   "2023": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "CashDividendsPaidFinCF",
+    "val": 84814000000
+   },
+   "2024": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "CashDividendsPaidFinCF",
+    "val": 84313000000
+   },
+   "2025": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "CashDividendsPaidFinCF",
+    "val": 162356000000
+   },
+   "2026": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "CashDividendsPaidFinCF",
+    "val": 156780000000
+   }
+  },
+  "end_cash_cf": {
+   "2023": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "CashAndCashEquivalents",
+    "val": 2517285000000
+   },
+   "2024": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "CashAndCashEquivalents",
+    "val": 2772370000000
+   },
+   "2025": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "CashAndCashEquivalents",
+    "val": 2313529000000
+   },
+   "2026": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "CashAndCashEquivalents",
+    "val": 2087588000000
+   }
+  },
+  "equity_parent": {
+   "2023": {
+    "accn": "S100TQJ1",
+    "derived_from": {
+     "accumulated_oci": 907483000000,
+     "shareholders_equity": 1753795000000
+    },
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "derived: shareholders_equity + accumulated_oci",
+    "val": 2661278000000
+   },
+   "2024": {
+    "accn": "S100TQJ1",
+    "derived_from": {
+     "accumulated_oci": 2009761000000,
+     "shareholders_equity": 1872093000000
+    },
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "derived: shareholders_equity + accumulated_oci",
+    "val": 3881854000000
+   },
+   "2025": {
+    "accn": "S100YC7A",
+    "derived_from": {
+     "accumulated_oci": 1597788000000,
+     "shareholders_equity": 2041323000000
+    },
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "derived: shareholders_equity + accumulated_oci",
+    "val": 3639111000000
+   },
+   "2026": {
+    "accn": "S100YC7A",
+    "derived_from": {
+     "accumulated_oci": 1983792000000,
+     "shareholders_equity": 2270210000000
+    },
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "derived: shareholders_equity + accumulated_oci",
+    "val": 4254002000000
+   }
+  },
+  "extraordinary_income": {
+   "2023": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "ExtraordinaryIncome",
+    "val": 4584000000
+   },
+   "2024": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "ExtraordinaryIncome",
+    "val": 6646000000
+   },
+   "2025": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "ExtraordinaryIncome",
+    "val": 19020000000
+   },
+   "2026": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "ExtraordinaryIncome",
+    "val": 22507000000
+   }
+  },
+  "extraordinary_loss": {
+   "2023": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "ExtraordinaryLoss",
+    "val": 39805000000
+   },
+   "2024": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "ExtraordinaryLoss",
+    "val": 31153000000
+   },
+   "2025": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "ExtraordinaryLoss",
+    "val": 75793000000
+   },
+   "2026": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "ExtraordinaryLoss",
+    "val": 42546000000
+   }
+  },
+  "fx_effect": {
+   "2023": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "EffectOfExchangeRateChangeOnCashAndCashEquivalents",
+    "val": 48019000000
+   },
+   "2024": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "EffectOfExchangeRateChangeOnCashAndCashEquivalents",
+    "val": 5120000000
+   },
+   "2025": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "EffectOfExchangeRateChangeOnCashAndCashEquivalents",
+    "val": 2610000000
+   },
+   "2026": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "EffectOfExchangeRateChangeOnCashAndCashEquivalents",
+    "val": 35387000000
+   }
+  },
+  "investment_expenses": {
+   "2023": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "InvestmentExpensesOEINS",
+    "val": 1145908000000
+   },
+   "2024": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "InvestmentExpensesOEINS",
+    "val": 603877000000
+   },
+   "2025": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "InvestmentExpensesOEINS",
+    "val": 842153000000
+   },
+   "2026": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "InvestmentExpensesOEINS",
+    "val": 867008000000
+   }
+  },
+  "investment_income": {
+   "2023": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "InvestmentIncomeOIINS",
+    "val": 2280869000000
+   },
+   "2024": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "InvestmentIncomeOIINS",
+    "val": 3033982000000
+   },
+   "2025": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "InvestmentIncomeOIINS",
+    "val": 2528416000000
+   },
+   "2026": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "InvestmentIncomeOIINS",
+    "val": 3735313000000
+   }
+  },
+  "investments": {
+   "2023": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "CallLoansAssetsINS + MonetaryReceivablesPurchasedAssetsINS + MoneyHeldInTrustAssetsINS + SecuritiesAssetsINS + LoansReceivablesAssetsINS",
+    "val": 53184450000000
+   },
+   "2024": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "CallLoansAssetsINS + ReceivablesUnderResaleAgreementsAssetsINS + MonetaryReceivablesPurchasedAssetsINS + MoneyHeldInTrustAssetsINS + SecuritiesAssetsINS + LoansReceivablesAssetsINS",
+    "val": 58393518000000
+   },
+   "2025": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "CallLoansAssetsINS + MonetaryReceivablesPurchasedAssetsINS + MoneyHeldInTrustAssetsINS + SecuritiesAssetsINS + LoansReceivablesAssetsINS",
+    "val": 59837983000000
+   },
+   "2026": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "CallLoansAssetsINS + MonetaryReceivablesPurchasedAssetsINS + MoneyHeldInTrustAssetsINS + SecuritiesAssetsINS + LoansReceivablesAssetsINS",
+    "val": 62734563000000
+   }
+  },
+  "liabilities_and_equity": {
+   "2023": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "LiabilitiesAndNetAssets",
+    "val": 61653699000000
+   },
+   "2024": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "LiabilitiesAndNetAssets",
+    "val": 67540309000000
+   },
+   "2025": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "LiabilitiesAndNetAssets",
+    "val": 69404123000000
+   },
+   "2026": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "LiabilitiesAndNetAssets",
+    "val": 74159096000000
+   }
+  },
+  "nci": {
+   "2023": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "NonControllingInterests",
+    "val": 1000000
+   }
+  },
+  "net_change_cash": {
+   "2023": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "NetIncreaseDecreaseInCashAndCashEquivalents",
+    "val": -99458000000
+   },
+   "2024": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "NetIncreaseDecreaseInCashAndCashEquivalents",
+    "val": 255085000000
+   },
+   "2025": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "NetIncreaseDecreaseInCashAndCashEquivalents",
+    "val": -458841000000
+   },
+   "2026": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "NetIncreaseDecreaseInCashAndCashEquivalents",
+    "val": -225940000000
+   }
+  },
+  "net_income": {
+   "2023": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "ProfitLossAttributableToOwnersOfParent",
+    "val": 173735000000
+   },
+   "2024": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "ProfitLossAttributableToOwnersOfParent",
+    "val": 320765000000
+   },
+   "2025": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "ProfitLossAttributableToOwnersOfParent",
+    "val": 458407000000
+   },
+   "2026": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "ProfitLossAttributableToOwnersOfParent",
+    "val": 436597000000
+   }
+  },
+  "net_income_incl_nci": {
+   "2023": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "ProfitLoss",
+    "val": 173735000000
+   },
+   "2024": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "ProfitLoss",
+    "val": 320786000000
+   },
+   "2025": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "ProfitLoss",
+    "val": 458407000000
+   },
+   "2026": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "ProfitLoss",
+    "val": 436597000000
+   }
+  },
+  "net_income_nci": {
+   "2023": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "ProfitLossAttributableToNonControllingInterests",
+    "val": 0
+   },
+   "2024": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "ProfitLossAttributableToNonControllingInterests",
+    "val": 21000000
+   }
+  },
+  "opex": {
+   "2023": {
+    "accn": "S100TQJ1",
+    "derived_from": {
+     "claims": 6548179000000,
+     "investment_expenses": 1145908000000,
+     "reserve_provision": 15348000000,
+     "total_expenses": 9121266000000
+    },
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "derived: total_expenses - claims - reserve_provision - investment_expenses",
+    "val": 1411831000000
+   },
+   "2024": {
+    "accn": "S100TQJ1",
+    "derived_from": {
+     "claims": 6756863000000,
+     "investment_expenses": 603877000000,
+     "reserve_provision": 1877422000000,
+     "total_expenses": 10489160000000
+    },
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "derived: total_expenses - claims - reserve_provision - investment_expenses",
+    "val": 1250998000000
+   },
+   "2025": {
+    "accn": "S100YC7A",
+    "derived_from": {
+     "claims": 6581327000000,
+     "investment_expenses": 842153000000,
+     "reserve_provision": 341899000000,
+     "total_expenses": 9120887000000
+    },
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "derived: total_expenses - claims - reserve_provision - investment_expenses",
+    "val": 1355508000000
+   },
+   "2026": {
+    "accn": "S100YC7A",
+    "derived_from": {
+     "claims": 6447114000000,
+     "investment_expenses": 867008000000,
+     "reserve_provision": 1814937000000,
+     "total_expenses": 10554587000000
+    },
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "derived: total_expenses - claims - reserve_provision - investment_expenses",
+    "val": 1425528000000
+   }
+  },
+  "ordinary_profit": {
+   "2023": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "OrdinaryIncome",
+    "val": 387500000000
+   },
+   "2024": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "OrdinaryIncome",
+    "val": 539006000000
+   },
+   "2025": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "OrdinaryIncome",
+    "val": 755728000000
+   },
+   "2026": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "OrdinaryIncome",
+    "val": 753688000000
+   }
+  },
+  "other_cash_change": {},
+  "other_income": {
+   "2023": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "OtherOperatingIncomeOIINS",
+    "val": 573470000000
+   },
+   "2024": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "OtherOperatingIncomeOIINS",
+    "val": 467827000000
+   },
+   "2025": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "OtherOperatingIncomeOIINS",
+    "val": 548833000000
+   },
+   "2026": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "OtherOperatingIncomeOIINS",
+    "val": 628895000000
+   }
+  },
+  "policy_reserve": {
+   "2023": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "PolicyReserveLiabilitiesINS",
+    "val": 52498770000000
+   },
+   "2024": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "PolicyReserveLiabilitiesINS",
+    "val": 55268875000000
+   },
+   "2025": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "PolicyReserveLiabilitiesINS",
+    "val": 57387967000000
+   },
+   "2026": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "PolicyReserveLiabilitiesINS",
+    "val": 59192742000000
+   }
+  },
+  "policy_reserves": {
+   "2023": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "ReserveForInsurancePolicyLiabilitiesLiabilitiesINS",
+    "val": 54276174000000
+   },
+   "2024": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "ReserveForInsurancePolicyLiabilitiesLiabilitiesINS",
+    "val": 57152350000000
+   },
+   "2025": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "ReserveForInsurancePolicyLiabilitiesLiabilitiesINS",
+    "val": 59246559000000
+   },
+   "2026": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "ReserveForInsurancePolicyLiabilitiesLiabilitiesINS",
+    "val": 61255107000000
+   }
+  },
+  "policyholder_dividend_provision": {
+   "2023": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "ProvisionOfReserveForDividendsToPolicyholdersINSLife",
+    "val": 95000000000
+   },
+   "2024": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "ProvisionOfReserveForDividendsToPolicyholdersINSLife",
+    "val": 87500000000
+   },
+   "2025": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "ProvisionOfReserveForDividendsToPolicyholdersINSLife",
+    "val": 100000000000
+   },
+   "2026": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "ProvisionOfReserveForDividendsToPolicyholdersINSLife",
+    "val": 107500000000
+   }
+  },
+  "premiums": {
+   "2023": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "InsurancePremiumsAndOtherOIINS",
+    "val": 6654426000000
+   },
+   "2024": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "InsurancePremiumsAndOtherOIINS",
+    "val": 7526357000000
+   },
+   "2025": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "InsurancePremiumsAndOtherOIINS",
+    "val": 6799366000000
+   },
+   "2026": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "InsurancePremiumsAndOtherOIINS",
+    "val": 6944066000000
+   }
+  },
+  "pretax_income": {
+   "2023": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "IncomeBeforeIncomeTaxes",
+    "val": 257280000000
+   },
+   "2024": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "IncomeBeforeIncomeTaxes",
+    "val": 426998000000
+   },
+   "2025": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "IncomeBeforeIncomeTaxes",
+    "val": 598955000000
+   },
+   "2026": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "IncomeBeforeIncomeTaxes",
+    "val": 626149000000
+   }
+  },
+  "reserve_change": {
+   "2023": {
+    "accn": "S100TQJ1",
+    "derived_from": {
+     "reserve_provision": 15348000000
+    },
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "derived: reserve_provision",
+    "val": 15348000000
+   },
+   "2024": {
+    "accn": "S100TQJ1",
+    "derived_from": {
+     "reserve_provision": 1877422000000
+    },
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "derived: reserve_provision",
+    "val": 1877422000000
+   },
+   "2025": {
+    "accn": "S100YC7A",
+    "derived_from": {
+     "reserve_provision": 341899000000
+    },
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "derived: reserve_provision",
+    "val": 341899000000
+   },
+   "2026": {
+    "accn": "S100YC7A",
+    "derived_from": {
+     "reserve_provision": 1814937000000
+    },
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "derived: reserve_provision",
+    "val": 1814937000000
+   }
+  },
+  "reserve_provision": {
+   "2023": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "ProvisionOfPolicyReserveAndOtherOEINS",
+    "val": 15348000000
+   },
+   "2024": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "ProvisionOfPolicyReserveAndOtherOEINS",
+    "val": 1877422000000
+   },
+   "2025": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "ProvisionOfPolicyReserveAndOtherOEINS",
+    "val": 341899000000
+   },
+   "2026": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "ProvisionOfPolicyReserveAndOtherOEINS",
+    "val": 1814937000000
+   }
+  },
+  "reserve_reversal": {},
+  "retained_earnings": {
+   "2023": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "RetainedEarnings",
+    "val": 1093232000000
+   },
+   "2024": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "RetainedEarnings",
+    "val": 1214608000000
+   },
+   "2025": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "RetainedEarnings",
+    "val": 1376222000000
+   },
+   "2026": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "RetainedEarnings",
+    "val": 1611421000000
+   }
+  },
+  "share_options": {
+   "2023": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "SubscriptionRightsToShares",
+    "val": 483000000
+   },
+   "2024": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "SubscriptionRightsToShares",
+    "val": 302000000
+   },
+   "2025": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "SubscriptionRightsToShares",
+    "val": 257000000
+   },
+   "2026": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "SubscriptionRightsToShares",
+    "val": 210000000
+   }
+  },
+  "shareholders_equity": {
+   "2023": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "ShareholdersEquity",
+    "val": 1753795000000
+   },
+   "2024": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "ShareholdersEquity",
+    "val": 1872093000000
+   },
+   "2025": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "ShareholdersEquity",
+    "val": 2041323000000
+   },
+   "2026": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "ShareholdersEquity",
+    "val": 2270210000000
+   }
+  },
+  "tax": {
+   "2023": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "IncomeTaxes",
+    "val": 83544000000
+   },
+   "2024": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "IncomeTaxes",
+    "val": 106212000000
+   },
+   "2025": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "IncomeTaxes",
+    "val": 140548000000
+   },
+   "2026": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "IncomeTaxes",
+    "val": 189551000000
+   }
+  },
+  "total_assets": {
+   "2023": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "Assets",
+    "val": 61653699000000
+   },
+   "2024": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "Assets",
+    "val": 67540309000000
+   },
+   "2025": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "Assets",
+    "val": 69404123000000
+   },
+   "2026": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "Assets",
+    "val": 74159096000000
+   }
+  },
+  "total_equity": {
+   "2023": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "NetAssets",
+    "val": 2661764000000
+   },
+   "2024": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "NetAssets",
+    "val": 3882157000000
+   },
+   "2025": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "NetAssets",
+    "val": 3639369000000
+   },
+   "2026": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "NetAssets",
+    "val": 4254212000000
+   }
+  },
+  "total_expenses": {
+   "2023": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "OperatingExpensesINS",
+    "val": 9121266000000
+   },
+   "2024": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "OperatingExpensesINS",
+    "val": 10489160000000
+   },
+   "2025": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "OperatingExpensesINS",
+    "val": 9120887000000
+   },
+   "2026": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "OperatingExpensesINS",
+    "val": 10554587000000
+   }
+  },
+  "total_liabilities": {
+   "2023": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "Liabilities",
+    "val": 58991935000000
+   },
+   "2024": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "Liabilities",
+    "val": 63658152000000
+   },
+   "2025": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "Liabilities",
+    "val": 65764753000000
+   },
+   "2026": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "Liabilities",
+    "val": 69904883000000
+   }
+  },
+  "total_revenue": {
+   "2023": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "OperatingIncomeINS",
+    "val": 9508766000000
+   },
+   "2024": {
+    "accn": "S100TQJ1",
+    "filed": "2024-06-25",
+    "form": "有価証券報告書",
+    "tag": "OperatingIncomeINS",
+    "val": 11028166000000
+   },
+   "2025": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "OperatingIncomeINS",
+    "val": 9876615000000
+   },
+   "2026": {
+    "accn": "S100YC7A",
+    "filed": "2026-06-16",
+    "form": "有価証券報告書",
+    "tag": "OperatingIncomeINS",
+    "val": 11308275000000
+   }
+  }
+ },
+ "routing": "routed to the insurer chart (maps/jgaap_insurer_life.yaml) because its DEI industry code is ins and 91 of its statement elements end in INS, and it files InsurancePremiumsAndOtherOIINS (life format)",
+ "sector": "insurer",
+ "shares_outstanding": {
+  "accn": "S100YC7A",
+  "basis": "issued shares at the year end, 3,621,895,219, less treasury shares (自己株式等), 2,864,200, from the 株式等の状況 section; basic, not diluted",
+  "end": "2026-03-31",
+  "filed": "2026-06-16",
+  "form": "有価証券報告書",
+  "note": null,
+  "tag": "jpcrp_cor:TotalNumberOfIssuedSharesSummaryOfBusinessResults less jpcrp_cor:TotalNumberOfSharesHeldTreasurySharesEtc",
+  "val": 3619031019
+ },
+ "source": "EDINET API v2 (Financial Services Agency), 有価証券報告書 XBRL data in CSV form, consolidated (連結) statements",
+ "standard": "J-GAAP (jppfs_cor)",
+ "statements_basis": "Years are labelled by the calendar year they end in (FY2026 = the year ended 2026-03-31). Each report holds two years; a year's figures come from the newest report that shows it.",
+ "ticker": "8750",
+ "warnings": [
+  "line reserve_reversal: no mapped value in any year (tags tried: ReversalOfPolicyReserveAndOtherINS)",
+  "line net_income_nci: no mapped value in 2025, 2026",
+  "line nci: no mapped value in 2024, 2025, 2026",
+  "line other_cash_change: no mapped value in any year (tags tried: IncreaseInCashAndCashEquivalentsFromNewlyConsolidatedSubsidiaryCCE, DecreaseInCashAndCashEquivalentsResultingFromExclusionOfSubsidiariesFromConsolidationCCE, IncreaseDecreaseInCashAndCashEquivalentsResultingFromChangeOfScopeOfConsolidationCCE)",
+  "21 company-specific elements carry values in the statements and are not mapped (a line the company tags only under its own element shows as missing above): BenefitsAndClaimsSummaryOfBusinessResults, CumulativeEffectsOfChangesInAccountingPoliciesEtc, ImpairmentTotalOfValuationGainLossEquitySecuritiesNotListedInvestmentEquitySecuritiesHeldForPureInvestmentLargestHoldingCompany, ImpairmentTotalOfValuationGainLossEquitySecuritiesOtherThanThoseNotListedInvestmentEquitySecuritiesHeldForPureInvestmentLargestHoldingCompany, IncreaseDecreaseInReserveForPossibleReimbursementOfPrescribedClaimsOpeCF, InvestmentIncomeSummaryOfBusinessResults, NetIncreaseDecreaseInShortTermFinancingFinCF, NetIncreaseDecreaseInShortTermInvestingInvCF, NetUnrealizedGainsLossesOnTotalPolicyReservesAndOtherNetOfTaxOCI, OtherLiabilitiesLiabilities, OtherRefundsEtcOEINS, PremiumAndOtherIncomeSummaryOfBusinessResults, ProvisionForReserveForPolicyholderDividendsSummaryOfBusinessResults, ReserveForPossibleReimbursementOfPrescribedClaims, RestatedBalanceChangesInAccountingPoliciesEtc, ReversalOfAllowanceForInvestmentLossInvestmentIncome, SalesActivityExpensesLifeInsuranceBusiness, SalesManagementExpensesLifeInsuranceBusiness, SecondCareerSpecialSupportExpensesEL, UnrealizedGainLossTotalOfValuationGainLossEquitySecuritiesNotListedInvestmentEquitySecuritiesHeldForPureInvestmentLargestHoldingCompany, UnrealizedGainLossTotalOfValuationGainLossEquitySecuritiesOtherThanThoseNotListedInvestmentEquitySecuritiesHeldForPureInvestmentLargestHoldingCompany"
+ ],
+ "years": [
+  {
+   "accn": "S100TQJ1",
+   "amendments": [],
+   "basis": "the prior-year figures in the report for the year ended 2024-03-31",
+   "end": "2023-03-31",
+   "filed": "2024-06-25",
+   "form": "有価証券報告書",
+   "fy": 2023,
+   "source_filings": {
+    "bs": "S100TQJ1",
+    "cf": "S100TQJ1",
+    "pl": "S100TQJ1"
+   },
+   "status": "flagged",
+   "unit": 1000000
+  },
+  {
+   "accn": "S100TQJ1",
+   "amendments": [],
+   "basis": "its own report",
+   "end": "2024-03-31",
+   "filed": "2024-06-25",
+   "form": "有価証券報告書",
+   "fy": 2024,
+   "source_filings": {
+    "bs": "S100TQJ1",
+    "cf": "S100TQJ1",
+    "pl": "S100TQJ1"
+   },
+   "status": "tied",
+   "unit": 1000000
+  },
+  {
+   "accn": "S100YC7A",
+   "amendments": [],
+   "basis": "the prior-year figures in the report for the year ended 2026-03-31",
+   "end": "2025-03-31",
+   "filed": "2026-06-16",
+   "form": "有価証券報告書",
+   "fy": 2025,
+   "source_filings": {
+    "bs": "S100YC7A",
+    "cf": "S100YC7A",
+    "pl": "S100YC7A"
+   },
+   "status": "tied",
+   "unit": 1000000
+  },
+  {
+   "accn": "S100YC7A",
+   "amendments": [],
+   "basis": "its own report",
+   "end": "2026-03-31",
+   "filed": "2026-06-16",
+   "form": "有価証券報告書",
+   "fy": 2026,
+   "source_filings": {
+    "bs": "S100YC7A",
+    "cf": "S100YC7A",
+    "pl": "S100YC7A"
+   },
+   "status": "tied",
+   "unit": 1000000
+  }
+ ]
+}

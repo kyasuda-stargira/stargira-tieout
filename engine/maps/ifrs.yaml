@@ -1,0 +1,167 @@
+# IFRS element map: EDINET jpigp_cor elements -> Tie-Out's standard chart of accounts.
+#
+# Same structure as us_gaap.yaml and jgaap.yaml (see jgaap.yaml for how the
+# EDINET CSV is read). Element names are without the "jpigp_cor:" prefix.
+# Elements marked "not yet seen" have not appeared in a test filing.
+
+meta:
+  standard: IFRS (jpigp_cor)
+  prefix: "jpigp_cor:"
+  facts_key: jp
+  unit: JPY
+  forms: ["有価証券報告書"]
+  flow_days: [350, 380]
+  max_years: 10
+  min_years: 3
+  period_tags: [NetCashProvidedByUsedInOperatingActivitiesIFRS, ProfitLossIFRS, RevenueIFRS]
+  cash_gap_reason: >-
+    the cash flow statement closes on %s and the balance sheet cash differs; the filing
+    gives no tagged reconciliation and its text note could not be read or does not foot,
+    so the gap of %s is not reconciled from the data
+
+lines:
+  # Profit and loss ----------------------------------------------------------------
+  revenue:
+    {statement: pl, kind: flow, label: Revenue (売上収益),
+     tags: [RevenueIFRS, NetSalesIFRS]}                            # the second: not yet seen
+  cogs:
+    {statement: pl, kind: flow, label: Cost of sales (売上原価), tags: [CostOfSalesIFRS]}
+  gross_profit:
+    {statement: pl, kind: flow, label: Gross profit (売上総利益), tags: [GrossProfitIFRS]}
+  rnd:
+    {statement: pl, kind: flow, label: Research and development (研究開発費),
+     tags: [ResearchAndDevelopmentExpenseIFRS,                    # not yet seen
+            ResearchAndDevelopmentExpenditureRecognizedAsExpenseDuringPeriodIFRS]}
+  sga:
+    {statement: pl, kind: flow, label: Selling, general and administrative (販売費及び一般管理費),
+     tags: [SellingGeneralAndAdministrativeExpensesIFRS]}
+  da:
+    {statement: cf, kind: flow, label: Depreciation and amortisation (減価償却費及び償却費, cash flow),
+     tags: [DepreciationAndAmortizationOpeCFIFRS]}
+  ebit:
+    {statement: pl, kind: flow, label: Operating profit (営業利益), tags: [OperatingProfitLossIFRS]}
+  interest_expense:
+    # 金融費用 (FinanceCostsIFRS) also holds exchange losses and other items, so it is
+    # not used: a company that tags interest only under its own element shows none.
+    {statement: pl, kind: flow, label: Interest expense (支払利息),
+     tags: [InterestExpensesFinanceCostsIFRS, InterestExpenseIFRS]}   # not yet seen
+  pretax_income:
+    {statement: pl, kind: flow, label: Profit before tax (税引前利益),
+     tags: [ProfitLossBeforeTaxIFRS, ProfitLossFromContinuingOperationsBeforeTaxIFRS]}
+  tax:
+    {statement: pl, kind: flow, label: Income tax expense (法人所得税費用), tags: [IncomeTaxExpenseIFRS]}
+  net_income_incl_nci:
+    {statement: pl, kind: flow, label: Profit incl. non-controlling interests (当期利益),
+     tags: [ProfitLossIFRS]}
+  net_income_nci:
+    {statement: pl, kind: flow, label: Profit to non-controlling interests,
+     tags: [ProfitLossAttributableToNonControllingInterestsIFRS]}
+  net_income:
+    {statement: pl, kind: flow, label: Profit to owners of the parent (親会社の所有者に帰属する当期利益),
+     tags: [ProfitLossAttributableToOwnersOfParentIFRS]}
+
+  # Balance sheet (財政状態計算書) ----------------------------------------------------
+  cash:
+    {statement: bs, kind: stock, label: Cash and cash equivalents (現金及び現金同等物),
+     tags: [CashAndCashEquivalentsIFRS]}
+  receivables:
+    {statement: bs, kind: stock, label: Trade and other receivables (営業債権及びその他の債権),
+     tags: [TradeAndOtherReceivablesCAIFRS, TradeAndOtherReceivables2CAIFRS]}
+  inventory:
+    {statement: bs, kind: stock, label: Inventories (棚卸資産), tags: [InventoriesCAIFRS]}
+  current_assets:
+    {statement: bs, kind: stock, label: Total current assets (流動資産), tags: [CurrentAssetsIFRS]}
+  ppe:
+    {statement: bs, kind: stock, label: Property, plant and equipment (有形固定資産),
+     tags: [PropertyPlantAndEquipmentIFRS]}
+  noncurrent_assets:
+    {statement: bs, kind: stock, label: Total non-current assets (非流動資産), tags: [NonCurrentAssetsIFRS]}
+  total_assets:
+    {statement: bs, kind: stock, label: Total assets (資産合計), tags: [AssetsIFRS]}
+  payables:
+    {statement: bs, kind: stock, label: Trade and other payables (営業債務及びその他の債務),
+     tags: [TradeAndOtherPayablesCLIFRS, TradeAndOtherPayables2CLIFRS]}
+  current_liabilities:
+    {statement: bs, kind: stock, label: Total current liabilities (流動負債),
+     tags: [TotalCurrentLiabilitiesIFRS, CurrentLiabilitiesIFRS]}
+  short_term_borrowings:
+    # The current line 社債及び借入金 already includes the current portion of long-term debt.
+    {statement: bs, kind: stock, label: Bonds and borrowings, current (社債及び借入金、流動),
+     tags: [BondsAndBorrowingsCLIFRS, BorrowingsCLIFRS]}
+  long_term_debt:
+    {statement: bs, kind: stock, label: Bonds and borrowings, non-current (社債及び借入金、非流動),
+     tags: [BondsAndBorrowingsNCLIFRS, BorrowingsNCLIFRS]}
+  noncurrent_liabilities:
+    # "Labilities" is the taxonomy's own spelling.
+    {statement: bs, kind: stock, label: Total non-current liabilities (非流動負債),
+     tags: [NonCurrentLabilitiesIFRS, NonCurrentLiabilitiesIFRS]}
+  total_liabilities:
+    {statement: bs, kind: stock, label: Total liabilities (負債合計), tags: [LiabilitiesIFRS]}
+  equity_parent:
+    {statement: bs, kind: stock, label: Equity to owners of the parent (親会社の所有者に帰属する持分),
+     tags: [EquityAttributableToOwnersOfParentIFRS]}
+  nci:
+    {statement: bs, kind: stock, label: Non-controlling interests (非支配持分),
+     tags: [NonControllingInterestsIFRS]}
+  total_equity:
+    {statement: bs, kind: stock, label: Total equity (資本合計), tags: [EquityIFRS]}
+  liabilities_and_equity:
+    {statement: bs, kind: stock, label: Total liabilities and equity (負債及び資本合計),
+     tags: [LiabilitiesAndEquityIFRS]}
+  retained_earnings:
+    {statement: bs, kind: stock, label: Retained earnings (利益剰余金), tags: [RetainedEarningsIFRS]}
+
+  # Cash flow ---------------------------------------------------------------------------
+  cfo:
+    {statement: cf, kind: flow, label: Cash from operations (営業活動によるキャッシュ・フロー),
+     tags: [NetCashProvidedByUsedInOperatingActivitiesIFRS]}
+  capex:
+    {statement: cf, kind: flow, label: Capital expenditure (有形固定資産の取得による支出), sign: -1,
+     tags: [PurchaseOfPropertyPlantAndEquipmentInvCFIFRS]}
+  cfi:
+    {statement: cf, kind: flow, label: Cash from investing (投資活動によるキャッシュ・フロー),
+     tags: [NetCashProvidedByUsedInInvestingActivitiesIFRS]}
+  dividends_paid:
+    {statement: cf, kind: flow, label: Dividends paid (配当金の支払額), sign: -1,
+     tags: [DividendsPaidFinCFIFRS, DividendsPaidToOwnersOfParentFinCFIFRS]}   # the second: not yet seen
+  buybacks:
+    {statement: cf, kind: flow, label: Share buybacks (自己株式の取得による支出), sign: -1,
+     tags: [PaymentsForPurchaseOfTreasurySharesFinCFIFRS, PurchaseOfTreasurySharesFinCFIFRS]}
+  cff:
+    {statement: cf, kind: flow, label: Cash from financing (財務活動によるキャッシュ・フロー),
+     tags: [NetCashProvidedByUsedInFinancingActivitiesIFRS]}
+  fx_effect:
+    {statement: cf, kind: flow, label: Exchange-rate effect on cash (為替変動による影響),
+     tags: [EffectOfExchangeRateChangesOnCashAndCashEquivalentsIFRS]}
+  net_change_cash:
+    {statement: cf, kind: flow, label: Net change in cash after exchange-rate effects,
+     tags: [NetIncreaseDecreaseInCashAndCashEquivalentsIFRS]}
+  net_change_cash_before_fx:
+    {statement: cf, kind: flow, label: Net change in cash before exchange-rate effects,
+     tags: [NetIncreaseDecreaseInCashAndCashEquivalentsBeforeEffectOfExchangeRateChangesIFRS]}
+  end_cash_cf:
+    {statement: cf, kind: stock, label: Closing cash (現金及び現金同等物, cash flow statement),
+     tags: [CashAndCashEquivalentsIFRS]}
+
+# Not chart lines; used by the tie-out only. 配当金 in the statement of changes in
+# equity is filed as a negative number.
+dividends_declared_tags: [DividendsSSIFRS]
+dividends_declared_sign: -1
+anchors: {pl: net_income, bs: total_assets, cf: cfo}
+
+# Banks, insurers and securities firms: detected here. An IFRS 17 non-life insurer
+# then goes to maps/ifrs_insurer.yaml (filings_map.jp_ifrs_insurer), which reads the
+# group's own elements by local name. Any other is refused (jp_ifrs_financial):
+# EDINET's IFRS taxonomy has no industry elements. Detected by the DEI
+# industry code (compared ignoring case; Tokio Marine's IFRS report says INS), or
+# a balance sheet in order of liquidity (no CurrentAssetsIFRS) with an element
+# ending in BNK, INS or SEC.
+unsupported:
+  enabled: true
+  message: >-
+    not supported yet: this looks like a bank, insurer or securities firm. Their
+    statements have no current/non-current split and no cost of sales, so
+    Tie-Out's standard chart does not fit them.
+  industry_codes: [bnk, bk1, bk2, ins, in1, in2, sec]
+  require_absent: [CurrentAssetsIFRS]
+  any_suffix: [BNK, INS, SEC]

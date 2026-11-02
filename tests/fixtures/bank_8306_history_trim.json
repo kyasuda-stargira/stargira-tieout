@@ -1,0 +1,1133 @@
+{
+ "ticker": "8306",
+ "sector": "bank",
+ "cik": "E03606",
+ "entity": "Mitsubishi UFJ Financial Group, Inc. (株式会社 三菱ＵＦＪフィナンシャル・グループ)",
+ "source": "EDINET API v2 (Financial Services Agency), 有価証券報告書 XBRL data in CSV form, consolidated (連結) statements",
+ "standard": "J-GAAP (jppfs_cor)",
+ "currency": "JPY",
+ "years": [
+  {
+   "fy": 2023,
+   "end": "2023-03-31",
+   "accn": "S100TRA1",
+   "form": "有価証券報告書",
+   "filed": "2024-06-25",
+   "amendments": [],
+   "basis": "the prior-year figures in the report for the year ended 2024-03-31",
+   "source_filings": {
+    "pl": "S100TRA1",
+    "bs": "S100TRA1",
+    "cf": "S100TRA1"
+   },
+   "unit": 1000000,
+   "status": "tied"
+  },
+  {
+   "fy": 2024,
+   "end": "2024-03-31",
+   "accn": "S100TRA1",
+   "form": "有価証券報告書",
+   "filed": "2024-06-25",
+   "amendments": [],
+   "basis": "its own report",
+   "source_filings": {
+    "pl": "S100TRA1",
+    "bs": "S100TRA1",
+    "cf": "S100TRA1"
+   },
+   "unit": 1000000,
+   "status": "flagged"
+  },
+  {
+   "fy": 2025,
+   "end": "2025-03-31",
+   "accn": "S100YJQO",
+   "form": "有価証券報告書",
+   "filed": "2026-06-24",
+   "amendments": [],
+   "basis": "the prior-year figures in the report for the year ended 2026-03-31",
+   "source_filings": {
+    "pl": "S100YJQO",
+    "bs": "S100YJQO",
+    "cf": "S100YJQO"
+   },
+   "unit": 1000000,
+   "status": "flagged"
+  },
+  {
+   "fy": 2026,
+   "end": "2026-03-31",
+   "accn": "S100YJQO",
+   "form": "有価証券報告書",
+   "filed": "2026-06-24",
+   "amendments": [],
+   "basis": "its own report",
+   "source_filings": {
+    "pl": "S100YJQO",
+    "bs": "S100YJQO",
+    "cf": "S100YJQO"
+   },
+   "unit": 1000000,
+   "status": "tied"
+  }
+ ],
+ "lines": {
+  "interest_income": {
+   "2023": {
+    "val": 5298944000000,
+    "tag": "InterestIncomeOIBNK",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2024": {
+    "val": 7468679000000,
+    "tag": "InterestIncomeOIBNK",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2025": {
+    "val": 8467719000000,
+    "tag": "InterestIncomeOIBNK",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   },
+   "2026": {
+    "val": 8723940000000,
+    "tag": "InterestIncomeOIBNK",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   }
+  },
+  "interest_expense": {
+   "2023": {
+    "val": 2372735000000,
+    "tag": "InterestExpensesOEBNK",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2024": {
+    "val": 5011105000000,
+    "tag": "InterestExpensesOEBNK",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2025": {
+    "val": 5591266000000,
+    "tag": "InterestExpensesOEBNK",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   },
+   "2026": {
+    "val": 5717866000000,
+    "tag": "InterestExpensesOEBNK",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   }
+  },
+  "net_interest_income": {
+   "2023": {
+    "val": 2926209000000,
+    "tag": "derived: interest_income - interest_expense",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25",
+    "derived_from": {
+     "interest_income": 5298944000000,
+     "interest_expense": 2372735000000
+    }
+   },
+   "2024": {
+    "val": 2457574000000,
+    "tag": "derived: interest_income - interest_expense",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25",
+    "derived_from": {
+     "interest_income": 7468679000000,
+     "interest_expense": 5011105000000
+    }
+   },
+   "2025": {
+    "val": 2876453000000,
+    "tag": "derived: interest_income - interest_expense",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24",
+    "derived_from": {
+     "interest_income": 8467719000000,
+     "interest_expense": 5591266000000
+    }
+   },
+   "2026": {
+    "val": 3006074000000,
+    "tag": "derived: interest_income - interest_expense",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24",
+    "derived_from": {
+     "interest_income": 8723940000000,
+     "interest_expense": 5717866000000
+    }
+   }
+  },
+  "provision": {
+   "2023": {
+    "val": 128847000000,
+    "tag": "ProvisionOfAllowanceForLoanLossesOEBNK - RecoveriesOfWrittenOffClaimsOIBNK",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2024": {
+    "val": 276252000000,
+    "tag": "ProvisionOfAllowanceForLoanLossesOEBNK - RecoveriesOfWrittenOffClaimsOIBNK",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2025": {
+    "val": -189046000000,
+    "tag": "- ReversalOfAllowanceForLoanLossesOIBNK - RecoveriesOfWrittenOffClaimsOIBNK",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   },
+   "2026": {
+    "val": 80194000000,
+    "tag": "ProvisionOfAllowanceForLoanLossesOEBNK - RecoveriesOfWrittenOffClaimsOIBNK",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   }
+  },
+  "opex": {
+   "2023": {
+    "val": 2969325000000,
+    "tag": "GeneralAndAdministrativeExpensesOEBNK",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2024": {
+    "val": 2920875000000,
+    "tag": "GeneralAndAdministrativeExpensesOEBNK",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2025": {
+    "val": 3166035000000,
+    "tag": "GeneralAndAdministrativeExpensesOEBNK",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   },
+   "2026": {
+    "val": 3489570000000,
+    "tag": "GeneralAndAdministrativeExpensesOEBNK",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   }
+  },
+  "noninterest_income": {
+   "2023": {
+    "val": 1192691000000,
+    "tag": "derived: revenue_tagged + interest_expense + opex + provision - interest_income - ordinary_expenses",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25",
+    "derived_from": {
+     "revenue_tagged": 9281027000000,
+     "interest_expense": 2372735000000,
+     "opex": 2969325000000,
+     "provision": 128847000000,
+     "interest_income": 5298944000000,
+     "ordinary_expenses": 8260299000000
+    }
+   },
+   "2024": {
+    "val": 2867512000000,
+    "tag": "derived: revenue_tagged + interest_expense + opex + provision - interest_income - ordinary_expenses",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25",
+    "derived_from": {
+     "revenue_tagged": 11890350000000,
+     "interest_expense": 5011105000000,
+     "opex": 2920875000000,
+     "provision": 276252000000,
+     "interest_income": 7468679000000,
+     "ordinary_expenses": 9762391000000
+    }
+   },
+   "2025": {
+    "val": 2770019000000,
+    "tag": "derived: revenue_tagged + interest_expense + opex + provision - interest_income - ordinary_expenses",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24",
+    "derived_from": {
+     "revenue_tagged": 13629997000000,
+     "interest_expense": 5591266000000,
+     "opex": 3166035000000,
+     "provision": -189046000000,
+     "interest_income": 8467719000000,
+     "ordinary_expenses": 10960514000000
+    }
+   },
+   "2026": {
+    "val": 3973882000000,
+    "tag": "derived: revenue_tagged + interest_expense + opex + provision - interest_income - ordinary_expenses",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24",
+    "derived_from": {
+     "revenue_tagged": 14620843000000,
+     "interest_expense": 5717866000000,
+     "opex": 3489570000000,
+     "provision": 80194000000,
+     "interest_income": 8723940000000,
+     "ordinary_expenses": 11210651000000
+    }
+   }
+  },
+  "total_revenue": {
+   "2023": {
+    "val": 4118900000000,
+    "tag": "derived: net_interest_income + noninterest_income",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25",
+    "derived_from": {
+     "net_interest_income": 2926209000000,
+     "noninterest_income": 1192691000000
+    }
+   },
+   "2024": {
+    "val": 5325086000000,
+    "tag": "derived: net_interest_income + noninterest_income",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25",
+    "derived_from": {
+     "net_interest_income": 2457574000000,
+     "noninterest_income": 2867512000000
+    }
+   },
+   "2025": {
+    "val": 5646472000000,
+    "tag": "derived: net_interest_income + noninterest_income",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24",
+    "derived_from": {
+     "net_interest_income": 2876453000000,
+     "noninterest_income": 2770019000000
+    }
+   },
+   "2026": {
+    "val": 6979956000000,
+    "tag": "derived: net_interest_income + noninterest_income",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24",
+    "derived_from": {
+     "net_interest_income": 3006074000000,
+     "noninterest_income": 3973882000000
+    }
+   }
+  },
+  "pretax_income": {
+   "2023": {
+    "val": 1569923000000,
+    "tag": "IncomeBeforeIncomeTaxes",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2024": {
+    "val": 2050104000000,
+    "tag": "IncomeBeforeIncomeTaxes",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2025": {
+    "val": 2550634000000,
+    "tag": "IncomeBeforeIncomeTaxes",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   },
+   "2026": {
+    "val": 3322161000000,
+    "tag": "IncomeBeforeIncomeTaxes",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   }
+  },
+  "tax": {
+   "2023": {
+    "val": 369607000000,
+    "tag": "IncomeTaxes",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2024": {
+    "val": 478342000000,
+    "tag": "IncomeTaxes",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2025": {
+    "val": 609156000000,
+    "tag": "IncomeTaxes",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   },
+   "2026": {
+    "val": 761648000000,
+    "tag": "IncomeTaxes",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   }
+  },
+  "net_income_incl_nci": {
+   "2023": {
+    "val": 1200316000000,
+    "tag": "ProfitLoss",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2024": {
+    "val": 1571761000000,
+    "tag": "ProfitLoss",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2025": {
+    "val": 1941477000000,
+    "tag": "ProfitLoss",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   },
+   "2026": {
+    "val": 2560512000000,
+    "tag": "ProfitLoss",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   }
+  },
+  "net_income_nci": {
+   "2023": {
+    "val": 83820000000,
+    "tag": "ProfitLossAttributableToNonControllingInterests",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2024": {
+    "val": 80979000000,
+    "tag": "ProfitLossAttributableToNonControllingInterests",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2025": {
+    "val": 78530000000,
+    "tag": "ProfitLossAttributableToNonControllingInterests",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   },
+   "2026": {
+    "val": 133283000000,
+    "tag": "ProfitLossAttributableToNonControllingInterests",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   }
+  },
+  "net_income": {
+   "2023": {
+    "val": 1116496000000,
+    "tag": "ProfitLossAttributableToOwnersOfParent",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2024": {
+    "val": 1490781000000,
+    "tag": "ProfitLossAttributableToOwnersOfParent",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2025": {
+    "val": 1862946000000,
+    "tag": "ProfitLossAttributableToOwnersOfParent",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   },
+   "2026": {
+    "val": 2427229000000,
+    "tag": "ProfitLossAttributableToOwnersOfParent",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   }
+  },
+  "cash": {
+   "2023": {
+    "val": 113630172000000,
+    "tag": "CashAndDueFromBanksAssetsBNK",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2024": {
+    "val": 109875097000000,
+    "tag": "CashAndDueFromBanksAssetsBNK",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2025": {
+    "val": 109095437000000,
+    "tag": "CashAndDueFromBanksAssetsBNK",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   },
+   "2026": {
+    "val": 90045500000000,
+    "tag": "CashAndDueFromBanksAssetsBNK",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   }
+  },
+  "reverse_repos": {
+   "2023": {
+    "val": 14619069000000,
+    "tag": "CallLoansAndBillsBoughtAssetsBNK + ReceivablesUnderResaleAgreementsAssetsBNK",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2024": {
+    "val": 19088787000000,
+    "tag": "CallLoansAndBillsBoughtAssetsBNK + ReceivablesUnderResaleAgreementsAssetsBNK",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2025": {
+    "val": 20037844000000,
+    "tag": "CallLoansAndBillsBoughtAssetsBNK + ReceivablesUnderResaleAgreementsAssetsBNK",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   },
+   "2026": {
+    "val": 17945918000000,
+    "tag": "CallLoansAndBillsBoughtAssetsBNK + ReceivablesUnderResaleAgreementsAssetsBNK",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   }
+  },
+  "trading_assets": {
+   "2023": {
+    "val": 18013184000000,
+    "tag": "TradingAssetsAssetsBNK",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2024": {
+    "val": 20886546000000,
+    "tag": "TradingAssetsAssetsBNK",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2025": {
+    "val": 26142919000000,
+    "tag": "TradingAssetsAssetsBNK",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   },
+   "2026": {
+    "val": 39995337000000,
+    "tag": "TradingAssetsAssetsBNK",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   }
+  },
+  "securities": {
+   "2023": {
+    "val": 86746900000000,
+    "tag": "SecuritiesAssetsBNK",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2024": {
+    "val": 86878589000000,
+    "tag": "SecuritiesAssetsBNK",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2025": {
+    "val": 86125371000000,
+    "tag": "SecuritiesAssetsBNK",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   },
+   "2026": {
+    "val": 85714795000000,
+    "tag": "SecuritiesAssetsBNK",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   }
+  },
+  "loans": {
+   "2023": {
+    "val": 109146272000000,
+    "tag": "LoansAndBillsDiscountedAssetsBNK",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2024": {
+    "val": 116825660000000,
+    "tag": "LoansAndBillsDiscountedAssetsBNK",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2025": {
+    "val": 121436133000000,
+    "tag": "LoansAndBillsDiscountedAssetsBNK",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   },
+   "2026": {
+    "val": 133799490000000,
+    "tag": "LoansAndBillsDiscountedAssetsBNK",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   }
+  },
+  "loan_allowance": {
+   "2023": {
+    "val": 1245727000000,
+    "tag": "AllowanceForLoanLossesAssetsBNK",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2024": {
+    "val": 1535253000000,
+    "tag": "AllowanceForLoanLossesAssetsBNK",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2025": {
+    "val": 1214870000000,
+    "tag": "AllowanceForLoanLossesAssetsBNK",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   },
+   "2026": {
+    "val": 1229947000000,
+    "tag": "AllowanceForLoanLossesAssetsBNK",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   }
+  },
+  "total_assets": {
+   "2023": {
+    "val": 386799477000000,
+    "tag": "Assets",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2024": {
+    "val": 403703147000000,
+    "tag": "Assets",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2025": {
+    "val": 413113501000000,
+    "tag": "Assets",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   },
+   "2026": {
+    "val": 431731548000000,
+    "tag": "Assets",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   }
+  },
+  "deposits": {
+   "2023": {
+    "val": 213609501000000,
+    "tag": "DepositsLiabilitiesBNK",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2024": {
+    "val": 224035035000000,
+    "tag": "DepositsLiabilitiesBNK",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2025": {
+    "val": 228512749000000,
+    "tag": "DepositsLiabilitiesBNK",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   },
+   "2026": {
+    "val": 239439246000000,
+    "tag": "DepositsLiabilitiesBNK",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   }
+  },
+  "negotiable_cds": {
+   "2023": {
+    "val": 13632559000000,
+    "tag": "NegotiableCertificatesOfDepositLiabilitiesBNK",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2024": {
+    "val": 16555451000000,
+    "tag": "NegotiableCertificatesOfDepositLiabilitiesBNK",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2025": {
+    "val": 17374010000000,
+    "tag": "NegotiableCertificatesOfDepositLiabilitiesBNK",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   },
+   "2026": {
+    "val": 17601483000000,
+    "tag": "NegotiableCertificatesOfDepositLiabilitiesBNK",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   }
+  },
+  "repo_borrowings": {
+   "2023": {
+    "val": 43432189000000,
+    "tag": "CallMoneyAndBillsSoldLiabilitiesBNK + PayablesUnderRepurchaseAgreementsLiabilitiesBNK",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2024": {
+    "val": 40607655000000,
+    "tag": "CallMoneyAndBillsSoldLiabilitiesBNK + PayablesUnderRepurchaseAgreementsLiabilitiesBNK",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2025": {
+    "val": 48432002000000,
+    "tag": "CallMoneyAndBillsSoldLiabilitiesBNK + PayablesUnderRepurchaseAgreementsLiabilitiesBNK",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   },
+   "2026": {
+    "val": 44454699000000,
+    "tag": "CallMoneyAndBillsSoldLiabilitiesBNK + PayablesUnderRepurchaseAgreementsLiabilitiesBNK",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   }
+  },
+  "short_term_borrowings": {
+   "2023": {
+    "val": 3268222000000,
+    "tag": "CommercialPapersLiabilities + ShortTermBondsPayable",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2024": {
+    "val": 4317548000000,
+    "tag": "CommercialPapersLiabilities + ShortTermBondsPayable",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2025": {
+    "val": 4848278000000,
+    "tag": "CommercialPapersLiabilities + ShortTermBondsPayable",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   },
+   "2026": {
+    "val": 4639357000000,
+    "tag": "CommercialPapersLiabilities + ShortTermBondsPayable",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   }
+  },
+  "long_term_debt": {
+   "2023": {
+    "val": 40565060000000,
+    "tag": "BorrowedMoneyLiabilitiesBNK + BondsPayable",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2024": {
+    "val": 42259259000000,
+    "tag": "BorrowedMoneyLiabilitiesBNK + BondsPayable",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2025": {
+    "val": 36120909000000,
+    "tag": "BorrowedMoneyLiabilitiesBNK + BondsPayable",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   },
+   "2026": {
+    "val": 25150567000000,
+    "tag": "BorrowedMoneyLiabilitiesBNK + BondsPayable",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   }
+  },
+  "total_liabilities": {
+   "2023": {
+    "val": 368526620000000,
+    "tag": "Liabilities",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2024": {
+    "val": 382956169000000,
+    "tag": "Liabilities",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2025": {
+    "val": 391385368000000,
+    "tag": "Liabilities",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   },
+   "2026": {
+    "val": 407987396000000,
+    "tag": "Liabilities",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   }
+  },
+  "equity_parent": {
+   "2023": {
+    "val": 17231290000000,
+    "tag": "derived: shareholders_equity + accumulated_oci",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25",
+    "derived_from": {
+     "shareholders_equity": 14749310000000,
+     "accumulated_oci": 2481980000000
+    }
+   },
+   "2024": {
+    "val": 19587973000000,
+    "tag": "derived: shareholders_equity + accumulated_oci",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25",
+    "derived_from": {
+     "shareholders_equity": 15402921000000,
+     "accumulated_oci": 4185052000000
+    }
+   },
+   "2025": {
+    "val": 20520373000000,
+    "tag": "derived: shareholders_equity + accumulated_oci",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24",
+    "derived_from": {
+     "shareholders_equity": 16260498000000,
+     "accumulated_oci": 4259875000000
+    }
+   },
+   "2026": {
+    "val": 22273941000000,
+    "tag": "derived: shareholders_equity + accumulated_oci",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24",
+    "derived_from": {
+     "shareholders_equity": 17357770000000,
+     "accumulated_oci": 4916171000000
+    }
+   }
+  },
+  "nci": {
+   "2023": {
+    "val": 1041565000000,
+    "tag": "NonControllingInterests",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2024": {
+    "val": 1159003000000,
+    "tag": "NonControllingInterests",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2025": {
+    "val": 1207746000000,
+    "tag": "NonControllingInterests",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   },
+   "2026": {
+    "val": 1470111000000,
+    "tag": "NonControllingInterests",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   }
+  },
+  "total_equity": {
+   "2023": {
+    "val": 18272857000000,
+    "tag": "NetAssets",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2024": {
+    "val": 20746978000000,
+    "tag": "NetAssets",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2025": {
+    "val": 21728132000000,
+    "tag": "NetAssets",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   },
+   "2026": {
+    "val": 23744152000000,
+    "tag": "NetAssets",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   }
+  },
+  "liabilities_and_equity": {
+   "2023": {
+    "val": 386799477000000,
+    "tag": "LiabilitiesAndNetAssets",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2024": {
+    "val": 403703147000000,
+    "tag": "LiabilitiesAndNetAssets",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2025": {
+    "val": 413113501000000,
+    "tag": "LiabilitiesAndNetAssets",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   },
+   "2026": {
+    "val": 431731548000000,
+    "tag": "LiabilitiesAndNetAssets",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   }
+  },
+  "dividends_paid": {
+   "2023": {
+    "val": 380447000000,
+    "tag": "CashDividendsPaidFinCF",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2024": {
+    "val": 439755000000,
+    "tag": "CashDividendsPaidFinCF",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2025": {
+    "val": 532976000000,
+    "tag": "CashDividendsPaidFinCF",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   },
+   "2026": {
+    "val": 848401000000,
+    "tag": "CashDividendsPaidFinCF",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   }
+  },
+  "buybacks": {
+   "2023": {
+    "val": 450153000000,
+    "tag": "PurchaseOfTreasuryStockFinCF",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2024": {
+    "val": 400156000000,
+    "tag": "PurchaseOfTreasuryStockFinCF",
+    "accn": "S100TRA1",
+    "form": "有価証券報告書",
+    "filed": "2024-06-25"
+   },
+   "2025": {
+    "val": 418546000000,
+    "tag": "PurchaseOfTreasuryStockFinCF",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   },
+   "2026": {
+    "val": 500212000000,
+    "tag": "PurchaseOfTreasuryStockFinCF",
+    "accn": "S100YJQO",
+    "form": "有価証券報告書",
+    "filed": "2026-06-24"
+   }
+  }
+ },
+ "shares_outstanding": {
+  "val": 11296348320,
+  "end": "2026-03-31",
+  "accn": "S100YJQO",
+  "form": "有価証券報告書",
+  "filed": "2026-06-24",
+  "tag": "jpcrp_cor:TotalNumberOfIssuedSharesSummaryOfBusinessResults less jpcrp_cor:TotalNumberOfSharesHeldTreasurySharesEtc",
+  "basis": "issued shares at the year end, 11,867,710,920, less treasury shares (自己株式等), 571,362,600, from the 株式等の状況 section; basic, not diluted",
+  "note": null
+ },
+ "flags": [
+  {
+   "fy": 2024,
+   "check": "cash",
+   "reason": "CFO + CFI + CFF + FX = net change off by -2,000,000 (within the rounding of the four filed figures, each shown to 1,000,000; the filed figures themselves do not add)"
+  },
+  {
+   "fy": 2025,
+   "check": "cash",
+   "reason": "CFO + CFI + CFF + FX = net change off by -2,000,000 (within the rounding of the four filed figures, each shown to 1,000,000; the filed figures themselves do not add)"
+  }
+ ],
+ "warnings": [
+  "line share_options: no mapped value in 2023",
+  "line other_cash_change: no mapped value in 2025, 2026",
+  "15 company-specific elements carry values in the statements and are not mapped (a line the company tags only under its own element shows as missing above): ChangeFromTransactionUnderCommonControlInvolvingOverseasSubsidiary, ChangesInSubsidiariesEquity, DebtValueAdjustmentsOfForeignSubsidiariesAndAffiliatesVTA, GainsOnSalesOfSharesOfAffiliates, LossOnPensionBuyoutEL, LossOnSalesOfAffiliatesStocksEL, LossesOnPensionBuyoutOpeCF, LossesOnStepAcqusitions, NetUnrealizedGainsLossesOnLoansOfForeignSubsidiariesAndAffiliatesOCI, NetUnrealizedGainsLossesOnLoansOfForeignSubsidiariesAndAffiliatesVTA, ProceedsFromIssuanceOfStockBasedCompensationLiabilitiesOfOverseasSubsidiariesFinCF, ProvisionForReserveForContingentLiabilitiesFromCommodityTransactions, ReserveForLoyaltyAwardsCreditsLiabilitiesBNK, ReserveForStocksPaymentLiabilities, SystemIntegrationRelatedCostsEL"
+ ],
+ "credit": [
+  "出典：EDINET閲覧（提出）サイト（https://disclosure2.edinet-fsa.go.jp/WZEK0040.aspx?S100YJQO, https://disclosure2.edinet-fsa.go.jp/WZEK0040.aspx?S100TRA1）、PDL1.0（https://www.digital.go.jp/resources/open_data/public_data_license_v1.0）",
+  "EDINET閲覧（提出）サイトのデータをもとにStargira Tie-Out（Stargira Advisors Ltd）により加工。Processed with Stargira Tie-Out (Stargira Advisors Ltd): the filed figures are re-arranged into Tie-Out's chart of accounts and shown in millions of yen; this is not the government's original data."
+ ],
+ "filing_id_label": "docID",
+ "statements_basis": "Years are labelled by the calendar year they end in (FY2026 = the year ended 2026-03-31). Each report holds two years; a year's figures come from the newest report that shows it.",
+ "edinet_code": "E03606",
+ "routing": "routed to the bank chart (maps/jgaap_bank.yaml) because its DEI industry code is bnk and 91 of its statement elements end in BNK",
+ "chart_notes": [
+  "total_revenue is net revenue, derived: 経常利益 + 営業経費 + credit costs. 経常収益 (gross ordinary income) is kept in revenue_tagged for reference.",
+  "net_interest_income is derived (資金運用収益 - 資金調達費用); J-GAAP has no 資金利益 element.",
+  "provision is credit costs (与信関係費用), the sum of the tagged parts: 貸倒引当金繰入額 + 貸出金償却 - 貸倒引当金戻入益 - 償却債権取立益. A net release is negative.",
+  "noninterest_income is derived (net revenue - net interest income): fees, trust fees, trading, other business and other ordinary items, each net of its own expense.",
+  "pretax_income includes extraordinary items (extraordinary_income, extraordinary_loss); a forecast normally sets them to zero.",
+  "loans is 貸出金 before the allowance, as printed; loan_allowance is the single 貸倒引当金 line, which also covers assets other than loans.",
+  "deposits is 預金 as printed; negotiable certificates of deposit (譲渡性預金) are the separate line negotiable_cds.",
+  "cash is 現金預け金 (cash and due from banks). At some banks part of it is not a cash equivalent; the tie-out then uses the filing's own reconciliation note only if it foots, else flags.",
+  "equity_parent is derived (株主資本 + その他の包括利益累計額); J-GAAP has no single equity-to-owners total."
+ ]
+}

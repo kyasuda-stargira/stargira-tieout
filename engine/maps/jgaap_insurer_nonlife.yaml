@@ -1,0 +1,214 @@
+# J-GAAP element map for NON-LIFE insurers: EDINET jppfs_cor elements (損害保険業,
+# the in2 sheet of the account list) -> Tie-Out's insurer chart (docs/MODELS.md,
+# "Financial companies: standard chart"). Same keys as us_gaap_insurer.yaml and
+# jgaap_insurer_life.yaml. filings_map routes an insurer here when it files
+# 正味収入保険料 (NetPremiumsWrittenOIINS).
+#
+# Format as jgaap_bank.yaml. Elements were checked against Tokio Marine's J-GAAP
+# report S100TOZP (years to 31 March 2023 and 2024), unless marked "not yet
+# seen". Tokio Marine itself is refused, because its latest report is IFRS;
+# this map has no other live test company yet.
+#
+# How a Japanese non-life P&L differs from a US one:
+# - Premiums are WRITTEN (正味収入保険料), not earned: there is no earned-premium
+#   element. The unearned-premium change sits inside 責任準備金等繰入額.
+# - Claims are PAID (正味支払保険金 + 損害調査費), not incurred. The change in
+#   outstanding claims is its own line, 支払備金繰入額.
+# - In this format 支払備金繰入額 and 責任準備金等繰入額 are two separate lines
+#   (in the life format the second includes the first).
+# - A group with a life subsidiary also files 生命保険料 and 生命保険金等 inside
+#   保険引受収益 / 保険引受費用; they are added to premiums and claims.
+
+meta:
+  standard: J-GAAP (jppfs_cor)
+  sector: insurer
+  insurer_type: non_life
+  prefix: "jppfs_cor:"
+  facts_key: jp
+  unit: JPY
+  forms: ["有価証券報告書"]
+  flow_days: [350, 380]
+  max_years: 10
+  min_years: 3
+  period_tags: [NetCashProvidedByUsedInOperatingActivities, ProfitLoss, OperatingIncomeINS]
+  cash_gap_reason: >-
+    the cash flow statement closes on 現金及び現金同等物 (%s) and the balance sheet shows
+    現金及び預貯金; the filing gives no tagged reconciliation and its text note could not
+    be read or does not foot, so the gap of %s is not reconciled from the data
+  chart_notes:
+    - "non-life insurer (J-GAAP 損害保険業 format)."
+    - "premiums is net premiums WRITTEN (正味収入保険料) plus life premiums of life subsidiaries (生命保険料), not premiums earned: J-GAAP has no earned-premium element. Label it 'premiums written'."
+    - "claims is net claims PAID (正味支払保険金 + 損害調査費 + 生命保険金等), not incurred; the outstanding-claims provision (支払備金繰入額) is inside reserve_provision."
+    - "reserve_change = reserve_provision (支払備金繰入額 + 責任準備金等繰入額, in 経常費用) - reserve_reversal (支払備金戻入額 + 責任準備金等戻入額, in 経常収益). Because a reversal sits inside total_revenue, use reserve_provision, not reserve_change, when building up total_expenses."
+    - "investment_income is 資産運用収益, gross and incl. realised gains; investment_expenses (資産運用費用) is the matching expense line."
+    - "opex is derived: 経常費用 - claims - reserve_provision - investment_expenses. It holds 諸手数料及び集金費 (acquisition_costs), 営業費及び一般管理費 (admin_expenses), 満期返戻金 and other underwriting and ordinary expenses."
+    - "pretax_income = 経常利益 + extraordinary items."
+    - "policy_reserves is the filed total 保険契約準備金 (支払備金 + 責任準備金等); 責任準備金等 holds unearned premiums and catastrophe reserves and is not split in J-GAAP, so unearned_premiums stays empty."
+    - "cash is 現金及び預貯金; the cash flow statement ends on 現金及び現金同等物. The tie-out uses the filing's own reconciliation note only if it foots, else flags."
+    - "equity_parent is derived (株主資本 + その他の包括利益累計額)."
+
+lines:
+  # Profit and loss (損益計算書) ---------------------------------------------------
+  premiums:
+    {statement: pl, kind: flow, label: Premiums written (正味収入保険料 + 生命保険料; not earned),
+     tags: [], parts: [[NetPremiumsWrittenOIINS], [LifeInsurancePremiumsOIINS]]}
+  investment_income:
+    {statement: pl, kind: flow, label: Investment income (資産運用収益; gross, incl. realised gains),
+     tags: [InvestmentIncomeOIINS]}
+  reserve_reversal:
+    {statement: pl, kind: flow, label: Reversal of reserves (支払備金戻入額 + 責任準備金等戻入額; income side),
+     tags: [],                                                       # neither part seen yet
+     parts: [[ReversalOfReserveForOutstandingClaimsINS],
+             [ReversalOfPolicyReserveAndOtherINS, ReversalOfPolicyReserveINS]]}
+  other_income:
+    {statement: pl, kind: flow, label: Other ordinary income (その他経常収益),
+     tags: [OtherOperatingIncomeOIINS]}
+  total_revenue:
+    {statement: pl, kind: flow, label: Ordinary income (経常収益; total revenue), tags: [OperatingIncomeINS]}
+  claims:
+    {statement: pl, kind: flow, label: Claims paid (正味支払保険金 + 損害調査費 + 生命保険金等; not incurred),
+     tags: [], parts: [[NetLossPaidOEINS], [LossAdjustmentExpensesOEINS], [LifeInsuranceClaimsPaidOEINS]]}
+  reserve_provision:
+    # Two separate lines in the non-life format.
+    {statement: pl, kind: flow, label: Provision for reserves (支払備金繰入額 + 責任準備金等繰入額),
+     tags: [], parts: [[ProvisionOfOutstandingClaimsOEINS],
+                       [ProvisionOfPolicyReserveAndOtherOEINS, ProvisionOfPolicyReserveOEINS]]}
+  reserve_change:
+    {statement: pl, kind: flow, label: Net change in policy reserves (provision - reversal; derived), tags: [],
+     derive: {plus: [reserve_provision], minus: [reserve_reversal], require: []}}
+  investment_expenses:
+    {statement: pl, kind: flow, label: Investment expenses (資産運用費用; incl. realised losses),
+     tags: [InvestmentExpensesOEINS]}
+  acquisition_costs:
+    {statement: pl, kind: flow, label: Commissions and collection expenses (諸手数料及び集金費; detail, inside opex),
+     tags: [CommissionsAndCollectionFeesOEINS]}
+  admin_expenses:
+    {statement: pl, kind: flow, label: Operating, general and administrative expenses (営業費及び一般管理費; detail, inside opex),
+     tags: [SalesAndAdministrativeExpensesOEINS]}
+  total_expenses:
+    {statement: pl, kind: flow, label: Ordinary expenses (経常費用), tags: [OperatingExpensesINS]}
+  opex:
+    {statement: pl, kind: flow, label: Other expenses (経常費用 - claims - reserve provision - investment expenses; derived),
+     tags: [],
+     derive: {plus: [total_expenses], minus: [claims, reserve_provision, investment_expenses],
+              require: [total_expenses, claims]}}
+  ordinary_profit:
+    {statement: pl, kind: flow, label: Ordinary profit (経常利益), tags: [OrdinaryIncome]}
+  extraordinary_income:
+    {statement: pl, kind: flow, label: Extraordinary income (特別利益), tags: [ExtraordinaryIncome]}
+  extraordinary_loss:
+    {statement: pl, kind: flow, label: Extraordinary losses (特別損失), tags: [ExtraordinaryLoss]}
+  pretax_income:
+    {statement: pl, kind: flow, label: Income before tax (税金等調整前当期純利益), tags: [IncomeBeforeIncomeTaxes]}
+  tax:
+    {statement: pl, kind: flow, label: Income taxes (法人税等合計), tags: [IncomeTaxes]}
+  net_income_incl_nci:
+    {statement: pl, kind: flow, label: Net income incl. non-controlling interests (当期純利益),
+     tags: [ProfitLoss]}
+  net_income_nci:
+    {statement: pl, kind: flow, label: Net income to non-controlling interests,
+     tags: [ProfitLossAttributableToNonControllingInterests]}
+  net_income:
+    {statement: pl, kind: flow, label: Net income to owners of the parent (親会社株主に帰属する当期純利益),
+     tags: [ProfitLossAttributableToOwnersOfParent, ProfitLoss]}
+
+  # Balance sheet (貸借対照表) ------------------------------------------------------
+  cash:
+    {statement: bs, kind: stock, label: Cash and deposits (現金及び預貯金), tags: [CashAndDepositsAssetsINS]}
+  investments:
+    # J-GAAP has no "total investments" line: the tagged investment lines are summed.
+    {statement: bs, kind: stock, label: Investments (call loans + resale + monetary claims bought + money in trust + securities + loans; sum of tagged lines),
+     tags: [],
+     parts: [[CallLoansAssetsINS], [ReceivablesUnderResaleAgreementsAssetsINS],
+             [MonetaryReceivablesPurchasedAssetsINS], [MoneyHeldInTrustAssetsINS],
+             [SecuritiesAssetsINS], [LoansReceivablesAssetsINS]]}
+  total_assets:
+    {statement: bs, kind: stock, label: Total assets (資産の部合計), tags: [Assets]}
+  claims_reserve:
+    {statement: bs, kind: stock, label: Outstanding claims (支払備金), tags: [OutstandingClaimsLiabilitiesINS]}
+  policy_reserve:
+    # 責任準備金等: unearned premiums, catastrophe reserves and the savings-type reserve.
+    {statement: bs, kind: stock, label: Policy reserve and other (責任準備金等),
+     tags: [PolicyReserveAndOtherLiabilitiesINS, PolicyReserveLiabilitiesINS]}
+  policy_reserves:
+    {statement: bs, kind: stock, label: Policy reserves total (保険契約準備金),
+     tags: [ReserveForInsurancePolicyLiabilitiesLiabilitiesINS]}
+  debt:
+    {statement: bs, kind: stock, label: Bonds and borrowings (短期社債 + 社債 + 借入金),
+     tags: [], parts: [[ShortTermBondsPayable], [BondsPayable], [BorrowingsLiabilitiesINS]]}
+  total_liabilities:
+    {statement: bs, kind: stock, label: Total liabilities (負債の部合計), tags: [Liabilities]}
+  shareholders_equity:
+    {statement: bs, kind: stock, label: Shareholders' equity (株主資本), tags: [ShareholdersEquity]}
+  accumulated_oci:
+    {statement: bs, kind: stock, label: Accumulated other comprehensive income (その他の包括利益累計額),
+     tags: [ValuationAndTranslationAdjustments]}
+  share_options:
+    {statement: bs, kind: stock, label: Share acquisition rights (新株予約権), tags: [SubscriptionRightsToShares]}
+  equity_parent:
+    {statement: bs, kind: stock, label: Equity to owners (株主資本 + その他の包括利益累計額; derived), tags: [],
+     derive: {plus: [shareholders_equity, accumulated_oci], require: [shareholders_equity]}}
+  nci:
+    {statement: bs, kind: stock, label: Non-controlling interests (非支配株主持分),
+     tags: [NonControllingInterests]}
+  total_equity:
+    {statement: bs, kind: stock, label: Net assets (純資産の部合計), tags: [NetAssets]}
+  liabilities_and_equity:
+    {statement: bs, kind: stock, label: Total liabilities and net assets (負債及び純資産の部合計),
+     tags: [LiabilitiesAndNetAssets]}
+  retained_earnings:
+    {statement: bs, kind: stock, label: Retained earnings (利益剰余金), tags: [RetainedEarnings]}
+
+  # Cash flow --------------------------------------------------------------------------
+  cfo:
+    {statement: cf, kind: flow, label: Cash from operations (営業活動によるキャッシュ・フロー),
+     tags: [NetCashProvidedByUsedInOperatingActivities]}
+  capex:
+    {statement: cf, kind: flow, label: Capital expenditure (有形固定資産の取得による支出), sign: -1,
+     tags: [PurchaseOfPropertyPlantAndEquipmentInvCF]}
+  cfi:
+    # The total, not the 資産運用活動計 subtotal
+    # (TotalOfNetCashProvidedByUsedInInvestmentTransactionsInvCFINS).
+    {statement: cf, kind: flow, label: Cash from investing (投資活動によるキャッシュ・フロー),
+     tags: [NetCashProvidedByUsedInInvestmentActivities]}
+  dividends_paid:
+    {statement: cf, kind: flow, label: Dividends paid (配当金の支払額), sign: -1,
+     tags: [CashDividendsPaidFinCF]}
+  buybacks:
+    {statement: cf, kind: flow, label: Share buybacks (自己株式の取得による支出), sign: -1,
+     tags: [PurchaseOfTreasuryStockFinCF]}
+  cff:
+    {statement: cf, kind: flow, label: Cash from financing (財務活動によるキャッシュ・フロー),
+     tags: [NetCashProvidedByUsedInFinancingActivities]}
+  fx_effect:
+    {statement: cf, kind: flow, label: Exchange-rate effect on cash (現金及び現金同等物に係る換算差額),
+     tags: [EffectOfExchangeRateChangeOnCashAndCashEquivalents]}
+  net_change_cash:
+    {statement: cf, kind: flow, label: Net change in cash (現金及び現金同等物の増減額),
+     tags: [NetIncreaseDecreaseInCashAndCashEquivalents]}
+  other_cash_change:
+    {statement: cf, kind: flow, label: Other changes in cash (連結範囲の変動等), tags: [],
+     parts: [[IncreaseInCashAndCashEquivalentsFromNewlyConsolidatedSubsidiaryCCE],
+             [DecreaseInCashAndCashEquivalentsResultingFromExclusionOfSubsidiariesFromConsolidationCCE],
+             [IncreaseDecreaseInCashAndCashEquivalentsResultingFromChangeOfScopeOfConsolidationCCE]]}
+  end_cash_cf:
+    {statement: cf, kind: stock, label: Closing cash (現金及び現金同等物の期末残高, cash flow statement),
+     tags: [CashAndCashEquivalents]}
+
+footings:
+  - {name: "経常収益 - 経常費用 = 経常利益 (ordinary income - ordinary expenses = ordinary profit)",
+     result: ordinary_profit, plus: [total_revenue], minus: [total_expenses], fail: true}
+  - {name: "経常利益 + 特別利益 - 特別損失 = 税金等調整前当期純利益 (ordinary profit + extraordinary items = pre-tax income)",
+     result: pretax_income, plus: [ordinary_profit, extraordinary_income], minus: [extraordinary_loss],
+     optional: [extraordinary_income, extraordinary_loss], fail: true}
+  - {name: "pre-tax income - tax = net income incl. NCI (or net income where no NCI is tagged)",
+     result: [net_income_incl_nci, net_income], fallback_unless: [net_income_nci],
+     plus: [pretax_income], minus: [tax]}
+  - {name: "net assets = equity to owners + share options + NCI",
+     result: total_equity, plus: [equity_parent, share_options, nci], optional: [share_options, nci]}
+  - {name: "保険契約準備金 = 支払備金 + 責任準備金等",
+     result: policy_reserves, plus: [claims_reserve, policy_reserve]}
+
+dividends_declared_tags: [DividendsFromSurplus]
+dividends_declared_sign: -1
+anchors: {pl: net_income, bs: total_assets, cf: cfo}

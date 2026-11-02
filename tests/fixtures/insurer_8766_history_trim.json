@@ -1,0 +1,838 @@
+{
+ "chart_notes": [
+  "non-life insurer (J-GAAP 損害保険業 format).",
+  "premiums is net premiums WRITTEN (正味収入保険料) plus life premiums of life subsidiaries (生命保険料), not premiums earned: J-GAAP has no earned-premium element. Label it 'premiums written'.",
+  "claims is net claims PAID (正味支払保険金 + 損害調査費 + 生命保険金等), not incurred; the outstanding-claims provision (支払備金繰入額) is inside reserve_provision.",
+  "reserve_change = reserve_provision (支払備金繰入額 + 責任準備金等繰入額, in 経常費用) - reserve_reversal (支払備金戻入額 + 責任準備金等戻入額, in 経常収益). Because a reversal sits inside total_revenue, use reserve_provision, not reserve_change, when building up total_expenses.",
+  "investment_income is 資産運用収益, gross and incl. realised gains; investment_expenses (資産運用費用) is the matching expense line.",
+  "opex is derived: 経常費用 - claims - reserve_provision - investment_expenses. It holds 諸手数料及び集金費 (acquisition_costs), 営業費及び一般管理費 (admin_expenses), 満期返戻金 and other underwriting and ordinary expenses.",
+  "pretax_income = 経常利益 + extraordinary items.",
+  "policy_reserves is the filed total 保険契約準備金 (支払備金 + 責任準備金等); 責任準備金等 holds unearned premiums and catastrophe reserves and is not split in J-GAAP, so unearned_premiums stays empty.",
+  "cash is 現金及び預貯金; the cash flow statement ends on 現金及び現金同等物. The tie-out uses the filing's own reconciliation note only if it foots, else flags.",
+  "equity_parent is derived (株主資本 + その他の包括利益累計額)."
+ ],
+ "cik": "E03847",
+ "credit": [
+  "出典：EDINET閲覧（提出）サイト（https://disclosure2.edinet-fsa.go.jp/WZEK0040.aspx?S100TOZP）、PDL1.0（https://www.digital.go.jp/resources/open_data/public_data_license_v1.0）",
+  "EDINET閲覧（提出）サイトのデータをもとにStargira Tie-Out（Stargira Advisors Ltd）により加工。Processed with Stargira Tie-Out (Stargira Advisors Ltd): the filed figures are re-arranged into Tie-Out's chart of accounts and shown in millions of yen; this is not the government's original data."
+ ],
+ "currency": "JPY",
+ "edinet_code": "E03847",
+ "entity": "Tokio Marine Holdings, Inc. (東京海上ホールディングス株式会社)",
+ "filing_id_label": "docID",
+ "fixture_note": "TEST FIXTURE: Tokio Marine's J-GAAP report S100TOZP alone (FY2023-FY2024). The live tool refuses 8766 because its latest report is IFRS; this history exists only to test the insurer template on a non-life J-GAAP chart.",
+ "flags": [
+  {
+   "check": "cash",
+   "fy": 2023,
+   "reason": "the cash flow statement closes on 現金及び現金同等物 (CashAndCashEquivalents) and the balance sheet shows 現金及び預貯金; the filing gives no tagged reconciliation and its text note could not be read or does not foot, so the gap of 113,389,000,000 is not reconciled from the data"
+  }
+ ],
+ "insurer_type": "non_life",
+ "lines": {
+  "accumulated_oci": {
+   "2023": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "ValuationAndTranslationAdjustments",
+    "val": 1462038000000
+   },
+   "2024": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "ValuationAndTranslationAdjustments",
+    "val": 2661980000000
+   }
+  },
+  "acquisition_costs": {
+   "2023": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "CommissionsAndCollectionFeesOEINS",
+    "val": 852983000000
+   },
+   "2024": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "CommissionsAndCollectionFeesOEINS",
+    "val": 951662000000
+   }
+  },
+  "admin_expenses": {
+   "2023": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "SalesAndAdministrativeExpensesOEINS",
+    "val": 1140954000000
+   },
+   "2024": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "SalesAndAdministrativeExpensesOEINS",
+    "val": 1255677000000
+   }
+  },
+  "buybacks": {
+   "2023": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "PurchaseOfTreasuryStockFinCF",
+    "val": 111691000000
+   },
+   "2024": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "PurchaseOfTreasuryStockFinCF",
+    "val": 62917000000
+   }
+  },
+  "capex": {
+   "2023": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "PurchaseOfPropertyPlantAndEquipmentInvCF",
+    "val": 24877000000
+   },
+   "2024": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "PurchaseOfPropertyPlantAndEquipmentInvCF",
+    "val": 20723000000
+   }
+  },
+  "cash": {
+   "2023": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "CashAndDepositsAssetsINS",
+    "val": 871993000000
+   },
+   "2024": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "CashAndDepositsAssetsINS",
+    "val": 896898000000
+   }
+  },
+  "cff": {
+   "2023": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "NetCashProvidedByUsedInFinancingActivities",
+    "val": -1009226000000
+   },
+   "2024": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "NetCashProvidedByUsedInFinancingActivities",
+    "val": -406204000000
+   }
+  },
+  "cfi": {
+   "2023": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "NetCashProvidedByUsedInInvestmentActivities",
+    "val": 18065000000
+   },
+   "2024": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "NetCashProvidedByUsedInInvestmentActivities",
+    "val": -627647000000
+   }
+  },
+  "cfo": {
+   "2023": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "NetCashProvidedByUsedInOperatingActivities",
+    "val": 1007710000000
+   },
+   "2024": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "NetCashProvidedByUsedInOperatingActivities",
+    "val": 1072124000000
+   }
+  },
+  "claims": {
+   "2023": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "NetLossPaidOEINS + LossAdjustmentExpensesOEINS + LifeInsuranceClaimsPaidOEINS",
+    "val": 2983967000000
+   },
+   "2024": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "NetLossPaidOEINS + LossAdjustmentExpensesOEINS + LifeInsuranceClaimsPaidOEINS",
+    "val": 3321318000000
+   }
+  },
+  "claims_reserve": {
+   "2023": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "OutstandingClaimsLiabilitiesINS",
+    "val": 4266235000000
+   },
+   "2024": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "OutstandingClaimsLiabilitiesINS",
+    "val": 4739831000000
+   }
+  },
+  "debt": {
+   "2023": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "BondsPayable",
+    "val": 222811000000
+   },
+   "2024": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "BondsPayable",
+    "val": 224404000000
+   }
+  },
+  "dividends_paid": {
+   "2023": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "CashDividendsPaidFinCF",
+    "val": 192008000000
+   },
+   "2024": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "CashDividendsPaidFinCF",
+    "val": 219142000000
+   }
+  },
+  "end_cash_cf": {
+   "2023": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "CashAndCashEquivalents",
+    "val": 985382000000
+   },
+   "2024": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "CashAndCashEquivalents",
+    "val": 1086981000000
+   }
+  },
+  "equity_parent": {
+   "2023": {
+    "accn": "S100TOZP",
+    "derived_from": {
+     "accumulated_oci": 1462038000000,
+     "shareholders_equity": 2122219000000
+    },
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "derived: shareholders_equity + accumulated_oci",
+    "val": 3584257000000
+   },
+   "2024": {
+    "accn": "S100TOZP",
+    "derived_from": {
+     "accumulated_oci": 2661980000000,
+     "shareholders_equity": 2514622000000
+    },
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "derived: shareholders_equity + accumulated_oci",
+    "val": 5176602000000
+   }
+  },
+  "extraordinary_income": {
+   "2023": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "ExtraordinaryIncome",
+    "val": 34035000000
+   },
+   "2024": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "ExtraordinaryIncome",
+    "val": 7815000000
+   }
+  },
+  "extraordinary_loss": {
+   "2023": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "ExtraordinaryLoss",
+    "val": 8538000000
+   },
+   "2024": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "ExtraordinaryLoss",
+    "val": 28530000000
+   }
+  },
+  "fx_effect": {
+   "2023": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "EffectOfExchangeRateChangeOnCashAndCashEquivalents",
+    "val": 56615000000
+   },
+   "2024": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "EffectOfExchangeRateChangeOnCashAndCashEquivalents",
+    "val": 63326000000
+   }
+  },
+  "investment_expenses": {
+   "2023": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "InvestmentExpensesOEINS",
+    "val": 294127000000
+   },
+   "2024": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "InvestmentExpensesOEINS",
+    "val": 260337000000
+   }
+  },
+  "investment_income": {
+   "2023": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "InvestmentIncomeOIINS",
+    "val": 843565000000
+   },
+   "2024": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "InvestmentIncomeOIINS",
+    "val": 1292735000000
+   }
+  },
+  "investments": {
+   "2023": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "ReceivablesUnderResaleAgreementsAssetsINS + MonetaryReceivablesPurchasedAssetsINS + MoneyHeldInTrustAssetsINS + SecuritiesAssetsINS + LoansReceivablesAssetsINS",
+    "val": 22921086000000
+   },
+   "2024": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "ReceivablesUnderResaleAgreementsAssetsINS + MonetaryReceivablesPurchasedAssetsINS + MoneyHeldInTrustAssetsINS + SecuritiesAssetsINS + LoansReceivablesAssetsINS",
+    "val": 25825480000000
+   }
+  },
+  "liabilities_and_equity": {
+   "2023": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "LiabilitiesAndNetAssets",
+    "val": 27397818000000
+   },
+   "2024": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "LiabilitiesAndNetAssets",
+    "val": 30594869000000
+   }
+  },
+  "nci": {
+   "2023": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "NonControllingInterests",
+    "val": 16627000000
+   },
+   "2024": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "NonControllingInterests",
+    "val": 6704000000
+   }
+  },
+  "net_change_cash": {
+   "2023": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "NetIncreaseDecreaseInCashAndCashEquivalents",
+    "val": 73165000000
+   },
+   "2024": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "NetIncreaseDecreaseInCashAndCashEquivalents",
+    "val": 101598000000
+   }
+  },
+  "net_income": {
+   "2023": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "ProfitLossAttributableToOwnersOfParent",
+    "val": 374605000000
+   },
+   "2024": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "ProfitLossAttributableToOwnersOfParent",
+    "val": 695808000000
+   }
+  },
+  "net_income_incl_nci": {
+   "2023": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "ProfitLoss",
+    "val": 346652000000
+   },
+   "2024": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "ProfitLoss",
+    "val": 671310000000
+   }
+  },
+  "net_income_nci": {
+   "2023": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "ProfitLossAttributableToNonControllingInterests",
+    "val": -27952000000
+   },
+   "2024": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "ProfitLossAttributableToNonControllingInterests",
+    "val": -24497000000
+   }
+  },
+  "opex": {
+   "2023": {
+    "accn": "S100TOZP",
+    "derived_from": {
+     "claims": 2983967000000,
+     "investment_expenses": 294127000000,
+     "reserve_provision": 541666000000,
+     "total_expenses": 6115880000000
+    },
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "derived: total_expenses - claims - reserve_provision - investment_expenses",
+    "val": 2296120000000
+   },
+   "2024": {
+    "accn": "S100TOZP",
+    "derived_from": {
+     "claims": 3321318000000,
+     "investment_expenses": 260337000000,
+     "reserve_provision": 605937000000,
+     "total_expenses": 6582091000000
+    },
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "derived: total_expenses - claims - reserve_provision - investment_expenses",
+    "val": 2394499000000
+   }
+  },
+  "ordinary_profit": {
+   "2023": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "OrdinaryIncome",
+    "val": 494165000000
+   },
+   "2024": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "OrdinaryIncome",
+    "val": 842576000000
+   }
+  },
+  "other_cash_change": {},
+  "other_income": {
+   "2023": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "OtherOperatingIncomeOIINS",
+    "val": 135936000000
+   },
+   "2024": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "OtherOperatingIncomeOIINS",
+    "val": 161965000000
+   }
+  },
+  "policy_reserve": {
+   "2023": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "PolicyReserveAndOtherLiabilitiesINS",
+    "val": 16456702000000
+   },
+   "2024": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "PolicyReserveAndOtherLiabilitiesINS",
+    "val": 17291343000000
+   }
+  },
+  "policy_reserves": {
+   "2023": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "ReserveForInsurancePolicyLiabilitiesLiabilitiesINS",
+    "val": 20722937000000
+   },
+   "2024": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "ReserveForInsurancePolicyLiabilitiesLiabilitiesINS",
+    "val": 22031174000000
+   }
+  },
+  "premiums": {
+   "2023": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "NetPremiumsWrittenOIINS + LifeInsurancePremiumsOIINS",
+    "val": 5541634000000
+   },
+   "2024": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "NetPremiumsWrittenOIINS + LifeInsurancePremiumsOIINS",
+    "val": 5874838000000
+   }
+  },
+  "pretax_income": {
+   "2023": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "IncomeBeforeIncomeTaxes",
+    "val": 519662000000
+   },
+   "2024": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "IncomeBeforeIncomeTaxes",
+    "val": 821861000000
+   }
+  },
+  "reserve_change": {
+   "2023": {
+    "accn": "S100TOZP",
+    "derived_from": {
+     "reserve_provision": 541666000000
+    },
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "derived: reserve_provision",
+    "val": 541666000000
+   },
+   "2024": {
+    "accn": "S100TOZP",
+    "derived_from": {
+     "reserve_provision": 605937000000
+    },
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "derived: reserve_provision",
+    "val": 605937000000
+   }
+  },
+  "reserve_provision": {
+   "2023": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "ProvisionOfOutstandingClaimsOEINS + ProvisionOfPolicyReserveAndOtherOEINS",
+    "val": 541666000000
+   },
+   "2024": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "ProvisionOfOutstandingClaimsOEINS + ProvisionOfPolicyReserveAndOtherOEINS",
+    "val": 605937000000
+   }
+  },
+  "reserve_reversal": {},
+  "retained_earnings": {
+   "2023": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "RetainedEarnings",
+    "val": 2000276000000
+   },
+   "2024": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "RetainedEarnings",
+    "val": 2378790000000
+   }
+  },
+  "share_options": {
+   "2023": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "SubscriptionRightsToShares",
+    "val": 33000000
+   },
+   "2024": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "SubscriptionRightsToShares",
+    "val": 33000000
+   }
+  },
+  "shareholders_equity": {
+   "2023": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "ShareholdersEquity",
+    "val": 2122219000000
+   },
+   "2024": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "ShareholdersEquity",
+    "val": 2514622000000
+   }
+  },
+  "tax": {
+   "2023": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "IncomeTaxes",
+    "val": 173009000000
+   },
+   "2024": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "IncomeTaxes",
+    "val": 150550000000
+   }
+  },
+  "total_assets": {
+   "2023": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "Assets",
+    "val": 27397818000000
+   },
+   "2024": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "Assets",
+    "val": 30594869000000
+   }
+  },
+  "total_equity": {
+   "2023": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "NetAssets",
+    "val": 3600919000000
+   },
+   "2024": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "NetAssets",
+    "val": 5183341000000
+   }
+  },
+  "total_expenses": {
+   "2023": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "OperatingExpensesINS",
+    "val": 6115880000000
+   },
+   "2024": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "OperatingExpensesINS",
+    "val": 6582091000000
+   }
+  },
+  "total_liabilities": {
+   "2023": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "Liabilities",
+    "val": 23796899000000
+   },
+   "2024": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "Liabilities",
+    "val": 25411528000000
+   }
+  },
+  "total_revenue": {
+   "2023": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "OperatingIncomeINS",
+    "val": 6610046000000
+   },
+   "2024": {
+    "accn": "S100TOZP",
+    "filed": "2024-06-21",
+    "form": "有価証券報告書",
+    "tag": "OperatingIncomeINS",
+    "val": 7424667000000
+   }
+  }
+ },
+ "routing": "routed to the insurer chart (maps/jgaap_insurer_nonlife.yaml) because its DEI industry code is INS and 84 of its statement elements end in INS, and it files NetPremiumsWrittenOIINS (non-life format)",
+ "sector": "insurer",
+ "shares_outstanding": {
+  "accn": "S100TOZP",
+  "basis": "issued shares at the year end, 1,978,000,000, less treasury shares (自己株式等), 3,473,000, from the 株式等の状況 section; basic, not diluted",
+  "end": "2024-03-31",
+  "filed": "2024-06-21",
+  "form": "有価証券報告書",
+  "note": null,
+  "tag": "jpcrp_cor:TotalNumberOfIssuedSharesSummaryOfBusinessResults less jpcrp_cor:TotalNumberOfSharesHeldTreasurySharesEtc",
+  "val": 1974527000
+ },
+ "source": "EDINET API v2 (Financial Services Agency), 有価証券報告書 XBRL data in CSV form, consolidated (連結) statements",
+ "standard": "J-GAAP (jppfs_cor)",
+ "statements_basis": "Years are labelled by the calendar year they end in (FY2024 = the year ended 2024-03-31). Each report holds two years; a year's figures come from the newest report that shows it.",
+ "ticker": "8766",
+ "warnings": [
+  "only 2 fiscal year(s) of 10-K data found; Tie-Out wants at least 3",
+  "line reserve_reversal: no mapped value in any year (tags tried: ReversalOfReserveForOutstandingClaimsINS, ReversalOfPolicyReserveAndOtherINS, ReversalOfPolicyReserveINS)",
+  "line other_cash_change: no mapped value in any year (tags tried: IncreaseInCashAndCashEquivalentsFromNewlyConsolidatedSubsidiaryCCE, DecreaseInCashAndCashEquivalentsResultingFromExclusionOfSubsidiariesFromConsolidationCCE, IncreaseDecreaseInCashAndCashEquivalentsResultingFromChangeOfScopeOfConsolidationCCE)",
+  "6 company-specific elements carry values in the statements and are not mapped (a line the company tags only under its own element shows as missing above): AmortizationOfNegativeGoodwillSegmentInformation, CumulativeEffectsOfRevisionInAccountingStandardsForOverseasSubsidiaries, InterestAndDividendIncomeSegmentInformation, NetIncreaseDecreaseInReceivablesUnderSecuritiesBorrowingTransactionsInvCFINS, RestatedBalanceCE, UnrealizedGainsLossesOnInsuranceLiabilityOfOverseasSubsidiariesCI"
+ ],
+ "years": [
+  {
+   "accn": "S100TOZP",
+   "amendments": [],
+   "basis": "the prior-year figures in the report for the year ended 2024-03-31",
+   "end": "2023-03-31",
+   "filed": "2024-06-21",
+   "form": "有価証券報告書",
+   "fy": 2023,
+   "source_filings": {
+    "bs": "S100TOZP",
+    "cf": "S100TOZP",
+    "pl": "S100TOZP"
+   },
+   "status": "flagged",
+   "unit": 1000000
+  },
+  {
+   "accn": "S100TOZP",
+   "amendments": [],
+   "basis": "its own report",
+   "end": "2024-03-31",
+   "filed": "2024-06-21",
+   "form": "有価証券報告書",
+   "fy": 2024,
+   "source_filings": {
+    "bs": "S100TOZP",
+    "cf": "S100TOZP",
+    "pl": "S100TOZP"
+   },
+   "status": "tied",
+   "unit": 1000000
+  }
+ ]
+}

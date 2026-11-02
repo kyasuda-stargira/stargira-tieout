@@ -1,0 +1,272 @@
+# IFRS element map for Japanese NON-LIFE insurers that report under IFRS 17:
+# EDINET jpigp_cor elements AND each group's own extension elements -> Tie-Out's
+# insurer chart (docs/MODELS.md, "Financial companies: standard chart", plus the
+# IFRS 17 keys under "Japan (IFRS 17)").
+#
+# Why this map matches LOCAL names across prefixes (meta.local_names):
+#   EDINET's IFRS taxonomy has no insurer elements (step2-elements.md §8), so every
+#   IFRS 17 line is the group's own extension element, under its own prefix
+#   (jpcrp030000-asr_E03847-000:InsuranceRevenueIFRS at Tokio Marine). The three
+#   groups use the same local name for most lines; where they differ, each line
+#   lists every local name seen, with the group that uses it. A local name is
+#   looked up under jpigp_cor first, then under the company's own prefix.
+#   Matching by local name alone is safe only because every value below was
+#   checked against the filing's own subtotals (the `footings`): a name is never
+#   trusted for what it sounds like. One trap: MS&AD's NetInsuranceFinanceExpensesIFRS
+#   is filed NEGATIVE for a net expense (-670,831 = -730,788 + 59,956), like the
+#   other two groups' "income and expenses" lines, despite its name.
+#
+# Checked against (¥m, years to 31 March 2025 and 2026):
+#   8766 Tokio Marine S100YLS8 (prefix jpcrp030000-asr_E03847-000),
+#   8630 SOMPO S100YC6Z, 8725 MS&AD S100YNCJ. Their earlier J-GAAP reports
+#   (S100TOZP, S100TNPG, S100TPAM) are never mixed in: load_edinet keeps the
+#   latest report's standard only.
+#
+# How an IFRS 17 P&L differs from the US and J-GAAP charts:
+# - premiums is INSURANCE REVENUE (IFRS 17): the premiums allocated to the
+#   coverage given in the year, gross of reinsurance. Not premiums written
+#   (J-GAAP) and not premiums earned net of reinsurance (US).
+# - claims is INSURANCE SERVICE EXPENSES: incurred claims, directly attributable
+#   expenses and the amortisation of acquisition cash flows, one line on the face
+#   of all three statements (not split here).
+# - reinsurance_result is the net income or expense from reinsurance contracts
+#   held, its own line (negative = a net cost).
+# - investment_income is the net investment result as filed (interest +
+#   realised and unrealised gains - investment expenses), and
+#   insurance_finance_result the net insurance finance income or expenses
+#   (negative = expense). Their sum is the filed net financial result.
+# - The balance sheet's insurance contract liabilities INCLUDE the contractual
+#   service margin (CSM: profit not yet earned on contracts in force). The CSM
+#   is not tagged on the face and is not modelled separately.
+
+meta:
+  standard: IFRS (jpigp_cor + company elements)
+  sector: insurer
+  insurer_type: non_life
+  basis: ifrs17
+  footing_rounding_note: true   # a footing that misses by no more than its own rounding says so (still flagged)
+  prefix: "jpigp_cor:"
+  local_names: true            # also read the company's own elements, by local name
+  per_year_standard: IFRS      # each year records its standard; a mixed history is refused
+  opening_balance: true        # keep the balance sheet one year before the first year, if filed
+  two_year_warning: >-
+    ONLY 2 ACTUAL YEARS: this group moved to IFRS (IFRS 17) in the year to March 2026, so its
+    IFRS report holds 2 years of P&L and cash flow, so it is built with 2 actual years;
+    every default is a 1- or 2-year figure, not the usual 3-year one.
+    Earlier J-GAAP years are not mixed in.
+  facts_key: jp
+  unit: JPY
+  forms: ["有価証券報告書"]
+  flow_days: [350, 380]
+  max_years: 10
+  min_years: 3
+  period_tags: [NetCashProvidedByUsedInOperatingActivitiesIFRS, ProfitLossIFRS, InsuranceRevenueIFRS]
+  cash_gap_reason: >-
+    the cash flow statement closes on %s and the balance sheet cash differs; the filing
+    gives no tagged reconciliation and its text note could not be read or does not foot,
+    so the gap of %s is not reconciled from the data
+  chart_notes:
+    - "non-life insurer reporting under IFRS 17 (IFRS on EDINET; the insurance lines are the group's own elements, matched by local name)."
+    - "premiums is INSURANCE REVENUE (IFRS 17), gross of reinsurance: not premiums written (J-GAAP) or premiums earned net of reinsurance (US). Label it 'insurance revenue'."
+    - "claims is INSURANCE SERVICE EXPENSES (IFRS 17): incurred claims, directly attributable expenses and amortised acquisition cash flows, one line on the face, not split."
+    - "reinsurance_result is the net income or expense from reinsurance contracts held (negative = a net cost); the model shows it as a cost line of its own."
+    - "investment_income is the net investment result as filed (interest + realised and unrealised gains - investment expenses); insurance_finance_result is the net insurance finance income or expenses (negative = expense). investment_income + insurance_finance_result = finance_result (the filed net financial result)."
+    - "other_income = その他の収益 (+ SOMPO's その他の営業収益) + the share of profit of equity-method investees; opex = non-attributable 一般管理費 + その他の費用 + 金融費用 (derived)."
+    - "policy_reserves is INSURANCE CONTRACT LIABILITIES (保険契約負債), which include the contractual service margin (CSM); the CSM is not tagged on the face and is not modelled separately. Insurance and reinsurance contract assets are on the asset side, outside investments."
+    - "investments = investment securities + loans + other financial investments + investment property + reverse repos, as tagged (derivatives and equity-method investments excluded)."
+    - "cash is 現金及び現金同等物, the same element as the cash flow statement's closing cash."
+    - "no reserve-change, policyholder-dividend, interest-credited, fee or unearned-premium line: IFRS 17 files none of them apart."
+
+lines:
+  # Profit and loss (連結損益計算書) -------------------------------------------------
+  premiums:
+    {statement: pl, kind: flow, label: Insurance revenue (保険収益; IFRS 17),
+     tags: [InsuranceRevenueIFRS]}                                       # all three
+  claims:
+    {statement: pl, kind: flow, label: Insurance service expenses (保険サービス費用; IFRS 17),
+     tags: [InsuranceServiceExpensesIFRS,                                # 8766, 8725
+            InsuranceServiceExpenseIFRS]}                                # 8630
+  reinsurance_result:
+    {statement: pl, kind: flow, label: Net income or expense from reinsurance contracts held (再保険収益又は費用; negative = cost),
+     tags: [IncomeOrExpensesFromReinsuranceContractsHeldIFRS,            # 8766, 8630
+            CededReinsuranceResultIFRS]}                                 # 8725
+  insurance_service_result:
+    {statement: pl, kind: flow, label: Insurance service result (保険サービス損益),
+     tags: [InsuranceServiceResultIFRS]}                                 # all three
+  investment_interest:
+    {statement: pl, kind: flow, label: Interest income (受取利息; detail, inside investment_income),
+     tags: [InterestIncomeIFRS,                                          # 8766 (jpigp_cor)
+            InterestRevenueIFRS,                                         # 8630
+            IncomeOfInterestIFRS]}                                       # 8725
+  investment_other_gains:
+    {statement: pl, kind: flow, label: Other investment gains and losses (detail, inside investment_income),
+     tags: [OtherInvestmentGainsAndLossesIFRS,                           # 8766
+            OtherInvestmentGainsLossesIFRS]}                             # 8630, 8725
+  investment_costs:
+    {statement: pl, kind: flow, label: Investment expenses (資産運用費用; detail, inside investment_income),
+     tags: [InvestmentExpensesIFRS,                                      # 8766
+            ExpensesRelatedToInvestmentsIFRS]}                           # 8630; 8725 files none
+  investment_income:
+    {statement: pl, kind: flow, label: Net investment result as filed (投資損益; incl. realised and unrealised gains),
+     tags: [InvestmentGainsAndLossesIFRS,                                # 8766
+            InvestmentGainsLossesIFRS]}                                  # 8630, 8725
+  insurance_finance_issued:
+    {statement: pl, kind: flow, label: Insurance finance expenses on contracts issued (positive = expense; detail),
+     tags: [InsuranceFinanceExpensesNetIFRS,                             # 8766, 8630
+            NetFinanceExpensesFromInsuranceContractsIssuedIFRS]}         # 8725
+  reinsurance_finance:
+    {statement: pl, kind: flow, label: Reinsurance finance income (positive = income; detail),
+     tags: [ReinsuranceFinanceIncomeNetIFRS,                             # 8766, 8630
+            NetFinanceIncomeFromReinsuranceContractsHeldIFRS]}           # 8725
+  insurance_finance_result:
+    {statement: pl, kind: flow, label: Net insurance finance income or expenses (保険金融損益; negative = expense),
+     tags: [InsuranceFinanceIncomeAndExpensesIFRS,                       # 8766
+            InsuranceFinanceGainsLossesIFRS,                             # 8630
+            NetInsuranceFinanceExpensesIFRS]}                            # 8725 (filed negative, despite the name)
+  finance_result:
+    {statement: pl, kind: flow, label: Net financial result (金融損益; investment result + insurance finance result),
+     tags: [FinanceResultIFRS]}                                          # all three
+  other_income:
+    {statement: pl, kind: flow, label: Other income (その他の収益 + その他の営業収益 + equity-method share),
+     tags: [], parts: [[OtherOperatingIncomeIFRS],                       # 8630 only
+                       [OtherIncomeIFRS],
+                       [ShareOfProfitLossOfInvestmentsAccountedForUsingEquityMethodIFRS]]}
+  admin_expenses:
+    {statement: pl, kind: flow, label: Non-attributable general and administrative expenses (一般管理費),
+     tags: [GeneralAndAdministrativeExpensesIFRS]}                       # 8766, 8630; 8725 files none
+  other_expenses:
+    {statement: pl, kind: flow, label: Other expenses (その他の費用), tags: [OtherExpensesIFRS]}
+  finance_costs:
+    {statement: pl, kind: flow, label: Finance costs (金融費用),
+     tags: [OtherFinanceCostsIFRS,                                       # 8766, 8725
+            FinanceCostsIFRS]}                                           # 8630
+  opex:
+    {statement: pl, kind: flow, label: Other expenses (一般管理費 + その他の費用 + 金融費用; derived),
+     tags: [], derive: {plus: [admin_expenses, other_expenses, finance_costs], require: [other_expenses]}}
+  other_net:
+    # SOMPO files the subtotal (その他の収益及び費用); the others are summed from their lines.
+    {statement: pl, kind: flow, label: Other income and expenses, net (filed subtotal, or the sum of the tagged lines),
+     tags: [OtherIncomeAndExpensesIFRS],                                 # 8630
+     parts: [[OtherOperatingIncomeIFRS], [OtherIncomeIFRS],
+             [ShareOfProfitLossOfInvestmentsAccountedForUsingEquityMethodIFRS],
+             {tags: [GeneralAndAdministrativeExpensesIFRS], sign: -1},
+             {tags: [OtherExpensesIFRS], sign: -1},
+             {tags: [OtherFinanceCostsIFRS, FinanceCostsIFRS], sign: -1}]}
+  pretax_income:
+    {statement: pl, kind: flow, label: Profit before tax (税引前利益), tags: [ProfitLossBeforeTaxIFRS]}
+  tax:
+    {statement: pl, kind: flow, label: Income tax expense (法人所得税費用), tags: [IncomeTaxExpenseIFRS]}
+  net_income_incl_nci:
+    {statement: pl, kind: flow, label: Profit incl. non-controlling interests (当期利益), tags: [ProfitLossIFRS]}
+  net_income_nci:
+    {statement: pl, kind: flow, label: Profit to non-controlling interests,
+     tags: [ProfitLossAttributableToNonControllingInterestsIFRS]}
+  net_income:
+    {statement: pl, kind: flow, label: Profit to owners of the parent (親会社の所有者に帰属する当期利益),
+     tags: [ProfitLossAttributableToOwnersOfParentIFRS]}
+
+  # Balance sheet (連結財政状態計算書) ------------------------------------------------
+  cash:
+    {statement: bs, kind: stock, label: Cash and cash equivalents (現金及び現金同等物),
+     tags: [CashAndCashEquivalentsIFRS]}
+  investments:
+    {statement: bs, kind: stock, label: Investments (securities + loans + other financial investments + investment property + reverse repos; sum of tagged lines),
+     tags: [],
+     parts: [[InvestmentSecuritiesAssetsIFRS,                            # 8766, 8725
+              MarketableSecuritiesAssetsIFRS],                           # 8630 (jpigp_cor)
+             [LoansAssetsIFRS,                                           # 8766, 8725
+              LoansAndAdvancesAssetsIFRS],                               # 8630
+             [OtherFinancialInvestmentsAssetsIFRS],                      # 8725
+             [InvestmentPropertyIFRS],                                   # 8766, 8725
+             [ReverseRepoAndSimilarSecuritiesLendingAssetsIFRS]]}        # 8630 (FY2026 only)
+  insurance_contract_assets:
+    {statement: bs, kind: stock, label: Insurance contract assets (保険契約資産), tags: [InsuranceContractAssetsAssetsIFRS]}
+  reinsurance_contract_assets:
+    {statement: bs, kind: stock, label: Reinsurance contract assets (再保険契約資産), tags: [ReinsuranceContractAssetsAssetsIFRS]}
+  total_assets:
+    {statement: bs, kind: stock, label: Total assets (資産合計), tags: [AssetsIFRS]}
+  policy_reserves:
+    {statement: bs, kind: stock, label: Insurance contract liabilities (保険契約負債; incl. the CSM),
+     tags: [InsuranceContractLiabilitiesLiabilitiesIFRS]}
+  reinsurance_contract_liabilities:
+    {statement: bs, kind: stock, label: Reinsurance contract liabilities (再保険契約負債),
+     tags: [ReinsuranceContractLiabilitiesLiabilitiesIFRS]}
+  investment_contract_liabilities:
+    {statement: bs, kind: stock, label: Investment contract liabilities (投資契約負債; IFRS 9, not insurance),
+     tags: [InvestmentContractLiabilitiesLiabilitiesIFRS]}               # 8766, 8725
+  debt:
+    {statement: bs, kind: stock, label: Bonds and borrowings (社債及び借入金),
+     tags: [BondsAndBorrowingsLiabilitiesIFRS]}
+  total_liabilities:
+    {statement: bs, kind: stock, label: Total liabilities (負債合計), tags: [LiabilitiesIFRS]}
+  equity_parent:
+    {statement: bs, kind: stock, label: Equity to owners of the parent (親会社の所有者に帰属する持分),
+     tags: [EquityAttributableToOwnersOfParentIFRS]}
+  nci:
+    {statement: bs, kind: stock, label: Non-controlling interests (非支配持分), tags: [NonControllingInterestsIFRS]}
+  total_equity:
+    {statement: bs, kind: stock, label: Total equity (資本合計), tags: [EquityIFRS]}
+  liabilities_and_equity:
+    {statement: bs, kind: stock, label: Total liabilities and equity (負債及び資本合計),
+     tags: [LiabilitiesAndEquityIFRS]}
+  retained_earnings:
+    {statement: bs, kind: stock, label: Retained earnings (利益剰余金), tags: [RetainedEarningsIFRS]}
+
+  # Cash flow --------------------------------------------------------------------------
+  cfo:
+    {statement: cf, kind: flow, label: Cash from operations (営業活動によるキャッシュ・フロー),
+     tags: [NetCashProvidedByUsedInOperatingActivitiesIFRS]}
+  capex:
+    {statement: cf, kind: flow, label: Capital expenditure (有形固定資産の取得による支出), sign: -1,
+     tags: [PurchaseOfPropertyPlantAndEquipmentInvCFIFRS]}
+  cfi:
+    {statement: cf, kind: flow, label: Cash from investing (投資活動によるキャッシュ・フロー),
+     tags: [NetCashProvidedByUsedInInvestingActivitiesIFRS]}
+  dividends_paid:
+    {statement: cf, kind: flow, label: Dividends paid to owners (配当金の支払額), sign: -1,
+     tags: [DividendsPaidFinCFIFRS]}
+  buybacks:
+    {statement: cf, kind: flow, label: Share buybacks (自己株式の取得による支出), sign: -1,
+     tags: [PaymentsForPurchaseOfTreasurySharesFinCFIFRS]}
+  cff:
+    {statement: cf, kind: flow, label: Cash from financing (財務活動によるキャッシュ・フロー),
+     tags: [NetCashProvidedByUsedInFinancingActivitiesIFRS]}
+  fx_effect:
+    {statement: cf, kind: flow, label: Exchange-rate effect on cash (現金及び現金同等物に係る換算差額),
+     tags: [EffectOfExchangeRateChangesOnCashAndCashEquivalentsIFRS]}
+  net_change_cash:
+    {statement: cf, kind: flow, label: Net change in cash (現金及び現金同等物の増減額),
+     tags: [NetIncreaseDecreaseInCashAndCashEquivalentsIFRS]}
+  other_cash_change:
+    # MS&AD FY2026: cash moved to assets held for sale (-7,061), below the net change.
+    {statement: cf, kind: flow, label: Other changes in cash (cash moved to assets held for sale), tags: [],
+     parts: [[NetIncreaseDecreaseInCashAndCashEquivalentsDueToTransferToAssetsHeldForSaleCFIFRS]]}
+  end_cash_cf:
+    {statement: cf, kind: stock, label: Closing cash (現金及び現金同等物の期末残高, cash flow statement),
+     tags: [CashAndCashEquivalentsIFRS]}
+
+footings:
+  - {name: "insurance revenue - insurance service expenses + reinsurance result = insurance service result",
+     result: insurance_service_result, plus: [premiums, reinsurance_result], minus: [claims], fail: true}
+  - {name: "net investment result + net insurance finance result = net financial result",
+     result: finance_result, plus: [investment_income, insurance_finance_result], fail: true}
+  - {name: "insurance service result + net financial result + other income and expenses = profit before tax",
+     result: pretax_income, plus: [insurance_service_result, finance_result, other_net], fail: true}
+  - {name: "interest + other investment gains - investment expenses = net investment result",
+     result: investment_income, plus: [investment_interest, investment_other_gains], minus: [investment_costs],
+     optional: [investment_costs]}
+  - {name: "- insurance finance expenses + reinsurance finance income = net insurance finance result",
+     result: insurance_finance_result, plus: [reinsurance_finance], minus: [insurance_finance_issued]}
+  - {name: "other income - other expenses = other income and expenses, net",
+     result: other_net, plus: [other_income], minus: [opex]}
+  - {name: "pre-tax income - tax = net income incl. NCI",
+     result: [net_income_incl_nci, net_income], fallback_unless: [net_income_nci],
+     plus: [pretax_income], minus: [tax]}
+  - {name: "total equity = equity to owners + NCI",
+     result: total_equity, plus: [equity_parent, nci], optional: [nci]}
+
+# Not chart lines; used by the tie-out only. 配当金 in the statement of changes in
+# equity is filed as a negative number.
+dividends_declared_tags: [DividendsSSIFRS]
+dividends_declared_sign: -1
+anchors: {pl: net_income, bs: total_assets, cf: cfo}

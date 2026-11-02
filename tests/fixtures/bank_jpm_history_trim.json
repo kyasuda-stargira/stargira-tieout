@@ -1,0 +1,840 @@
+{
+ "ticker": "JPM",
+ "sector": "bank",
+ "cik": 19617,
+ "entity": "JPMORGAN CHASE & CO",
+ "source": "SEC EDGAR XBRL data (companyfacts)",
+ "standard": "us-gaap",
+ "currency": "USD",
+ "years": [
+  {
+   "fy": 2022,
+   "end": "2022-12-31",
+   "accn": "0000019617-23-000231",
+   "form": "10-K",
+   "filed": "2023-02-21",
+   "amendments": [],
+   "source_filings": {
+    "pl": "0000019617-25-000270",
+    "bs": "0000019617-24-000225",
+    "cf": "0000019617-25-000270"
+   },
+   "unit": 1000000,
+   "status": "tied"
+  },
+  {
+   "fy": 2023,
+   "end": "2023-12-31",
+   "accn": "0000019617-24-000225",
+   "form": "10-K",
+   "filed": "2024-02-16",
+   "amendments": [],
+   "source_filings": {
+    "pl": "0001628280-26-008131",
+    "bs": "0000019617-25-000270",
+    "cf": "0001628280-26-008131"
+   },
+   "unit": 1000000,
+   "status": "tied"
+  },
+  {
+   "fy": 2024,
+   "end": "2024-12-31",
+   "accn": "0000019617-25-000270",
+   "form": "10-K",
+   "filed": "2025-02-14",
+   "amendments": [],
+   "source_filings": {
+    "pl": "0001628280-26-008131",
+    "bs": "0001628280-26-008131",
+    "cf": "0001628280-26-008131"
+   },
+   "unit": 1000000,
+   "status": "tied"
+  },
+  {
+   "fy": 2025,
+   "end": "2025-12-31",
+   "accn": "0001628280-26-008131",
+   "form": "10-K",
+   "filed": "2026-02-13",
+   "amendments": [],
+   "source_filings": {
+    "pl": "0001628280-26-008131",
+    "bs": "0001628280-26-008131",
+    "cf": "0001628280-26-008131"
+   },
+   "unit": 1000000,
+   "status": "tied"
+  }
+ ],
+ "lines": {
+  "interest_income": {
+   "2022": {
+    "val": 92807000000,
+    "tag": "InterestIncomeOperating",
+    "accn": "0000019617-25-000270",
+    "form": "10-K",
+    "filed": "2025-02-14"
+   },
+   "2023": {
+    "val": 170588000000,
+    "tag": "InterestIncomeOperating",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   },
+   "2024": {
+    "val": 193933000000,
+    "tag": "InterestIncomeOperating",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   },
+   "2025": {
+    "val": 193341000000,
+    "tag": "InterestIncomeOperating",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   }
+  },
+  "interest_expense": {
+   "2022": {
+    "val": 26097000000,
+    "tag": "InterestExpenseOperating",
+    "accn": "0000019617-25-000270",
+    "form": "10-K",
+    "filed": "2025-02-14"
+   },
+   "2023": {
+    "val": 81321000000,
+    "tag": "InterestExpenseOperating",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   },
+   "2024": {
+    "val": 101350000000,
+    "tag": "InterestExpenseOperating",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   },
+   "2025": {
+    "val": 97898000000,
+    "tag": "InterestExpenseOperating",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   }
+  },
+  "net_interest_income": {
+   "2022": {
+    "val": 66710000000,
+    "tag": "InterestIncomeExpenseNet",
+    "accn": "0000019617-25-000270",
+    "form": "10-K",
+    "filed": "2025-02-14"
+   },
+   "2023": {
+    "val": 89267000000,
+    "tag": "InterestIncomeExpenseNet",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   },
+   "2024": {
+    "val": 92583000000,
+    "tag": "InterestIncomeExpenseNet",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   },
+   "2025": {
+    "val": 95443000000,
+    "tag": "InterestIncomeExpenseNet",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   }
+  },
+  "noninterest_income": {
+   "2022": {
+    "val": 61985000000,
+    "tag": "NoninterestIncome",
+    "accn": "0000019617-25-000270",
+    "form": "10-K",
+    "filed": "2025-02-14"
+   },
+   "2023": {
+    "val": 68837000000,
+    "tag": "NoninterestIncome",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   },
+   "2024": {
+    "val": 84973000000,
+    "tag": "NoninterestIncome",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   },
+   "2025": {
+    "val": 87004000000,
+    "tag": "NoninterestIncome",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   }
+  },
+  "total_revenue": {
+   "2022": {
+    "val": 128695000000,
+    "tag": "derived: net_interest_income + noninterest_income",
+    "accn": "0000019617-25-000270",
+    "form": "10-K",
+    "filed": "2025-02-14",
+    "derived_from": {
+     "net_interest_income": 66710000000,
+     "noninterest_income": 61985000000
+    }
+   },
+   "2023": {
+    "val": 158104000000,
+    "tag": "derived: net_interest_income + noninterest_income",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13",
+    "derived_from": {
+     "net_interest_income": 89267000000,
+     "noninterest_income": 68837000000
+    }
+   },
+   "2024": {
+    "val": 177556000000,
+    "tag": "derived: net_interest_income + noninterest_income",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13",
+    "derived_from": {
+     "net_interest_income": 92583000000,
+     "noninterest_income": 84973000000
+    }
+   },
+   "2025": {
+    "val": 182447000000,
+    "tag": "derived: net_interest_income + noninterest_income",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13",
+    "derived_from": {
+     "net_interest_income": 95443000000,
+     "noninterest_income": 87004000000
+    }
+   }
+  },
+  "provision": {
+   "2022": {
+    "val": 6389000000,
+    "tag": "ProvisionForLoanLeaseAndOtherLosses",
+    "accn": "0000019617-25-000270",
+    "form": "10-K",
+    "filed": "2025-02-14"
+   },
+   "2023": {
+    "val": 9320000000,
+    "tag": "ProvisionForLoanLeaseAndOtherLosses",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   },
+   "2024": {
+    "val": 10678000000,
+    "tag": "ProvisionForLoanLeaseAndOtherLosses",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   },
+   "2025": {
+    "val": 14212000000,
+    "tag": "ProvisionForLoanLeaseAndOtherLosses",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   }
+  },
+  "opex": {
+   "2022": {
+    "val": 76140000000,
+    "tag": "NoninterestExpense",
+    "accn": "0000019617-25-000270",
+    "form": "10-K",
+    "filed": "2025-02-14"
+   },
+   "2023": {
+    "val": 87172000000,
+    "tag": "NoninterestExpense",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   },
+   "2024": {
+    "val": 91797000000,
+    "tag": "NoninterestExpense",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   },
+   "2025": {
+    "val": 95640000000,
+    "tag": "NoninterestExpense",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   }
+  },
+  "pretax_income": {
+   "2022": {
+    "val": 46166000000,
+    "tag": "IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest",
+    "accn": "0000019617-25-000270",
+    "form": "10-K",
+    "filed": "2025-02-14"
+   },
+   "2023": {
+    "val": 61612000000,
+    "tag": "IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   },
+   "2024": {
+    "val": 75081000000,
+    "tag": "IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   },
+   "2025": {
+    "val": 72595000000,
+    "tag": "IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   }
+  },
+  "tax": {
+   "2022": {
+    "val": 8490000000,
+    "tag": "IncomeTaxExpenseBenefit",
+    "accn": "0000019617-25-000270",
+    "form": "10-K",
+    "filed": "2025-02-14"
+   },
+   "2023": {
+    "val": 12060000000,
+    "tag": "IncomeTaxExpenseBenefit",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   },
+   "2024": {
+    "val": 16610000000,
+    "tag": "IncomeTaxExpenseBenefit",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   },
+   "2025": {
+    "val": 15547000000,
+    "tag": "IncomeTaxExpenseBenefit",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   }
+  },
+  "net_income_incl_nci": {},
+  "net_income_nci": {},
+  "net_income": {
+   "2022": {
+    "val": 37676000000,
+    "tag": "NetIncomeLoss",
+    "accn": "0000019617-25-000270",
+    "form": "10-K",
+    "filed": "2025-02-14"
+   },
+   "2023": {
+    "val": 49552000000,
+    "tag": "NetIncomeLoss",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   },
+   "2024": {
+    "val": 58471000000,
+    "tag": "NetIncomeLoss",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   },
+   "2025": {
+    "val": 57048000000,
+    "tag": "NetIncomeLoss",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   }
+  },
+  "cash": {
+   "2022": {
+    "val": 567234000000,
+    "tag": "CashAndDueFromBanks + InterestBearingDepositsInBanks",
+    "accn": "0000019617-24-000225",
+    "form": "10-K",
+    "filed": "2024-02-16"
+   },
+   "2023": {
+    "val": 624151000000,
+    "tag": "CashAndDueFromBanks + InterestBearingDepositsInBanks",
+    "accn": "0000019617-25-000270",
+    "form": "10-K",
+    "filed": "2025-02-14"
+   },
+   "2024": {
+    "val": 469317000000,
+    "tag": "CashAndDueFromBanks + InterestBearingDepositsInBanks",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   },
+   "2025": {
+    "val": 343338000000,
+    "tag": "CashAndDueFromBanks + InterestBearingDepositsInBanks",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   }
+  },
+  "reverse_repos": {
+   "2022": {
+    "val": 315592000000,
+    "tag": "FederalFundsSoldAndSecuritiesPurchasedUnderAgreementsToResell",
+    "accn": "0000019617-24-000225",
+    "form": "10-K",
+    "filed": "2024-02-16"
+   },
+   "2023": {
+    "val": 276152000000,
+    "tag": "FederalFundsSoldAndSecuritiesPurchasedUnderAgreementsToResell",
+    "accn": "0000019617-25-000270",
+    "form": "10-K",
+    "filed": "2025-02-14"
+   },
+   "2024": {
+    "val": 295001000000,
+    "tag": "FederalFundsSoldAndSecuritiesPurchasedUnderAgreementsToResell",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   },
+   "2025": {
+    "val": 336426000000,
+    "tag": "FederalFundsSoldAndSecuritiesPurchasedUnderAgreementsToResell",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   }
+  },
+  "trading_assets": {},
+  "securities": {
+   "2022": {
+    "val": 631162000000,
+    "tag": "DebtSecuritiesAvailableForSaleExcludingAccruedInterest + DebtSecuritiesHeldToMaturityExcludingAccruedInterestAfterAllowanceForCreditLoss",
+    "accn": "0000019617-24-000225",
+    "form": "10-K",
+    "filed": "2024-02-16"
+   },
+   "2023": {
+    "val": 571552000000,
+    "tag": "DebtSecuritiesAvailableForSaleExcludingAccruedInterest + DebtSecuritiesHeldToMaturityExcludingAccruedInterestAfterAllowanceForCreditLoss",
+    "accn": "0000019617-25-000270",
+    "form": "10-K",
+    "filed": "2025-02-14"
+   },
+   "2024": {
+    "val": 681320000000,
+    "tag": "DebtSecuritiesAvailableForSaleExcludingAccruedInterest + DebtSecuritiesHeldToMaturityExcludingAccruedInterestAfterAllowanceForCreditLoss",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   },
+   "2025": {
+    "val": 777332000000,
+    "tag": "DebtSecuritiesAvailableForSaleExcludingAccruedInterest + DebtSecuritiesHeldToMaturityExcludingAccruedInterestAfterAllowanceForCreditLoss",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   }
+  },
+  "loans": {
+   "2022": {
+    "val": 1115921000000,
+    "tag": "FinancingReceivableExcludingAccruedInterestAfterAllowanceForCreditLoss",
+    "accn": "0000019617-24-000225",
+    "form": "10-K",
+    "filed": "2024-02-16"
+   },
+   "2023": {
+    "val": 1301286000000,
+    "tag": "FinancingReceivableExcludingAccruedInterestAfterAllowanceForCreditLoss",
+    "accn": "0000019617-25-000270",
+    "form": "10-K",
+    "filed": "2025-02-14"
+   },
+   "2024": {
+    "val": 1323643000000,
+    "tag": "FinancingReceivableExcludingAccruedInterestAfterAllowanceForCreditLoss",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   },
+   "2025": {
+    "val": 1467664000000,
+    "tag": "FinancingReceivableExcludingAccruedInterestAfterAllowanceForCreditLoss",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   }
+  },
+  "loan_allowance": {
+   "2022": {
+    "val": 19726000000,
+    "tag": "FinancingReceivableAllowanceForCreditLossExcludingAccruedInterest",
+    "accn": "0000019617-24-000225",
+    "form": "10-K",
+    "filed": "2024-02-16"
+   },
+   "2023": {
+    "val": 22420000000,
+    "tag": "FinancingReceivableAllowanceForCreditLossExcludingAccruedInterest",
+    "accn": "0000019617-25-000270",
+    "form": "10-K",
+    "filed": "2025-02-14"
+   },
+   "2024": {
+    "val": 24345000000,
+    "tag": "FinancingReceivableAllowanceForCreditLossExcludingAccruedInterest",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   },
+   "2025": {
+    "val": 25765000000,
+    "tag": "FinancingReceivableAllowanceForCreditLossExcludingAccruedInterest",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   }
+  },
+  "total_assets": {
+   "2022": {
+    "val": 3665743000000,
+    "tag": "Assets",
+    "accn": "0000019617-24-000225",
+    "form": "10-K",
+    "filed": "2024-02-16"
+   },
+   "2023": {
+    "val": 3875393000000,
+    "tag": "Assets",
+    "accn": "0000019617-25-000270",
+    "form": "10-K",
+    "filed": "2025-02-14"
+   },
+   "2024": {
+    "val": 4002814000000,
+    "tag": "Assets",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   },
+   "2025": {
+    "val": 4424900000000,
+    "tag": "Assets",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   }
+  },
+  "deposits": {
+   "2022": {
+    "val": 2340179000000,
+    "tag": "Deposits",
+    "accn": "0000019617-24-000225",
+    "form": "10-K",
+    "filed": "2024-02-16"
+   },
+   "2023": {
+    "val": 2400688000000,
+    "tag": "Deposits",
+    "accn": "0000019617-25-000270",
+    "form": "10-K",
+    "filed": "2025-02-14"
+   },
+   "2024": {
+    "val": 2406032000000,
+    "tag": "Deposits",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   },
+   "2025": {
+    "val": 2559320000000,
+    "tag": "Deposits",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   }
+  },
+  "repo_borrowings": {
+   "2022": {
+    "val": 202613000000,
+    "tag": "FederalFundsPurchasedAndSecuritiesSoldUnderAgreementsToRepurchase",
+    "accn": "0000019617-24-000225",
+    "form": "10-K",
+    "filed": "2024-02-16"
+   },
+   "2023": {
+    "val": 216535000000,
+    "tag": "FederalFundsPurchasedAndSecuritiesSoldUnderAgreementsToRepurchase",
+    "accn": "0000019617-25-000270",
+    "form": "10-K",
+    "filed": "2025-02-14"
+   },
+   "2024": {
+    "val": 296835000000,
+    "tag": "FederalFundsPurchasedAndSecuritiesSoldUnderAgreementsToRepurchase",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   },
+   "2025": {
+    "val": 442396000000,
+    "tag": "FederalFundsPurchasedAndSecuritiesSoldUnderAgreementsToRepurchase",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   }
+  },
+  "short_term_borrowings": {
+   "2022": {
+    "val": 44027000000,
+    "tag": "ShortTermBorrowings",
+    "accn": "0000019617-24-000225",
+    "form": "10-K",
+    "filed": "2024-02-16"
+   },
+   "2023": {
+    "val": 44712000000,
+    "tag": "ShortTermBorrowings",
+    "accn": "0000019617-25-000270",
+    "form": "10-K",
+    "filed": "2025-02-14"
+   },
+   "2024": {
+    "val": 52893000000,
+    "tag": "ShortTermBorrowings",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   },
+   "2025": {
+    "val": 64776000000,
+    "tag": "ShortTermBorrowings",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   }
+  },
+  "long_term_debt": {},
+  "total_liabilities": {
+   "2022": {
+    "val": 3373411000000,
+    "tag": "Liabilities",
+    "accn": "0000019617-24-000225",
+    "form": "10-K",
+    "filed": "2024-02-16"
+   },
+   "2023": {
+    "val": 3547515000000,
+    "tag": "Liabilities",
+    "accn": "0000019617-25-000270",
+    "form": "10-K",
+    "filed": "2025-02-14"
+   },
+   "2024": {
+    "val": 3658056000000,
+    "tag": "Liabilities",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   },
+   "2025": {
+    "val": 4062462000000,
+    "tag": "Liabilities",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   }
+  },
+  "temporary_equity": {},
+  "equity_parent": {
+   "2022": {
+    "val": 292332000000,
+    "tag": "StockholdersEquity",
+    "accn": "0000019617-24-000225",
+    "form": "10-K",
+    "filed": "2024-02-16"
+   },
+   "2023": {
+    "val": 327878000000,
+    "tag": "StockholdersEquity",
+    "accn": "0000019617-25-000270",
+    "form": "10-K",
+    "filed": "2025-02-14"
+   },
+   "2024": {
+    "val": 344758000000,
+    "tag": "StockholdersEquity",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   },
+   "2025": {
+    "val": 362438000000,
+    "tag": "StockholdersEquity",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   }
+  },
+  "nci": {},
+  "total_equity": {},
+  "liabilities_and_equity": {
+   "2022": {
+    "val": 3665743000000,
+    "tag": "LiabilitiesAndStockholdersEquity",
+    "accn": "0000019617-24-000225",
+    "form": "10-K",
+    "filed": "2024-02-16"
+   },
+   "2023": {
+    "val": 3875393000000,
+    "tag": "LiabilitiesAndStockholdersEquity",
+    "accn": "0000019617-25-000270",
+    "form": "10-K",
+    "filed": "2025-02-14"
+   },
+   "2024": {
+    "val": 4002814000000,
+    "tag": "LiabilitiesAndStockholdersEquity",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   },
+   "2025": {
+    "val": 4424900000000,
+    "tag": "LiabilitiesAndStockholdersEquity",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   }
+  },
+  "dividends_paid": {
+   "2022": {
+    "val": 13562000000,
+    "tag": "PaymentsOfDividends",
+    "accn": "0000019617-25-000270",
+    "form": "10-K",
+    "filed": "2025-02-14"
+   },
+   "2023": {
+    "val": 13463000000,
+    "tag": "PaymentsOfDividends",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   },
+   "2024": {
+    "val": 14783000000,
+    "tag": "PaymentsOfDividends",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   },
+   "2025": {
+    "val": 16625000000,
+    "tag": "PaymentsOfDividends",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   }
+  },
+  "buybacks": {
+   "2022": {
+    "val": 3162000000,
+    "tag": "PaymentsForRepurchaseOfCommonStock",
+    "accn": "0000019617-25-000270",
+    "form": "10-K",
+    "filed": "2025-02-14"
+   },
+   "2023": {
+    "val": 9824000000,
+    "tag": "PaymentsForRepurchaseOfCommonStock",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   },
+   "2024": {
+    "val": 18830000000,
+    "tag": "PaymentsForRepurchaseOfCommonStock",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   },
+   "2025": {
+    "val": 31591000000,
+    "tag": "PaymentsForRepurchaseOfCommonStock",
+    "accn": "0001628280-26-008131",
+    "form": "10-K",
+    "filed": "2026-02-13"
+   }
+  }
+ },
+ "shares_outstanding": {
+  "val": 2697032375,
+  "end": "2026-01-31",
+  "accn": "0001628280-26-008131",
+  "form": "10-K",
+  "filed": "2026-02-13",
+  "tag": "dei:EntityCommonStockSharesOutstanding",
+  "note": null
+ },
+ "flags": [],
+ "warnings": [
+  "line net_income_incl_nci: no mapped value in any year (tags tried: ProfitLoss)",
+  "line net_income_nci: no mapped value in any year (tags tried: NetIncomeLossAttributableToNoncontrollingInterest)",
+  "line trading_assets: no mapped value in any year (tags tried: TradingSecurities)",
+  "line loans: no mapped value in 2016, 2017",
+  "line long_term_debt: no mapped value in any year (tags tried: LongTermDebt, UnsecuredLongTermDebt)",
+  "line temporary_equity: no mapped value in any year (tags tried: RedeemableNoncontrollingInterestEquityCarryingAmount)",
+  "line nci: no mapped value in any year (tags tried: MinorityInterest)",
+  "line total_equity: no mapped value in any year (tags tried: StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest)",
+  "line capex: no mapped value in any year (tags tried: PaymentsToAcquirePropertyPlantAndEquipment, PaymentsToAcquireProductiveAssets)",
+  "line net_change_cash_before_fx: no mapped value in any year (tags tried: CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseExcludingExchangeRateEffect)",
+  "company-extension tags are not in companyfacts (the SEC file holds standard taxonomies only), so a line a company reports only under its own tag shows as missing above; other taxonomies present and not mapped: ecd, ffd, invest, srt"
+ ],
+ "routing": "routed to the bank chart (maps/us_gaap_bank.yaml) because it has Deposits"
+}

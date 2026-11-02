@@ -1,0 +1,209 @@
+# UNUSED, waiting for a broker-dealer template: securities firms are refused
+# until one exists. jgaap.yaml's securities route
+# now refuses instead of naming this file. It is kept, as checked against Daiwa
+# 8601, as the starting point for that template's map. Do not delete it.
+#
+# J-GAAP element map for securities firms (第一種金融商品取引業, the sec sheet of
+# the account list) -> Tie-Out's BANK chart (docs/MODELS.md), as first
+# planned: a broker-dealer runs through the bank template, as Goldman Sachs
+# does on the US route. Same keys as jgaap_bank.yaml; lines a securities firm does
+# not file stay empty and the history says so.
+#
+# Format as jgaap_bank.yaml. Every element below was checked against values in
+# the Daiwa Securities Group (8601) reports unless marked "not yet seen".
+#
+# A securities firm's statements are not a bank's:
+# - It has a current/non-current split, and its P&L runs 営業収益 (operating
+#   revenue) - 金融費用 (financial expenses) = 純営業収益 (net operating revenue),
+#   then 販売費及び一般管理費, 営業利益, 営業外損益, 経常利益.
+# - "Interest" here is 金融収益 / 金融費用: interest and dividends on trading,
+#   margin and repo-type positions as well as loans.
+# - Credit costs are inside 販売費及び一般管理費 (貸倒引当金繰入額), so `provision`
+#   stays empty rather than counting them twice.
+# - Customer deposits of a banking subsidiary are not a jppfs_cor element on
+#   this sheet (Daiwa files them under its own element), so `deposits` is empty
+#   unless a firm uses the bank element.
+
+meta:
+  standard: J-GAAP (jppfs_cor)
+  sector: bank
+  statement_format: securities
+  prefix: "jppfs_cor:"
+  facts_key: jp
+  unit: JPY
+  forms: ["有価証券報告書"]
+  flow_days: [350, 380]
+  max_years: 10
+  min_years: 3
+  period_tags: [NetCashProvidedByUsedInOperatingActivities, ProfitLoss, NetOperatingRevenueSEC]
+  cash_gap_reason: >-
+    the cash flow statement closes on 現金及び現金同等物 (%s) and the balance sheet shows
+    現金及び預金; the filing gives no tagged reconciliation and its text note could not be
+    read or does not foot, so the gap of %s is not reconciled from the data
+  chart_notes:
+    - "securities firm (J-GAAP 第一種金融商品取引業 format) on the bank chart."
+    - "total_revenue is net operating revenue (純営業収益), as filed; revenue_tagged is gross operating revenue (営業収益)."
+    - "interest_income / interest_expense are 金融収益 / 金融費用 (financial revenue and expenses: interest and dividends on trading, margin and repo-type positions as well as loans), not loan interest only."
+    - "noninterest_income is derived (net operating revenue - net financial revenue): commissions, trading gains and other operating revenue, net of other operating expenses."
+    - "provision is empty: credit costs are inside 販売費及び一般管理費 (opex)."
+    - "pretax_income = operating profit + non-operating items + extraordinary items."
+    - "reverse_repos is 有価証券担保貸付金 (cash lent against securities: securities borrowed and gensaki); repo_borrowings is 有価証券担保借入金."
+    - "deposits is empty unless the firm files 預金 under the bank element; a banking subsidiary's deposits filed under the company's own element are listed among the unmapped company elements."
+    - "equity_parent is derived (株主資本 + その他の包括利益累計額)."
+
+lines:
+  # Profit and loss (損益計算書) ---------------------------------------------------
+  interest_income:
+    {statement: pl, kind: flow, label: Financial revenue (金融収益), tags: [FinancialRevenueORSEC]}
+  interest_expense:
+    {statement: pl, kind: flow, label: Financial expenses (金融費用), tags: [FinancialExpensesSEC]}
+  net_interest_income:
+    {statement: pl, kind: flow, label: Net financial revenue (金融収益 - 金融費用; derived), tags: [],
+     derive: {plus: [interest_income], minus: [interest_expense]}}
+  fee_income:
+    {statement: pl, kind: flow, label: Commissions received (受入手数料; detail), tags: [CommissionReceivedORSEC]}
+  other_income:
+    {statement: pl, kind: flow, label: Net trading income (トレーディング損益; detail), tags: [NetTradingIncomeORSEC]}
+  revenue_tagged:
+    {statement: pl, kind: flow, label: Operating revenue (営業収益; gross, reference only),
+     tags: [OperatingRevenueSEC]}
+  total_revenue:
+    {statement: pl, kind: flow, label: Net operating revenue (純営業収益), tags: [NetOperatingRevenueSEC]}
+  noninterest_income:
+    {statement: pl, kind: flow, label: Non-interest revenue, net (net operating revenue - net financial revenue; derived),
+     tags: [], derive: {plus: [total_revenue], minus: [net_interest_income]}}
+  opex:
+    {statement: pl, kind: flow, label: Selling, general and administrative expenses (販売費及び一般管理費),
+     tags: [SellingGeneralAndAdministrativeExpenses]}
+  operating_profit:
+    {statement: pl, kind: flow, label: Operating profit (営業利益), tags: [OperatingIncome]}
+  non_operating_income:
+    {statement: pl, kind: flow, label: Non-operating income (営業外収益), tags: [NonOperatingIncome]}
+  non_operating_expenses:
+    {statement: pl, kind: flow, label: Non-operating expenses (営業外費用), tags: [NonOperatingExpenses]}
+  ordinary_profit:
+    {statement: pl, kind: flow, label: Ordinary profit (経常利益), tags: [OrdinaryIncome]}
+  extraordinary_income:
+    {statement: pl, kind: flow, label: Extraordinary income (特別利益), tags: [ExtraordinaryIncome]}
+  extraordinary_loss:
+    {statement: pl, kind: flow, label: Extraordinary losses (特別損失), tags: [ExtraordinaryLoss]}
+  pretax_income:
+    {statement: pl, kind: flow, label: Income before tax (税金等調整前当期純利益),
+     tags: [IncomeBeforeIncomeTaxes]}
+  tax:
+    {statement: pl, kind: flow, label: Income taxes (法人税等合計), tags: [IncomeTaxes]}
+  net_income_incl_nci:
+    {statement: pl, kind: flow, label: Net income incl. non-controlling interests (当期純利益),
+     tags: [ProfitLoss]}
+  net_income_nci:
+    {statement: pl, kind: flow, label: Net income to non-controlling interests,
+     tags: [ProfitLossAttributableToNonControllingInterests]}
+  net_income:
+    {statement: pl, kind: flow, label: Net income to owners of the parent (親会社株主に帰属する当期純利益),
+     tags: [ProfitLossAttributableToOwnersOfParent, ProfitLoss]}
+
+  # Balance sheet (貸借対照表) ------------------------------------------------------
+  cash:
+    {statement: bs, kind: stock, label: Cash and deposits (現金及び預金), tags: [CashAndDeposits]}
+  reverse_repos:
+    {statement: bs, kind: stock, label: Loans secured by securities (有価証券担保貸付金),
+     tags: [LoansSecuredBySecuritiesCASEC]}
+  trading_assets:
+    {statement: bs, kind: stock, label: Trading products (トレーディング商品), tags: [TradingProductsCASEC]}
+  securities:
+    {statement: bs, kind: stock, label: Securities (有価証券 + 投資有価証券), tags: [],
+     parts: [[ShortTermInvestmentSecurities], [InvestmentSecurities]]}
+  loans:
+    {statement: bs, kind: stock, label: Operating loans (営業貸付金), tags: [OperatingLoansCA]}
+  total_assets:
+    {statement: bs, kind: stock, label: Total assets (資産合計), tags: [Assets]}
+  deposits:
+    {statement: bs, kind: stock, label: Deposits (預金), tags: [DepositsLiabilitiesBNK]}   # not yet seen on a securities firm
+  repo_borrowings:
+    {statement: bs, kind: stock, label: Borrowings secured by securities (有価証券担保借入金),
+     tags: [LoansPayableSecuredBySecuritiesCLSEC]}
+  short_term_borrowings:
+    {statement: bs, kind: stock, label: Short-term borrowings, CP and bonds due within a year (短期借入金 + CP + 1年内償還予定の社債 + 1年内返済予定の長期借入金),
+     tags: [], parts: [[ShortTermLoansPayable], [CommercialPapersLiabilities], [CurrentPortionOfBonds],
+                       [CurrentPortionOfLongTermLoansPayable]]}
+  long_term_debt:
+    {statement: bs, kind: stock, label: Bonds and long-term loans (社債 + 長期借入金),
+     tags: [], parts: [[BondsPayable], [LongTermLoansPayable]]}
+  total_liabilities:
+    {statement: bs, kind: stock, label: Total liabilities (負債合計), tags: [Liabilities]}
+  shareholders_equity:
+    {statement: bs, kind: stock, label: Shareholders' equity (株主資本), tags: [ShareholdersEquity]}
+  accumulated_oci:
+    {statement: bs, kind: stock, label: Accumulated other comprehensive income (その他の包括利益累計額),
+     tags: [ValuationAndTranslationAdjustments]}
+  share_options:
+    {statement: bs, kind: stock, label: Share acquisition rights (新株予約権), tags: [SubscriptionRightsToShares]}
+  equity_parent:
+    {statement: bs, kind: stock, label: Equity to owners (株主資本 + その他の包括利益累計額; derived), tags: [],
+     derive: {plus: [shareholders_equity, accumulated_oci], require: [shareholders_equity]}}
+  nci:
+    {statement: bs, kind: stock, label: Non-controlling interests (非支配株主持分),
+     tags: [NonControllingInterests]}
+  total_equity:
+    {statement: bs, kind: stock, label: Net assets (純資産合計), tags: [NetAssets]}
+  liabilities_and_equity:
+    {statement: bs, kind: stock, label: Total liabilities and net assets (負債純資産合計),
+     tags: [LiabilitiesAndNetAssets]}
+  retained_earnings:
+    {statement: bs, kind: stock, label: Retained earnings (利益剰余金), tags: [RetainedEarnings]}
+
+  # Cash flow (same elements as jgaap.yaml) -------------------------------------------
+  cfo:
+    {statement: cf, kind: flow, label: Cash from operations (営業活動によるキャッシュ・フロー),
+     tags: [NetCashProvidedByUsedInOperatingActivities]}
+  capex:
+    {statement: cf, kind: flow, label: Capital expenditure (有形固定資産の取得による支出), sign: -1,
+     tags: [PurchaseOfPropertyPlantAndEquipmentInvCF]}
+  cfi:
+    {statement: cf, kind: flow, label: Cash from investing (投資活動によるキャッシュ・フロー),
+     tags: [NetCashProvidedByUsedInInvestmentActivities]}
+  dividends_paid:
+    {statement: cf, kind: flow, label: Dividends paid (配当金の支払額), sign: -1,
+     tags: [CashDividendsPaidFinCF]}
+  buybacks:
+    {statement: cf, kind: flow, label: Share buybacks (自己株式の取得による支出), sign: -1,
+     tags: [PurchaseOfTreasuryStockFinCF]}
+  cff:
+    {statement: cf, kind: flow, label: Cash from financing (財務活動によるキャッシュ・フロー),
+     tags: [NetCashProvidedByUsedInFinancingActivities]}
+  fx_effect:
+    {statement: cf, kind: flow, label: Exchange-rate effect on cash (現金及び現金同等物に係る換算差額),
+     tags: [EffectOfExchangeRateChangeOnCashAndCashEquivalents]}
+  net_change_cash:
+    {statement: cf, kind: flow, label: Net change in cash (現金及び現金同等物の増減額),
+     tags: [NetIncreaseDecreaseInCashAndCashEquivalents]}
+  other_cash_change:
+    # Changes below the net-change line: newly consolidated or excluded subsidiaries.
+    {statement: cf, kind: flow, label: Other changes in cash (連結範囲の変動等), tags: [],
+     parts: [[IncreaseInCashAndCashEquivalentsFromNewlyConsolidatedSubsidiaryCCE],
+             [DecreaseInCashAndCashEquivalentsResultingFromExclusionOfSubsidiariesFromConsolidationCCE],
+             [IncreaseDecreaseInCashAndCashEquivalentsResultingFromChangeOfScopeOfConsolidationCCE]]}
+  end_cash_cf:
+    {statement: cf, kind: stock, label: Closing cash (現金及び現金同等物の期末残高, cash flow statement),
+     tags: [CashAndCashEquivalents]}
+
+footings:
+  - {name: "純営業収益 - 販売費及び一般管理費 = 営業利益 (net operating revenue - SG&A = operating profit)",
+     result: operating_profit, plus: [total_revenue], minus: [opex], fail: true}
+  - {name: "営業利益 + 営業外収益 - 営業外費用 = 経常利益 (operating profit + non-operating items = ordinary profit)",
+     result: ordinary_profit, plus: [operating_profit, non_operating_income], minus: [non_operating_expenses],
+     optional: [non_operating_income, non_operating_expenses], fail: true}
+  - {name: "経常利益 + 特別利益 - 特別損失 = 税金等調整前当期純利益 (ordinary profit + extraordinary items = pre-tax income)",
+     result: pretax_income, plus: [ordinary_profit, extraordinary_income], minus: [extraordinary_loss],
+     optional: [extraordinary_income, extraordinary_loss], fail: true}
+  - {name: "営業収益 - 金融費用 = 純営業収益 (reported: other operating expenses, if any, are filed under the company's own element)",
+     result: total_revenue, plus: [revenue_tagged], minus: [interest_expense]}
+  - {name: "pre-tax income - tax = net income incl. NCI (or net income where no NCI is tagged)",
+     result: [net_income_incl_nci, net_income], fallback_unless: [net_income_nci],
+     plus: [pretax_income], minus: [tax]}
+  - {name: "net assets = equity to owners + share options + NCI",
+     result: total_equity, plus: [equity_parent, share_options, nci], optional: [share_options, nci]}
+
+dividends_declared_tags: [DividendsFromSurplus]
+dividends_declared_sign: -1
+anchors: {pl: net_income, bs: total_assets, cf: cfo}

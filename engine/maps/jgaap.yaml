@@ -1,0 +1,212 @@
+# J-GAAP element map: EDINET jppfs_cor elements -> Tie-Out's standard chart of accounts.
+#
+# Same structure as us_gaap.yaml. filings_map.py (load_edinet) reads the CSV form
+# of each 有価証券報告書 (EDINET download type 5), keeps the consolidated (連結)
+# statement rows of the two years each report holds (plain contexts only: no
+# segment or equity-component members), and turns them into facts with dates.
+# Element names below are without the "jppfs_cor:" prefix.
+#
+# Each line lists its elements in priority order; the first with a value wins.
+# `sign: -1` turns a payment, which a Japanese cash flow statement files as a
+# negative number, into the positive amount the chart expects. `parts` sums the
+# tagged parts when the total is not tagged (e.g. inventories filed by kind).
+# Elements marked "not yet seen" have not appeared in a test filing; a wrong
+# name never matches, so it cannot pull in a wrong value.
+
+meta:
+  standard: J-GAAP (jppfs_cor)
+  prefix: "jppfs_cor:"
+  facts_key: jp
+  unit: JPY
+  forms: ["有価証券報告書"]
+  flow_days: [350, 380]
+  max_years: 10
+  min_years: 3
+  period_tags: [NetCashProvidedByUsedInOperatingActivities, ProfitLoss, NetSales, OperatingIncome]
+  cash_gap_reason: >-
+    the cash flow statement closes on 現金及び現金同等物 (%s) and the balance sheet shows
+    現金及び預金; the filing gives no tagged reconciliation and its text note could not be
+    read or does not foot, so the gap of %s is not reconciled from the data
+
+lines:
+  # Profit and loss (損益計算書) ---------------------------------------------------
+  revenue:
+    {statement: pl, kind: flow, label: Revenue (売上高),
+     tags: [NetSales, OperatingRevenue1, OperatingRevenue2]}     # the last two: not yet seen
+  cogs:
+    {statement: pl, kind: flow, label: Cost of sales (売上原価), tags: [CostOfSales]}
+  gross_profit:
+    {statement: pl, kind: flow, label: Gross profit (売上総利益), tags: [GrossProfit]}
+  sga:
+    {statement: pl, kind: flow, label: Selling, general and administrative (販売費及び一般管理費),
+     tags: [SellingGeneralAndAdministrativeExpenses]}
+  da:
+    # J-GAAP P&Ls do not show D&A on their own; the cash flow statement does.
+    {statement: cf, kind: flow, label: Depreciation and amortisation (減価償却費, cash flow),
+     tags: [DepreciationAndAmortizationOpeCF, DepreciationOpeCF]}   # the second: not yet seen
+  ebit:
+    {statement: pl, kind: flow, label: Operating income (営業利益), tags: [OperatingIncome]}
+  interest_expense:
+    {statement: pl, kind: flow, label: Interest expense (支払利息),
+     tags: [InterestExpensesNOE]}
+  pretax_income:
+    {statement: pl, kind: flow, label: Income before tax (税金等調整前当期純利益),
+     tags: [IncomeBeforeIncomeTaxes, IncomeBeforeIncomeTaxesAndMinorityInterests]}
+  tax:
+    {statement: pl, kind: flow, label: Income taxes (法人税等), tags: [IncomeTaxes]}
+  net_income_incl_nci:
+    {statement: pl, kind: flow, label: Net income incl. non-controlling interests (当期純利益),
+     tags: [ProfitLoss]}
+  net_income_nci:
+    {statement: pl, kind: flow, label: Net income to non-controlling interests,
+     tags: [ProfitLossAttributableToNonControllingInterests]}
+  net_income:
+    # ProfitLoss is the fallback for a company with no consolidated statements.
+    {statement: pl, kind: flow, label: Net income to owners of the parent (親会社株主に帰属する当期純利益),
+     tags: [ProfitLossAttributableToOwnersOfParent, ProfitLoss]}
+
+  # Balance sheet (貸借対照表) ------------------------------------------------------
+  cash:
+    # 現金及び預金 includes time deposits over three months; the cash flow statement
+    # ends on 現金及び現金同等物. The tie-out reconciles the two only through the
+    # filing's own note (see filings_map.cash_bridge).
+    {statement: bs, kind: stock, label: Cash and deposits (現金及び預金), tags: [CashAndDeposits]}
+  short_term_investments:
+    {statement: bs, kind: stock, label: Short-term securities (有価証券),
+     tags: [ShortTermInvestmentSecurities]}
+  receivables:
+    {statement: bs, kind: stock, label: Trade receivables (受取手形及び売掛金),
+     tags: [NotesAndAccountsReceivableTrade, NotesAndAccountsReceivableTradeAndContractAssets,
+            AccountsReceivableTrade]}
+  inventory:
+    {statement: bs, kind: stock, label: Inventories (棚卸資産), tags: [Inventories],
+     parts: [[MerchandiseAndFinishedGoods], [WorkInProcess], [RawMaterialsAndSupplies]]}
+  current_assets:
+    {statement: bs, kind: stock, label: Total current assets (流動資産), tags: [CurrentAssets]}
+  ppe:
+    {statement: bs, kind: stock, label: Property, plant and equipment (有形固定資産),
+     tags: [PropertyPlantAndEquipment]}
+  noncurrent_assets:
+    {statement: bs, kind: stock, label: Total non-current assets (固定資産), tags: [NoncurrentAssets]}
+  total_assets:
+    {statement: bs, kind: stock, label: Total assets (資産合計), tags: [Assets]}
+  payables:
+    {statement: bs, kind: stock, label: Trade payables (支払手形及び買掛金),
+     tags: [NotesAndAccountsPayableTrade, AccountsPayableTrade]}
+  current_liabilities:
+    {statement: bs, kind: stock, label: Total current liabilities (流動負債), tags: [CurrentLiabilities]}
+  short_term_borrowings:
+    {statement: bs, kind: stock, label: Short-term borrowings (短期借入金), tags: [ShortTermLoansPayable]}
+  commercial_paper:
+    {statement: bs, kind: stock, label: Commercial paper (コマーシャル・ペーパー),
+     tags: [CommercialPapersLiabilities]}                         # not yet seen
+  current_portion_ltd:
+    {statement: bs, kind: stock, label: Current portion of long-term loans (1年内返済予定の長期借入金),
+     tags: [CurrentPortionOfLongTermLoansPayable]}
+  current_bonds:
+    {statement: bs, kind: stock, label: Current portion of bonds (1年内償還予定の社債),
+     tags: [CurrentPortionOfBonds]}
+  long_term_debt:
+    {statement: bs, kind: stock, label: Long-term loans (長期借入金), tags: [LongTermLoansPayable]}
+  bonds:
+    {statement: bs, kind: stock, label: Bonds (社債), tags: [BondsPayable]}
+  noncurrent_liabilities:
+    {statement: bs, kind: stock, label: Total non-current liabilities (固定負債),
+     tags: [NoncurrentLiabilities]}
+  total_liabilities:
+    {statement: bs, kind: stock, label: Total liabilities (負債合計), tags: [Liabilities]}
+  nci:
+    {statement: bs, kind: stock, label: Non-controlling interests (非支配株主持分),
+     tags: [NonControllingInterests]}
+  total_equity:
+    # 純資産 = shareholders' equity + valuation adjustments + share options (新株予約権)
+    # + non-controlling interests. J-GAAP has no single "equity to owners" total.
+    {statement: bs, kind: stock, label: Net assets (純資産合計), tags: [NetAssets]}
+  liabilities_and_equity:
+    {statement: bs, kind: stock, label: Total liabilities and net assets (負債純資産合計),
+     tags: [LiabilitiesAndNetAssets]}
+  retained_earnings:
+    {statement: bs, kind: stock, label: Retained earnings (利益剰余金), tags: [RetainedEarnings]}
+
+  # Cash flow (キャッシュ・フロー計算書) ---------------------------------------------
+  cfo:
+    {statement: cf, kind: flow, label: Cash from operations (営業活動によるキャッシュ・フロー),
+     tags: [NetCashProvidedByUsedInOperatingActivities]}
+  capex:
+    {statement: cf, kind: flow, label: Capital expenditure (有形固定資産の取得による支出), sign: -1,
+     tags: [PurchaseOfPropertyPlantAndEquipmentInvCF,
+            PurchaseOfPropertyPlantAndEquipmentAndIntangibleAssetsInvCF]}
+  cfi:
+    {statement: cf, kind: flow, label: Cash from investing (投資活動によるキャッシュ・フロー),
+     tags: [NetCashProvidedByUsedInInvestmentActivities, NetCashProvidedByUsedInInvestingActivities]}
+  dividends_paid:
+    {statement: cf, kind: flow, label: Dividends paid (配当金の支払額), sign: -1,
+     tags: [CashDividendsPaidFinCF]}
+  buybacks:
+    {statement: cf, kind: flow, label: Share buybacks (自己株式の取得による支出), sign: -1,
+     tags: [PurchaseOfTreasuryStockFinCF]}
+  cff:
+    {statement: cf, kind: flow, label: Cash from financing (財務活動によるキャッシュ・フロー),
+     tags: [NetCashProvidedByUsedInFinancingActivities]}
+  fx_effect:
+    {statement: cf, kind: flow, label: Exchange-rate effect on cash (現金及び現金同等物に係る換算差額),
+     tags: [EffectOfExchangeRateChangeOnCashAndCashEquivalents]}
+  net_change_cash:
+    {statement: cf, kind: flow, label: Net change in cash (現金及び現金同等物の増減額),
+     tags: [NetIncreaseDecreaseInCashAndCashEquivalents]}
+  other_cash_change:
+    # Changes below the net-change line, e.g. from a change in the scope of consolidation.
+    {statement: cf, kind: flow, label: Other changes in cash (連結範囲の変動等),
+     tags: [IncreaseDecreaseInCashAndCashEquivalentsResultingFromChangeOfScopeOfConsolidationCCE]}  # not yet seen
+  end_cash_cf:
+    {statement: cf, kind: stock, label: Closing cash (現金及び現金同等物の期末残高, cash flow statement),
+     tags: [CashAndCashEquivalents]}
+
+# Not chart lines; used by the tie-out only. 剰余金の配当 in the statement of changes
+# in net assets is filed as a negative number.
+dividends_declared_tags: [DividendsFromSurplus]
+dividends_declared_sign: -1
+# The statement each tie-out reads from one report: per year, the newest report
+# showing that year (see filings_map.load_edinet).
+anchors: {pl: net_income, bs: total_assets, cf: cfo}
+
+# Banks, insurers and securities firms do not fit this chart. The `route` list
+# sends each to its own map (filings_map.jp_route): the DEI industry code decides,
+# compared ignoring case (EDINET writes both "bnk" and "BNK"); with no financial
+# code, the element suffix does, when at least `min_suffix_elements` statement
+# elements carry it and the route's safeguard holds. Seen on live filings: bnk
+# (MUFG, Shizuoka FG), BNK (SBI Shinsei), ins (Dai-ichi Life), INS (Tokio Marine),
+# SEC (Daiwa). bk1, bk2, in1, in2 are taxonomy identifiers, kept in case a filing
+# uses them. A company the rule catches but no route takes stays refused.
+unsupported:
+  enabled: true
+  message: >-
+    not supported yet: this looks like a bank, insurer or securities firm. Their
+    statements have no current/non-current split and no cost of sales, so
+    Tie-Out's standard chart does not fit them.
+  industry_codes: [bnk, bk1, bk2, ins, in1, in2, sec]
+  require_absent: [CurrentAssets]
+  any_suffix: [BNK, INS, SEC]
+  min_suffix_elements: 3
+  route:
+    - {sector: bank, label: bank, map: jgaap_bank.yaml, industry_codes: [bnk, bk1, bk2],
+       suffix: BNK, require_absent: [CurrentAssets]}
+    - sector: insurer
+      label: insurer
+      industry_codes: [ins, in1, in2]
+      suffix: INS
+      require_absent: [CurrentAssets]
+      by_element:
+        - {format: life, map: jgaap_insurer_life.yaml, any_present: [InsurancePremiumsAndOtherOIINS]}
+        - {format: non-life, map: jgaap_insurer_nonlife.yaml, any_present: [NetPremiumsWrittenOIINS]}
+    # A securities firm has current assets, so its safeguard is its own P&L
+    # format instead. CASEC / CLSEC / ORSEC elements all end in SEC.
+    # Refused, not mapped, until a broker-dealer template exists. maps/jgaap_securities.yaml stays in the repo for that template.
+    - sector: bank
+      label: securities firm
+      industry_codes: [sec]
+      suffix: SEC
+      any_present: [NetOperatingRevenueSEC, OperatingRevenueSEC]
+      refuse: >-
+        not supported yet: this is a securities firm ({detail}). Tie-Out has no
+        broker-dealer template yet; the bank template's drivers do not fit it.

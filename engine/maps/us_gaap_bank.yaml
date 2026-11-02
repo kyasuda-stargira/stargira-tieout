@@ -1,0 +1,273 @@
+# US-GAAP tag map for banks: SEC companyfacts tags -> Tie-Out's standard chart
+# for financial companies (bank chart). Broker-dealer holding companies (Goldman
+# Sachs) use this map too: they file as bank holding companies.
+#
+# Same format and rules as us_gaap.yaml: tags in priority order, first tag with a
+# 10-K value wins, `parts` sums the tagged parts when no total tag is filed.
+# New here: `derive` computes a line from other chart lines (tag reads
+# "derived: ..."), and `footings` are arithmetic checks on the P&L.
+# Every tag below was checked against values in JPM, USB or GS filings.
+#
+# THE BANK CHART (one line per key; the J-GAAP and IFRS bank maps fill the same keys)
+# P&L
+#   interest_income       gross interest (and dividend) income
+#   interest_expense      gross interest expense
+#   net_interest_income   interest income less interest expense, as filed
+#   noninterest_income    all revenue other than net interest income (fees,
+#                         trading, other), net of any fee expense the filing nets
+#   total_revenue         net revenue = net_interest_income + noninterest_income
+#                         (derived; a bank's revenue is net of interest expense)
+#   revenue_tagged        the company's own revenue tag, for reference only; it can
+#                         be on another basis (USB's is taxable-equivalent). Not used
+#   provision             provision for credit losses (a release is negative)
+#   opex                  noninterest (operating) expenses
+#   gain_on_disposal      gain (loss) on disposal of operations, outside net revenue
+#                         and expenses (left out when not filed)
+#   pretax_income         profit before tax
+#   tax                   income tax
+#   net_income_incl_nci   net income including non-controlling interests
+#   net_income_nci        net income to non-controlling interests
+#   net_income            net income to the parent's shareholders
+# Balance sheet
+#   cash                  cash and due from banks + interest-bearing deposits with
+#                         banks (the cash-flow statement's cash)
+#   reverse_repos         fed funds sold and securities bought under resale agreements
+#   trading_assets        trading assets (as one line where tagged)
+#   securities            investment securities: available-for-sale + held-to-maturity
+#   loans                 loans net of the allowance (the balance-sheet line)
+#   loan_allowance        allowance for loan losses (positive number)
+#   total_assets          total assets
+#   deposits              deposits
+#   repo_borrowings       fed funds bought and securities sold under repurchase agreements
+#   short_term_borrowings short-term borrowings
+#   long_term_debt        long-term debt (incl. current portion where filed so)
+#   total_liabilities     total liabilities
+#   temporary_equity      mezzanine equity (rare for banks)
+#   equity_parent         shareholders' equity (incl. preferred stock)
+#   nci                   non-controlling interests
+#   total_equity          total equity incl. non-controlling interests
+#   liabilities_and_equity total liabilities and equity
+#   retained_earnings     retained earnings
+# Cash flow: the corporate keys (cfo, capex, cfi, dividends_paid, buybacks, cff,
+#   fx_effect, net_change_cash, end_cash_cf).
+# Not a history line: other_assets. Lines a bank files only under its own tags
+# (JPM's trading assets and long-term debt) are missing from companyfacts, so the
+# template derives "other assets" and "other liabilities" as the total less the
+# mapped lines, and labels them so.
+
+meta:
+  standard: us-gaap
+  sector: bank
+  unit: USD
+  forms: ["10-K", "10-K/A"]
+  flow_days: [350, 380]
+  max_years: 10
+  min_years: 3
+
+lines:
+  # Profit and loss ------------------------------------------------------------
+  interest_income:
+    {statement: pl, kind: flow, label: Interest income,
+     tags: [InterestIncomeOperating, InterestAndDividendIncomeOperating]}
+  interest_expense:
+    # JPM and USB switched from InterestExpense to InterestExpenseOperating in
+    # their FY2022 10-Ks; the old tag keeps the earlier years.
+    {statement: pl, kind: flow, label: Interest expense,
+     tags: [InterestExpenseOperating, InterestExpense]}
+  net_interest_income:
+    {statement: pl, kind: flow, label: Net interest income, tags: [InterestIncomeExpenseNet]}
+  noninterest_income:
+    {statement: pl, kind: flow, label: Noninterest income, tags: [NoninterestIncome]}
+  total_revenue:
+    {statement: pl, kind: flow, label: Total net revenue, tags: [],
+     derive: {plus: [net_interest_income, noninterest_income]}}
+  revenue_tagged:
+    {statement: pl, kind: flow, label: Revenue as the company tags it (reference only),
+     tags: [RevenuesNetOfInterestExpense, Revenues]}
+  provision:
+    # Since CECL (2020) Citi, PNC and BAC file their total provision under their own
+    # tags only, which companyfacts does not carry; the standard parts are tagged.
+    # The parts were checked against each 10-K's printed total:
+    # loans + unfunded commitments ties BAC FY2020-FY2025; Citi's total
+    # ("provisions for credit losses and for benefits and claims") also takes HTM
+    # securities and policyholder benefits. Citi's AFS credit-loss line sits inside
+    # its revenues, so no AFS tag is a part. `parts_must_foot`: a parts sum is kept
+    # only in a year where the pre-tax footing then ties (PNC and Citi file another
+    # part under their own tags in some years); otherwise the year shows no provision
+    # and its flag says what the parts added to.
+    {statement: pl, kind: flow, label: Provision for credit losses,
+     tags: [ProvisionForLoanLeaseAndOtherLosses, ProvisionForLoanAndLeaseLosses],
+     parts: [[FinancingReceivableExcludingAccruedInterestCreditLossExpenseReversal,
+              ProvisionForLoanLossesExpensed],
+             [OffBalanceSheetCreditLossLiabilityCreditLossExpenseReversal],
+             [DebtSecuritiesHeldToMaturityExcludingAccruedInterestCreditLossExpenseReversal,
+              DebtSecuritiesHeldToMaturityCreditLossExpenseReversal],
+             [PolicyholderBenefitsAndClaimsIncurredNet]],
+     parts_must_foot: true}
+  opex:
+    {statement: pl, kind: flow, label: Noninterest expense, tags: [NoninterestExpense]}
+  gain_on_disposal:
+    # Same tag as the insurer map (confirmed on Allstate's FY2025 statement of
+    # operations); a gain outside net revenue and expenses breaks the pre-tax footing.
+    {statement: pl, kind: flow, label: Gain (loss) on disposal of operations,
+     omit_if_empty: true, tags: [DisposalGroupNotDiscontinuedOperationGainLossOnDisposal]}
+  pretax_income:
+    {statement: pl, kind: flow, label: Income before tax,
+     tags: [IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest,
+            IncomeLossFromContinuingOperationsBeforeIncomeTaxesMinorityInterestAndIncomeLossFromEquityMethodInvestments]}
+  tax:
+    {statement: pl, kind: flow, label: Income tax, tags: [IncomeTaxExpenseBenefit]}
+  net_income_incl_nci:
+    {statement: pl, kind: flow, label: Net income incl. non-controlling interests,
+     tags: [ProfitLoss]}
+  net_income_nci:
+    {statement: pl, kind: flow, label: Net income to non-controlling interests,
+     tags: [NetIncomeLossAttributableToNoncontrollingInterest]}
+  net_income:
+    {statement: pl, kind: flow, label: Net income to shareholders,
+     tags: [NetIncomeLoss, NetIncomeLossAvailableToCommonStockholdersBasic]}
+
+  # Balance sheet ----------------------------------------------------------------
+  cash:
+    # JPM and USB file no CashAndCashEquivalentsAtCarryingValue: their cash is
+    # cash and due from banks + deposits with banks (USB files the first only).
+    {statement: bs, kind: stock, label: Cash and deposits with banks,
+     tags: [CashAndCashEquivalentsAtCarryingValue],
+     parts: [[CashAndDueFromBanks], [InterestBearingDepositsInBanks]]}
+  reverse_repos:
+    {statement: bs, kind: stock, label: Fed funds sold and reverse repos,
+     tags: [FederalFundsSoldAndSecuritiesPurchasedUnderAgreementsToResell,
+            SecuritiesPurchasedUnderAgreementsToResell]}
+  trading_assets:
+    {statement: bs, kind: stock, label: Trading assets, tags: [TradingSecurities]}
+  securities:
+    {statement: bs, kind: stock, label: Investment securities (AFS + HTM), tags: [],
+     parts: [[DebtSecuritiesAvailableForSaleExcludingAccruedInterest,
+              AvailableForSaleSecuritiesDebtSecurities],
+             [DebtSecuritiesHeldToMaturityExcludingAccruedInterestAfterAllowanceForCreditLoss,
+              DebtSecuritiesHeldToMaturityAmortizedCostAfterAllowanceForCreditLoss,
+              HeldToMaturitySecurities]]}
+  loans:
+    # The balance-sheet line "loans, net of allowance". JPM's
+    # FinancingReceivableExcludingAccruedInterestBeforeAllowanceForCreditLoss
+    # (1,408,905 in FY2025) leaves out loans at fair value, so it is not used.
+    {statement: bs, kind: stock, label: Loans net of allowance,
+     tags: [LoansAndLeasesReceivableNetReportedAmount,
+            FinancingReceivableExcludingAccruedInterestAfterAllowanceForCreditLoss,
+            NotesReceivableNet]}
+  loan_allowance:
+    {statement: bs, kind: stock, label: Allowance for loan losses,
+     tags: [FinancingReceivableAllowanceForCreditLossExcludingAccruedInterest,
+            LoansAndLeasesReceivableAllowance, FinancingReceivableAllowanceForCreditLosses]}
+  total_assets:
+    {statement: bs, kind: stock, label: Total assets, tags: [Assets]}
+  deposits:
+    {statement: bs, kind: stock, label: Deposits, tags: [Deposits]}
+  repo_borrowings:
+    {statement: bs, kind: stock, label: Fed funds bought and repos,
+     tags: [FederalFundsPurchasedAndSecuritiesSoldUnderAgreementsToRepurchase,
+            SecuritiesSoldUnderAgreementsToRepurchase]}
+  short_term_borrowings:
+    {statement: bs, kind: stock, label: Short-term borrowings, tags: [ShortTermBorrowings]}
+  long_term_debt:
+    {statement: bs, kind: stock, label: Long-term debt,
+     tags: [LongTermDebt, UnsecuredLongTermDebt]}
+  total_liabilities:
+    {statement: bs, kind: stock, label: Total liabilities, tags: [Liabilities]}
+  temporary_equity:
+    {statement: bs, kind: stock, label: Temporary (mezzanine) equity,
+     tags: [RedeemableNoncontrollingInterestEquityCarryingAmount]}
+  equity_parent:
+    {statement: bs, kind: stock, label: Shareholders' equity, tags: [StockholdersEquity]}
+  nci:
+    {statement: bs, kind: stock, label: Non-controlling interests, tags: [MinorityInterest]}
+  total_equity:
+    {statement: bs, kind: stock, label: Total equity incl. non-controlling interests,
+     tags: [StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest]}
+  liabilities_and_equity:
+    {statement: bs, kind: stock, label: Total liabilities and equity,
+     tags: [LiabilitiesAndStockholdersEquity]}
+  retained_earnings:
+    {statement: bs, kind: stock, label: Retained earnings, tags: [RetainedEarningsAccumulatedDeficit]}
+
+  # Cash flow (same as us_gaap.yaml) -------------------------------------------------
+  cfo:
+    {statement: cf, kind: flow, label: Cash from operations,
+     tags: [NetCashProvidedByUsedInOperatingActivities,
+            NetCashProvidedByUsedInOperatingActivitiesContinuingOperations]}
+  capex:
+    {statement: cf, kind: flow, label: Capital expenditure,
+     tags: [PaymentsToAcquirePropertyPlantAndEquipment, PaymentsToAcquireProductiveAssets]}
+  cfi:
+    {statement: cf, kind: flow, label: Cash from investing,
+     tags: [NetCashProvidedByUsedInInvestingActivities,
+            NetCashProvidedByUsedInInvestingActivitiesContinuingOperations]}
+  dividends_paid:
+    {statement: cf, kind: flow, label: Dividends paid,
+     tags: [PaymentsOfDividends, PaymentsOfDividendsCommonStock]}
+  buybacks:
+    {statement: cf, kind: flow, label: Share buybacks, tags: [PaymentsForRepurchaseOfCommonStock]}
+  cff:
+    {statement: cf, kind: flow, label: Cash from financing,
+     tags: [NetCashProvidedByUsedInFinancingActivities,
+            NetCashProvidedByUsedInFinancingActivitiesContinuingOperations]}
+  fx_effect:
+    {statement: cf, kind: flow, label: Exchange-rate effect on cash,
+     tags: [EffectOfExchangeRateOnCashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents,
+            EffectOfExchangeRateOnCashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsIncludingDisposalGroupAndDiscontinuedOperations,
+            EffectOfExchangeRateOnCashAndCashEquivalents,
+            EffectOfExchangeRateOnCashAndCashEquivalentsContinuingOperations]}
+  net_change_cash:
+    {statement: cf, kind: flow, label: Net change in cash,
+     tags: [CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffect,
+            CashAndCashEquivalentsPeriodIncreaseDecrease, CashPeriodIncreaseDecrease]}
+  net_change_cash_before_fx:
+    {statement: cf, kind: flow, label: Net change in cash before exchange-rate effects,
+     tags: [CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseExcludingExchangeRateEffect]}
+  end_cash_cf:
+    # USB's 10-Ks before FY2019 close the cash flow on cash and due from banks.
+    {statement: cf, kind: stock, label: Closing cash (cash flow statement),
+     tags: [CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents,
+            CashAndCashEquivalentsAtCarryingValue, CashAndDueFromBanks]}
+
+# P&L arithmetic checks. `fail: true` makes a miss flag the year (check "pl");
+# the others are reported in the notes only. Missing optional terms count as 0.
+footings:
+  # `inside_if_ties`: a line some filers already count inside another term. Citi's
+  # gain on disposal sits inside its "total revenues, net of interest expense" (its
+  # FY2016 10-K prints no gain line, and 69,875 - 6,982 - 41,416 = 21,477 pre-tax).
+  # The line is added on top when that ties, left out when only that ties, and
+  # the test name says which.
+  - {name: "pre-tax income = net revenue - provision - noninterest expense",
+     result: pretax_income, plus: [total_revenue, gain_on_disposal], minus: [provision, opex],
+     optional: [gain_on_disposal], fail: true,
+     name_extra: {gain_on_disposal: " + gain on disposal of operations"},
+     inside_if_ties: {gain_on_disposal: "gain on disposal of operations, already inside net revenue in this filing"}}
+  - {name: "net interest income = interest income - interest expense",
+     result: net_interest_income, plus: [interest_income], minus: [interest_expense]}
+  - {name: "net revenue = the company's own revenue tag",
+     result: revenue_tagged, plus: [total_revenue]}
+  # Where neither net income incl. NCI nor an NCI share is tagged, net income
+  # to shareholders is the whole of it. Discontinued operations break this
+  # footing, so it is reported, not failed.
+  - {name: "pre-tax income - tax = net income incl. NCI (or net income where no NCI is tagged)",
+     result: [net_income_incl_nci, net_income], fallback_unless: [net_income_nci],
+     plus: [pretax_income], minus: [tax]}
+
+dividends_declared_tags: [DividendsCommonStockCash, DividendsCommonStock, DividendsCash, Dividends]
+restricted_cash:
+  total: [RestrictedCash, RestrictedCashAndCashEquivalents]
+  parts:
+    - [RestrictedCashAndCashEquivalentsAtCarryingValue]
+    - [RestrictedCashAndCashEquivalentsNoncurrent]
+# The balance sheet's source filing is the latest 10-K that tags the
+# liabilities-and-equity total, a tag used only on the balance sheet's face.
+# Assets also turns up in later 10-Ks' notes for older years (JPM's FY2021 10-K
+# carries a FY2019 Assets figure of 2,686,477 against 2,687,379 on the balance
+# sheet), so anchoring on it can mix two filings in one balance sheet.
+anchors: {pl: net_income, bs: liabilities_and_equity, cf: cfo}
+# Cash held in a disposal group (held for sale) sits outside balance-sheet cash
+# but inside the cash flow statement's opening or closing cash. The roll-forward
+# uses these tags only when they make the year tie, and says so.
+disposal_group_cash: [DisposalGroupIncludingDiscontinuedOperationCashAndCashEquivalents,
+                      DisposalGroupIncludingDiscontinuedOperationCash]

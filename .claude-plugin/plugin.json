@@ -1,8 +1,8 @@
 {
   "name": "stargira-tieout",
   "displayName": "Stargira Tie-Out: Three-Statement Model Builder",
-  "version": "1.0.1",
-  "description": "Builds a three-statement financial model (P&L, balance sheet, cash flow) in Excel for a SaaS business, a power project, or a business that earns on a balance it holds with a capital requirement. Every input sits on one Assumptions sheet, every other cell is a formula, and a checker confirms the statements tie out in every period.",
+  "version": "1.1.0",
+  "description": "Builds a three-statement financial model (P&L, balance sheet, cash flow) in Excel: a SaaS business, a power project, a business that earns on a balance it holds, or a listed company, bank or insurer built from its own SEC (US) or EDINET (Japan) filings. Every workbook opens on a Start_Here guide, every input sits on one Assumptions sheet, every other cell is a formula, and a checker confirms the statements tie out in every period.",
   "author": {
     "name": "Stargira Advisors Ltd",
     "url": "https://stargira.com"
@@ -21,7 +21,10 @@
     "saas",
     "project-finance",
     "power",
-    "lending"
+    "lending",
+    "sec-filings",
+    "edinet",
+    "valuation"
   ],
   "skills": [
     "./skill/"

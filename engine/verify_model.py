@@ -3,6 +3,10 @@
 Automated checks on a workbook written by build_model.py.
 
 Usage:  verify_model.py <schema.yaml> <workbook.xlsx> [--evaluator auto|formulas|builtin]
+                        [--show SHEET ...]
+
+--show prints the named sheet's evaluated values after the checks (for example
+the Valuation sheet), so headline figures can be read without opening Excel.
 
 Four checks; exit code 0 only if all pass:
 
@@ -31,13 +35,13 @@ import re
 import sys
 from pathlib import Path
 
-import yaml
 from openpyxl import load_workbook
 from openpyxl.formula.tokenizer import Token, Tokenizer
 from openpyxl.utils import column_index_from_string, get_column_letter
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from build_model import schema_assumptions  # noqa: E402
+from schemas import load_schema  # noqa: E402
 
 INPUT_SHEETS = {"Assumptions", "_Manifest", "READ_ME"}
 STRUCTURAL_SHEETS = {"Timeline"}
@@ -58,6 +62,22 @@ STRUCTURAL_CONSTANTS = {
 CHECK_HEADER = re.compile(r"^\s*(BS Check|CF Check)", re.I)
 CHECK_ROW_LABEL = re.compile(r"^\s*CHECK:", re.I)
 TOL = 1e-9
+# Floating-point noise grows with the size of the numbers: a model in millions of
+# yen holds figures ~150x those of one in millions of dollars. The tolerance is
+# therefore TOL or REL_TOL x the largest typed-in number, whichever is larger
+# (for every base model and US company this is TOL itself).
+REL_TOL = 1e-15
+
+
+def check_tolerance(wb):
+    """TOL, or REL_TOL times the largest absolute constant typed into the workbook."""
+    big = 0.0
+    for ws in wb.worksheets:
+        for row in ws.iter_rows():
+            for c in row:
+                if isinstance(c.value, (int, float)) and not isinstance(c.value, bool):
+                    big = max(big, abs(c.value))
+    return max(TOL, REL_TOL * big)
 
 
 # ---------------------------------------------------------------------------
@@ -248,9 +268,11 @@ def main():
     ap.add_argument("workbook")
     ap.add_argument("--evaluator", default="auto",
                     choices=["auto", "formulas", "builtin"])
+    ap.add_argument("--show", action="append", default=[], metavar="SHEET",
+                    help="also print this sheet's evaluated values (repeatable)")
     args = ap.parse_args()
 
-    schema = yaml.safe_load(Path(args.schema).read_text())
+    schema = load_schema(args.schema)
     wb = load_workbook(args.workbook)
     ok = True
 
@@ -292,19 +314,51 @@ def main():
     else:
         cells = [c for v in lines.values() for c in v]
         engine, vals = evaluate(args.workbook, cells, args.evaluator)
+        tol = check_tolerance(wb)
         print(f"   Evaluator: {engine}")
+        print(f"   Tolerance: {tol:.2e}" + ("" if tol == TOL else
+              f" (relative: {REL_TOL:.0e} x the largest typed-in number)"))
         for label, cs in lines.items():
             nums = [vals[c] for c in cs]
             non_num = [f"{c[1]}={v}" for c, v in zip(cs, nums)
                        if not isinstance(v, (int, float))]
             worst = max((abs(v) for v in nums if isinstance(v, (int, float))), default=0.0)
-            line_ok = not non_num and worst <= TOL
+            line_ok = not non_num and worst <= tol
             ok &= line_ok
             print(f"   {'PASS' if line_ok else 'FAIL'}  {label:<44} periods={len(cs):>3}  "
                   f"max |value|={worst:.2e}" + (f"  errors: {non_num[:5]}" if non_num else ""))
 
+    for name in args.show:
+        show_sheet(wb, args.workbook, name, args.evaluator)
+
     print(f"\nRESULT: {'PASS' if ok else 'FAIL'}")
     sys.exit(0 if ok else 1)
+
+
+def show_sheet(wb, path, name, choice):
+    """Print every non-empty row of one sheet, formulas replaced by their values."""
+    if name not in wb.sheetnames:
+        print(f"\n--show {name}: no such sheet (sheets: {', '.join(wb.sheetnames)})")
+        return
+    ws = wb[name]
+    cells = [(name, c.coordinate) for row in ws.iter_rows() for c in row
+             if isinstance(c.value, str) and c.value.startswith("=")]
+    engine, vals = evaluate(path, cells, choice) if cells else ("none", {})
+    print(f"\nSheet {name} (evaluator: {engine})")
+    for row in ws.iter_rows():
+        out = []
+        for c in row:
+            v = vals.get((name, c.coordinate), c.value)
+            if hasattr(v, "value"):          # formulas returns arrays
+                try:
+                    v = v.value.ravel()[0]
+                except Exception:
+                    pass
+            if isinstance(v, (int, float)) and not isinstance(v, bool):
+                v = f"{v:,.4f}"
+            out.append("" if v is None else str(v))
+        if any(out):
+            print("   " + " | ".join(out))
 
 
 if __name__ == "__main__":

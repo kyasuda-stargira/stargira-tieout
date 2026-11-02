@@ -19,3 +19,6 @@ env/
 # Held back from the public repo (engagement work and service-only verticals)
 projects/
 engine/build_structured_credit.py
+
+# Filings runs (raw SEC data and rebuilt history): local only
+output/filings/

@@ -1,0 +1,108 @@
+# Listed corporate — vertical schema template, v1.0
+#
+# Archetype: listed (a forward model seeded from a company's own filed history).
+# Annual periods: the last `history.years` actual years, then g_forecast_years
+# forecast years. Same grammar as balance.yaml, plus a `history` block that
+# build_model.py flattens into one input per (actual year, field).
+#
+# The defaults below are a placeholder company. A real case comes from
+# engine/history_to_answers.py, which writes an answers file whose values are
+# derived from the company's filed history (each derivation is commented there).
+#
+# Build:  python engine/history_to_answers.py output/filings/AAPL_history.json
+#         python engine/build_model.py verticals/listed_corporate.yaml \
+#                output/filings/aapl_filings.yaml output/filings/aapl_model.xlsx
+#
+# Currency-neutral: amounts are in millions of the reporting currency
+# (g_reporting_ccy); nothing in the logic names a currency or a taxonomy.
+
+meta:
+  schema_version: "1.0"
+  vertical: listed_corporate
+  archetypes: [listed]
+  modules: [history_actuals, revenue_growth, margins, capex_depreciation,
+            working_capital_days, dividends_buybacks, valuation_dcf]
+  note_keys: [data_notes]     # free-text lines for the Data notes sheet (not inputs)
+
+assumptions:
+
+  # ── 1. Entity ───────────────────────────────────────────────────────────────
+  - { id: g_entity_name,        label: "Company name",                          section: "1. Entity",   unit: text,     default: "Example Listed Co" }
+  - { id: g_ticker,             label: "Ticker or securities code",            section: "1. Entity",   unit: text,     default: "EXMP" }
+  - { id: g_reporting_ccy,      label: "Reporting currency",                    section: "1. Entity",   unit: text,     default: "USD" }      # from the filing's unit; amounts are in millions of it
+  - { id: g_data_source,        label: "Source of the actuals",                 section: "1. Entity",   unit: text,     default: "placeholder (no filing loaded)" }   # history_to_answers.py copies the filing source and credit here
+  - { id: g_tax_rate,           label: "Tax rate on pre-tax profit",            section: "1. Entity",   unit: percent,  default: 0.21 }       # placeholder: US federal statutory rate; history_to_answers.py replaces it with the 3-year effective rate
+  - { id: g_days_in_year,       label: "Days in a year (working-capital days)", section: "1. Entity",   unit: integer,  default: 365 }        # day-count convention for receivable/inventory/payable days
+
+  # ── 2. Timeline ─────────────────────────────────────────────────────────────
+  - { id: g_forecast_years,     label: "Forecast years after the last actual (5-10)", section: "2. Timeline", unit: integer, default: 5 }
+
+  # ── 3. Operating drivers (forecast years) ──────────────────────────────────
+  - { id: rev_growth,           label: "Revenue growth per year",               section: "3. Operations", unit: percent, default: 0.05 }    # placeholder; from history: 3-year revenue CAGR
+  - { id: gross_margin,         label: "Gross margin (revenue less cost of revenue)", section: "3. Operations", unit: percent, default: 0.40 }  # placeholder; from history: 1 - sum(cost of revenue)/sum(revenue), last 3 years
+  - { id: ebit_margin,          label: "Operating (EBIT) margin",               section: "3. Operations", unit: percent, default: 0.15 }    # placeholder; from history: sum(EBIT)/sum(revenue), last 3 years
+  - { id: da_pct_rev,           label: "Depreciation and amortisation (% of revenue)", section: "3. Operations", unit: percent, default: 0.04 }  # placeholder; from history: sum(D&A)/sum(revenue), last 3 years
+  - { id: capex_pct_rev,        label: "Capital expenditure (% of revenue)",    section: "3. Operations", unit: percent, default: 0.05 }    # placeholder; from history: sum(capex)/sum(revenue), last 3 years
+  - { id: wc_receivable_days,   label: "Receivable days (on revenue)",          section: "4. Working capital", unit: ratio, default: 45.0 }  # placeholder; from history: last-year receivables / revenue x days in year
+  - { id: wc_inventory_days,    label: "Inventory days (on cost of revenue)",   section: "4. Working capital", unit: ratio, default: 60.0 }  # placeholder; from history: last-year inventory / cost of revenue x days in year
+  - { id: wc_payable_days,      label: "Payable days (on cost of revenue)",     section: "4. Working capital", unit: ratio, default: 45.0 }  # placeholder; from history: last-year payables / cost of revenue x days in year
+
+  # ── 4. Financing and distributions ─────────────────────────────────────────
+  - { id: fin_interest_rate,    label: "Interest rate on opening debt",         section: "5. Financing", unit: percent, default: 0.045 }    # placeholder; from history: sum(interest expense)/sum(opening debt), last 3 years with both tagged
+  - { id: fin_dividend_payout,  label: "Dividend payout (% of net income)",     section: "5. Financing", unit: percent, default: 0.30 }     # placeholder; from history: sum(dividends paid)/sum(net income), last 3 years
+  - { id: fin_buyback_pct_ni,   label: "Share buybacks (% of net income)",      section: "5. Financing", unit: percent, default: 0.00 }     # placeholder; from history: sum(buybacks)/sum(net income), last 3 years
+  # Cash floor and revolver. Distributions are a share of net income, so they can
+  # exceed the cash the business makes (Apple's buybacks plus dividends run above its
+  # net income). A revolving credit facility (revolver) then draws to keep cash at the
+  # floor, and repays from any cash above the floor. The floor is a stated share of the
+  # cash at the last actual year end, not a figure derived from the filing: a filing
+  # does not state how much cash a company needs to run, and a share of its own cash
+  # scales to any company size and currency. 50% is a placeholder; set your own.
+  # Revolver interest is charged on the opening balance, so nothing is circular.
+  - { id: fin_min_cash_pct,     label: "Minimum cash (% of cash at the last actual year end)", section: "5. Financing", unit: percent, default: 0.50 }   # placeholder, not derived from the filing
+  - { id: fin_revolver_rate,    label: "Revolver interest rate (on the opening balance)", section: "5. Financing", unit: percent, default: 0.06 }   # placeholder, not derived from the filing; the facility has no limit in this model
+
+  # ── 5. Valuation (the user types the price; the tool never fetches one) ────
+  - { id: val_share_price,      label: "Share price (typed by the user; 0 = not entered)", section: "6. Valuation", unit: ratio, default: 0.0 }   # source: user. Look it up on the exchange's own quote page (see the Valuation sheet)
+  - { id: val_price_date,       label: "Date of that share price",              section: "6. Valuation", unit: date,    default: "2026-01-01" }   # placeholder; the user sets it with the price
+  - { id: val_price_source,     label: "Price source label",                    section: "6. Valuation", unit: text,    default: "user" }         # always "user": the tool never fetches a price
+  - { id: val_shares_diluted,   label: "Shares (millions; default: basic count in the latest annual filing)", section: "6. Valuation", unit: millions, default: 100.0 }     # placeholder; from the filing's count (US: cover page, dei:EntityCommonStockSharesOutstanding; Japan: issued less treasury shares); the user may replace it with a diluted count
+  - { id: val_shares_source,    label: "Share count source label",              section: "6. Valuation", unit: text,    default: "filing" }       # "filing" (the filed count) or "user" (typed with --shares-millions)
+  - { id: val_wacc,             label: "Discount rate (WACC)",                  section: "6. Valuation", unit: percent, default: 0.08 }      # placeholder, not derived from the filing; set to the company's cost of capital
+  - { id: val_terminal_growth,  label: "Terminal growth after the last forecast year", section: "6. Valuation", unit: percent, default: 0.025 }  # placeholder, not derived from the filing; must be below WACC
+
+# ── History block: one input per (actual year, field) ─────────────────────────
+# Amounts in millions of the reporting currency, signs as reported (outflows such
+# as capex, dividends and buybacks are positive numbers; cash from investing and
+# financing keep their reported sign). The default is the placeholder company.
+history:
+  years: 3                    # actual years shown; every company the filings map accepts has at least 3
+  fields:
+    - { id: fy,                label: "Fiscal year",                         unit: integer,  default: 2025 }
+    - { id: end,               label: "Fiscal year end",                     unit: date,     default: "2025-12-31" }
+    - { id: form,              label: "Filing type",                         unit: text,     default: "placeholder" }   # e.g. 10-K, or 有価証券報告書 for a Japanese filer
+    - { id: accn,              label: "Filing ID (accession / document ID)", unit: text,     default: "n/a" }
+    - { id: status,            label: "History tie-out status",              unit: text,     default: "not checked" }   # from the filings map: tied or flagged
+    - { id: revenue,           label: "Revenue",                             unit: millions, default: 1000.0 }
+    - { id: cogs,              label: "Cost of revenue",                     unit: millions, default: 600.0 }
+    - { id: da,                label: "Depreciation and amortisation",       unit: millions, default: 40.0 }
+    - { id: ebit,              label: "Operating income (EBIT)",             unit: millions, default: 150.0 }
+    - { id: interest,          label: "Interest expense",                    unit: millions, default: 9.0 }
+    - { id: pretax,            label: "Income before tax",                   unit: millions, default: 141.0 }
+    - { id: tax,               label: "Income tax",                          unit: millions, default: 29.6 }
+    - { id: net_income,        label: "Net income to shareholders",          unit: millions, default: 111.4 }
+    - { id: cash,              label: "Cash and short-term investments",     unit: millions, default: 100.0 }
+    - { id: receivables,       label: "Receivables",                         unit: millions, default: 123.3 }
+    - { id: inventory,         label: "Inventory",                           unit: millions, default: 98.6 }
+    - { id: ppe,               label: "Property, plant and equipment (net)", unit: millions, default: 400.0 }
+    - { id: other_assets,      label: "Other assets (total assets less the lines above)", unit: millions, default: 278.1 }
+    - { id: payables,          label: "Accounts payable",                    unit: millions, default: 74.0 }
+    - { id: debt,              label: "Debt (short-term borrowings + current and long-term debt)", unit: millions, default: 200.0 }
+    - { id: other_liabilities, label: "Other liabilities (total liabilities and mezzanine equity less the lines above)", unit: millions, default: 226.0 }
+    - { id: equity,            label: "Total equity incl. non-controlling interests", unit: millions, default: 500.0 }
+    - { id: cfo,               label: "Cash from operations",                unit: millions, default: 150.0 }
+    - { id: capex,             label: "Capital expenditure",                 unit: millions, default: 50.0 }
+    - { id: cfi,               label: "Cash from investing",                 unit: millions, default: -50.0 }
+    - { id: dividends,         label: "Dividends paid",                      unit: millions, default: 33.4 }
+    - { id: buybacks,          label: "Share buybacks",                      unit: millions, default: 0.0 }
+    - { id: cff,               label: "Cash from financing",                 unit: millions, default: -33.4 }

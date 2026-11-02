@@ -170,6 +170,8 @@ def _text(v, fmt):
         return f"{MONTHS[d.month - 1]} {d.year % 100:02d}"
     if f == "yyyy":
         return str(to_date(_num(v)).year)
+    if f == "yyyy-mm-dd":
+        return to_date(_num(v)).isoformat()
     raise NotImplementedError(f"TEXT format {fmt!r}")
 
 
@@ -317,6 +319,12 @@ class Evaluator:
                 return ev(1)
         if name == "CHOOSE":
             return ev(int(_num(ev(0))))
+        if name == "ISNUMBER":
+            try:
+                v = ev(0)
+            except _Propagate:
+                return False
+            return isinstance(v, (int, float)) and not isinstance(v, bool)
         vals = [self.ev(a, sheet) for a in args]
         if name in ("MAX", "MIN", "SUM", "AVERAGE"):
             flat = []
@@ -336,6 +344,8 @@ class Evaluator:
         if name == "COUNT":
             return float(sum(1 for x in _flatten(vals)
                              if isinstance(x, (int, float)) and not isinstance(x, bool)))
+        if name == "RATE":
+            return _rate(*[_num(v) for v in vals])
         if name == "XIRR":
             return _xirr([_num(x) for x in _flatten([vals[0]])],
                          [_num(x) for x in _flatten([vals[1]])])
@@ -365,6 +375,30 @@ class Evaluator:
             rng = vals[0] if isinstance(vals[0], list) else [vals[0]]
             return rng[int(_num(vals[1])) - 1]
         raise NotImplementedError(f"function {name}")
+
+
+def _rate(nper, pmt, pv, fv=0.0, typ=0.0, guess=0.1):
+    """Excel RATE: the rate per period at which the annuity's present value is zero."""
+    if typ:
+        raise NotImplementedError("RATE with type 1")
+
+    def f(r):
+        if abs(r) < 1e-12:
+            return pv + pmt * nper + fv
+        g = (1 + r) ** nper
+        return pv * g + pmt * (g - 1) / r + fv
+
+    r = guess
+    for _ in range(100):
+        h = 1e-7
+        d = (f(r + h) - f(r - h)) / (2 * h)
+        if d == 0:
+            break
+        step = f(r) / d
+        r -= step
+        if abs(step) < 1e-13:
+            return r
+    raise _Propagate(XLError("#NUM!"))
 
 
 def _xirr(values, dates):

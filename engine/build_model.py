@@ -6,7 +6,10 @@ Reads:  <schema.yaml> + <answers.yaml>
 Emits:  [output.xlsx], default output/<answers name>.xlsx
 
 The schema's meta.archetypes picks the revenue logic: subscription ->
-vertical_saas.py, capacity -> vertical_power.py, otherwise the balance model
+vertical_saas.py, capacity -> vertical_power.py, listed -> vertical_listed.py
+(a forecast seeded from a company's filed history), listed_bank ->
+vertical_bank.py (the same for a bank, valued on residual income), listed_insurer ->
+vertical_insurer.py (the same for an insurer), otherwise the balance model
 built in this file (12 sheets, template verticals/balance.yaml).
 
 Balance model: revenue is a yield on a balance the business holds (for example a
@@ -51,6 +54,8 @@ from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
 from openpyxl.workbook.defined_name import DefinedName
 
+from schemas import load_schema
+
 # ---------------------------------------------------------------------------
 # Styling
 # ---------------------------------------------------------------------------
@@ -64,6 +69,7 @@ BORDER = Border(left=THIN, right=THIN, top=THIN, bottom=THIN)
 
 UNIT_FMT = {
     "usd_millions": "#,##0.00",
+    "millions":     "#,##0.00",   # millions of the reporting currency (listed model)
     "integer":      "0",
     "date":         "mmm yyyy",
     "percent":      "0.00%",
@@ -250,10 +256,14 @@ def schema_assumptions(schema: dict) -> list[dict]:
     """Every input the schema defines, one dict per named range.
     verify_model.py audits named ranges against this list.
 
-    Vertical templates may also carry two table blocks, flattened here into
+    Vertical templates may also carry three table blocks, flattened here into
     ordinary inputs so they land on the Assumptions sheet like any other:
       scenarios: one input per (axis, scenario), id scn_<axis>_<scenario id>
       curves:    one input per (curve, point, field), id crv_<curve>_<n>_<field>
+      history:   one input per (actual year, field), id hist_<n>_<field>,
+                 n = 1 (oldest) .. history.years (latest)
+      opening:   one filed input per field of the balance sheet one year before
+                 actual year 1, id hist_open_<field> (banks and insurers)
     """
     items = list(schema["assumptions"])
     for axis in scenario_axes(schema):
@@ -270,7 +280,39 @@ def schema_assumptions(schema: dict) -> list[dict]:
                               "section": "Curves",
                               "unit": "integer" if field == "year" else "ratio",
                               "default": v})
+    hist = schema.get("history") or {}
+    for n in range(1, int(hist.get("years", 0)) + 1):
+        for fld in hist["fields"]:
+            items.append({"id": f"hist_{n}_{fld['id']}",
+                          "label": f"Actual year {n} of {hist['years']}: {fld['label']}",
+                          "section": "History (actuals)", "unit": fld["unit"],
+                          "default": fld["default"]})
+    for fld in (schema.get("opening") or {}).get("fields", []):
+        items.append({"id": f"hist_open_{fld['id']}",
+                      "label": f"{OPENING_LABEL}: {fld['label']}",
+                      "section": "Opening balance (actuals)", "unit": fld["unit"],
+                      "default": fld.get("default")})
     return items
+
+
+# Label of the opening-balance inputs; build_assumptions() names the year when known.
+OPENING_LABEL = "Opening balance (year end before actual year 1)"
+
+
+def history_mismatch(schema: dict, answers: dict) -> str | None:
+    """An answers file whose actual years (hist_<n>_...) do not match the schema's
+    history.years would build placeholder years or drop filed ones; say why, else None.
+    Answers with no hist_ keys (the placeholder models) are not checked."""
+    ns = {int(k.split("_")[1]) for k in answers
+          if k.startswith("hist_") and k.split("_")[1].isdigit()}
+    if not ns:
+        return None
+    want = int((schema.get("history") or {}).get("years", 0))
+    if ns != set(range(1, want + 1)):
+        return (f"the answers file has actual years {sorted(ns)} but the schema "
+                f"({schema['meta'].get('vertical')}) shows {want}; use the schema named in the "
+                f"answers file's 'Build:' line")
+    return None
 
 
 def scenario_rows(schema: dict) -> list[dict]:
@@ -318,7 +360,11 @@ def build_assumptions(wb: Workbook, schema: dict, answers: dict) -> dict[str, st
 
         n += 1
         ws.cell(row=row, column=1, value=n).border = BORDER
-        ws.cell(row=row, column=2, value=a["label"]).border = BORDER
+        label = a["label"]
+        if a["id"].startswith("hist_open_") and answers.get("hist_open_fy") is not None:
+            label = label.replace(OPENING_LABEL,
+                                  f"Opening balance (FY{answers['hist_open_fy']} year end)")
+        ws.cell(row=row, column=2, value=label).border = BORDER
         ws.cell(row=row, column=3, value=a["id"]).border = BORDER
         ws.cell(row=row, column=4, value=a["unit"]).border = BORDER
 
@@ -832,10 +878,15 @@ def main():
 
     schema_path  = Path(sys.argv[1])
     answers_path = Path(sys.argv[2])
-    schema  = yaml.safe_load(schema_path.read_text())
+    schema  = load_schema(schema_path)
     answers = yaml.safe_load(answers_path.read_text()) or {}
+    bad = history_mismatch(schema, answers)
+    if bad:
+        print(f"REFUSED: {bad}", file=sys.stderr)
+        sys.exit(2)
 
     known = {a["id"] for a in schema_assumptions(schema)}
+    known |= set(schema["meta"].get("note_keys", []))   # free-text blocks, not inputs
     unknown = sorted(set(answers) - known)
     if unknown:
         print(f"WARNING: unknown answer keys (ignored): {', '.join(unknown)}",
@@ -856,6 +907,18 @@ def main():
         import vertical_power
         vertical_power.build(wb, schema, values)
         kind = "power"
+    elif "listed_bank" in archetypes:
+        import vertical_bank
+        vertical_bank.build(wb, schema, values, answers.get("data_notes") or [])
+        kind = "bank"
+    elif "listed_insurer" in archetypes:
+        import vertical_insurer
+        vertical_insurer.build(wb, schema, values, answers.get("data_notes") or [])
+        kind = "insurer"
+    elif "listed" in archetypes:
+        import vertical_listed
+        vertical_listed.build(wb, schema, values, answers.get("data_notes") or [])
+        kind = "listed"
     else:
         warn_milestones(values)
         ri = build_timeline(wb, schema, values)
@@ -871,6 +934,11 @@ def main():
         kind = "balance"
     import dashboard
     dashboard.build(wb, kind)
+    import start_here
+    if kind in ("listed", "bank", "insurer"):
+        start_here.build(wb, answers.get("data_notes") or [], kind)
+    else:
+        start_here.build_base(wb, kind)
     build_manifest(wb, schema, answers_path)
 
     if len(sys.argv) == 4:

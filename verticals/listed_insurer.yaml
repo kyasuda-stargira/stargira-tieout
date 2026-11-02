@@ -1,0 +1,139 @@
+# Listed insurer — vertical schema template, v1.0
+#
+# Archetype: listed_insurer (a forward model of a non-life or life insurer, seeded
+# from its own filed history). Same grammar as listed_corporate.yaml and
+# listed_bank.yaml: annual periods, the last `history.years` actual years as
+# inputs (hist_<n>_<field>), then g_forecast_years forecast years.
+#
+# An insurer collects premiums now and pays claims later. So the drivers are
+# premium growth, the share of premiums that goes to claims and benefits (loss
+# ratio), to reserve build (life, and Japan), to expenses (expense ratio) and to
+# policyholder dividends, plus the yield on invested assets. Reserves move with
+# premiums (or roll forward with the reserve change where the filing shows it).
+# The valuation is a residual-income value (book equity plus the present value of
+# profit above the cost of equity), not a free-cash-flow DCF: reserves are the
+# insurer's operating liabilities, not its debt.
+#
+# One template serves non-life and life: a row that does not apply to the
+# company (for example interest credited at a non-life insurer) reads 0 and
+# Data_Notes says it is not applicable.
+#
+# The defaults below are a placeholder insurer. A real case comes from
+# engine/history_to_answers.py (it picks this template when the history's
+# sector is "insurer"), which derives every driver from the company's own last
+# three years and comments how.
+#
+# Build:  python engine/history_to_answers.py output/filings/TRV_history.json
+#         python engine/build_model.py verticals/listed_insurer.yaml \
+#                output/filings/trv_insurer_filings.yaml output/filings/trv_insurer_model.xlsx
+#
+# Currency-neutral: amounts are in millions of the reporting currency.
+
+meta:
+  schema_version: "1.0"
+  vertical: listed_insurer
+  archetypes: [listed_insurer]
+  modules: [history_actuals, premium_growth, underwriting_ratios, investment_income,
+            reserves, capital_check, dividends_buybacks, valuation_residual_income]
+  note_keys: [data_notes]     # free-text lines for the Data notes sheet (not inputs)
+
+assumptions:
+
+  # ── 1. Entity ───────────────────────────────────────────────────────────────
+  - { id: g_entity_name,        label: "Company name",                          section: "1. Entity",   unit: text,     default: "Example Insurer" }
+  - { id: g_ticker,             label: "Ticker or securities code",            section: "1. Entity",   unit: text,     default: "EXIN" }
+  - { id: g_reporting_ccy,      label: "Reporting currency",                    section: "1. Entity",   unit: text,     default: "USD" }
+  - { id: g_data_source,        label: "Source of the actuals",                 section: "1. Entity",   unit: text,     default: "placeholder (no filing loaded)" }
+  - { id: g_tax_rate,           label: "Tax rate on pre-tax profit",            section: "1. Entity",   unit: percent,  default: 0.21 }       # placeholder; history_to_answers.py replaces it with the 3-year effective rate
+
+  # ── 2. Timeline ─────────────────────────────────────────────────────────────
+  - { id: g_forecast_years,     label: "Forecast years after the last actual (5-10)", section: "2. Timeline", unit: integer, default: 5 }
+
+  # ── 3. Premiums and underwriting ───────────────────────────────────────────
+  - { id: ins_premium_growth,   label: "Premium growth per year (fees grow at the same rate)", section: "3. Underwriting", unit: percent, default: 0.04 }   # placeholder; from history: 3-year CAGR of premiums (written, where the filing gives written premiums)
+  - { id: ins_loss_ratio,       label: "Loss ratio: claims and benefits / premiums", section: "3. Underwriting", unit: percent, default: 0.65 }   # placeholder; from history: sum(claims) / sum(premiums)
+  - { id: ins_reserve_change_pct, label: "Reserve change / premiums (where filed as its own line; 0 = not applicable)", section: "3. Underwriting", unit: percent, default: 0.0 }   # placeholder; from history: sum(reserve provision less reversal) / sum(premiums)
+  - { id: ins_expense_ratio,    label: "Expense ratio: acquisition + other operating expenses / premiums", section: "3. Underwriting", unit: percent, default: 0.30 }   # placeholder; from history: sum(opex) / sum(premiums)
+  - { id: ins_ph_dividend_pct,  label: "Policyholder dividends / premiums (0 = not applicable)", section: "3. Underwriting", unit: percent, default: 0.0 }   # placeholder; from history: sum(policyholder dividends) / sum(premiums)
+  - { id: ins_nci_share,        label: "Non-controlling interests' share of net income", section: "3. Underwriting", unit: percent, default: 0.0 }   # placeholder; from history: sum(NCI share) / sum(net income incl. NCI)
+
+  # ── 4. Investments ──────────────────────────────────────────────────────────
+  - { id: ins_investment_yield, label: "Net investment income / opening investments", section: "4. Investments", unit: percent, default: 0.04 }   # placeholder; from history: sum(net investment income) / sum(opening investments)
+  - { id: ins_inv_gains_pct,    label: "Investment and derivative gains / premiums (volatile; 0 = not projected)", section: "4. Investments", unit: percent, default: 0.0 }   # zero by default; the history's ratio is in the derivation line
+  - { id: ins_other_income_pct, label: "Other income / premiums (projected; set 0 to leave it out)", section: "4. Investments", unit: percent, default: 0.01 }   # placeholder; from history: sum(other income) / sum(premiums)
+  - { id: ins_crediting_rate,   label: "Interest credited / opening policyholder account balances (0 = not applicable)", section: "4. Investments", unit: percent, default: 0.0 }   # placeholder; from history where filed
+
+  # ── 5. Reserves ─────────────────────────────────────────────────────────────
+  - { id: ins_reserve_rollforward, label: "Reserve method: 1 = roll forward with the reserve change, 0 = hold reserves / premiums", section: "5. Reserves", unit: integer, default: 0 }   # from history: 1 when the filing shows the reserve change as its own line
+  - { id: ins_reserves_pct_premiums, label: "Policy reserves / premiums (used when the method is 0)", section: "5. Reserves", unit: ratio, default: 2.0 }   # placeholder; from history: last actual year's ratio
+
+  # ── 6. Capital and distributions ───────────────────────────────────────────
+  - { id: fin_dividend_payout,  label: "Dividend payout (% of net income to owners)", section: "6. Capital", unit: percent, default: 0.30 }   # placeholder; from history: sum(dividends paid) / sum(net income to owners)
+  - { id: fin_buyback_pct_ni,   label: "Share buybacks (% of net income to owners)", section: "6. Capital", unit: percent, default: 0.20 }   # placeholder; from history: sum(buybacks) / sum(net income to owners)
+  - { id: ins_target_equity_assets, label: "Target equity to assets (owners' equity / total assets; a check, not a driver)", section: "6. Capital", unit: percent, default: 0.10 }  # typed in (source: user); default = the last actual year's ratio. Solvency ratios (ESR, SMR, RBC) are not in the filing data
+
+  # ── 7. Valuation (the user types the price; the tool never fetches one) ────
+  - { id: val_share_price,      label: "Share price (typed by the user; 0 = not entered)", section: "7. Valuation", unit: ratio, default: 0.0 }
+  - { id: val_price_date,       label: "Date of that share price",              section: "7. Valuation", unit: date,    default: "2026-01-01" }
+  - { id: val_price_source,     label: "Price source label",                    section: "7. Valuation", unit: text,    default: "user" }
+  - { id: val_shares_diluted,   label: "Shares (millions; default: basic count in the latest annual filing)", section: "7. Valuation", unit: millions, default: 100.0 }
+  - { id: val_shares_source,    label: "Share count source label",              section: "7. Valuation", unit: text,    default: "filing" }
+  - { id: val_cost_of_equity,   label: "Cost of equity (discount rate for residual income)", section: "7. Valuation", unit: percent, default: 0.10 }   # placeholder, not derived from the filing or market data; set your own
+  - { id: val_terminal_growth,  label: "Long-run growth of residual income after the last forecast year", section: "7. Valuation", unit: percent, default: 0.02 }  # placeholder, not derived from the filing; must be below the cost of equity
+
+# ── History block: one input per (actual year, field) ─────────────────────────
+# Amounts in millions of the reporting currency. Outflows (dividends, buybacks)
+# are positive numbers. A line the filing does not tag is 0 and listed on Data_Notes.
+history:
+  years: 3                    # actual years shown, as in the listed model
+  fields:
+    - { id: fy,                label: "Fiscal year",                         unit: integer,  default: 2025 }
+    - { id: end,               label: "Fiscal year end",                     unit: date,     default: "2025-12-31" }
+    - { id: form,              label: "Filing type",                         unit: text,     default: "placeholder" }
+    - { id: accn,              label: "Filing ID (accession / document ID)", unit: text,     default: "n/a" }
+    - { id: status,            label: "History tie-out status",              unit: text,     default: "not checked" }
+    - { id: premiums,          label: "Premiums (US: earned, net; Japan non-life: written)", unit: millions, default: 1000.0 }
+    - { id: fee_income,        label: "Policy fees and commissions (life; 0 where not filed)", unit: millions, default: 0.0 }
+    - { id: investment_income, label: "Investment income as filed (US: net; Japan: gross, incl. realised gains)", unit: millions, default: 80.0 }
+    - { id: investment_expenses, label: "Investment expenses (Japan: 資産運用費用; US: 0, already netted)", unit: millions, default: 0.0 }
+    - { id: investment_gains,  label: "Investment and derivative gains, as tagged (US; Japan: inside investment income, 0)", unit: millions, default: 0.0 }
+    - { id: other_income,      label: "Other income (total revenue less premiums, fees, investment income, gains and reserve reversals)", unit: millions, default: 10.0 }
+    - { id: claims,            label: "Claims and benefits (US: incurred, incl. reserve change; Japan: paid)", unit: millions, default: 650.0 }
+    - { id: reserve_change,    label: "Change in policy reserves, where filed as its own line (Japan: provision less reversal)", unit: millions, default: 0.0 }
+    - { id: interest_credited, label: "Interest credited to policyholder accounts (life; 0 where not filed)", unit: millions, default: 0.0 }
+    - { id: policyholder_dividends, label: "Policyholder dividends (Japan life: 契約者配当準備金繰入額)", unit: millions, default: 0.0 }
+    - { id: opex,              label: "Operating expenses incl. acquisition costs (derived by the map)", unit: millions, default: 300.0 }
+    - { id: pretax,            label: "Income before tax",                   unit: millions, default: 140.0 }
+    - { id: tax,               label: "Income tax",                          unit: millions, default: 29.4 }
+    - { id: net_income_total,  label: "Net income incl. non-controlling interests", unit: millions, default: 110.6 }
+    - { id: net_income,        label: "Net income to owners",                unit: millions, default: 110.6 }
+    - { id: cash,              label: "Cash (and deposits)",                 unit: millions, default: 50.0 }
+    - { id: investments,       label: "Investments, as filed or as the sum of the investment lines", unit: millions, default: 2000.0 }
+    - { id: total_assets,      label: "Total assets",                        unit: millions, default: 2600.0 }
+    - { id: claims_reserve,    label: "Claims reserve, as tagged (Japan: 支払備金)", unit: millions, default: 1500.0 }
+    - { id: unearned_premiums, label: "Unearned premiums, as tagged",       unit: millions, default: 500.0 }
+    - { id: future_policy_benefits, label: "Future policy benefits, as tagged (life)", unit: millions, default: 0.0 }
+    - { id: policyholder_account_balances, label: "Policyholder account balances, as tagged (life)", unit: millions, default: 0.0 }
+    - { id: underwriting_reserve, label: "Japan: 責任準備金 (non-life: 責任準備金等)", unit: millions, default: 0.0 }
+    - { id: dividend_reserve,  label: "Japan life: 契約者配当準備金",            unit: millions, default: 0.0 }
+    - { id: policy_reserves,   label: "Policy reserves, total (US: sum of the tagged lines; Japan: 保険契約準備金 as filed)", unit: millions, default: 2000.0 }
+    - { id: debt,              label: "Debt (US: as one tagged total; Japan: bonds)", unit: millions, default: 100.0 }
+    - { id: total_liabilities, label: "Total liabilities incl. mezzanine equity", unit: millions, default: 2200.0 }
+    - { id: equity_parent,     label: "Equity to owners (shareholders of the parent)", unit: millions, default: 400.0 }
+    - { id: total_equity,      label: "Total equity incl. non-controlling interests (and, in Japan, share options)", unit: millions, default: 400.0 }
+    - { id: dividends,         label: "Dividends paid",                      unit: millions, default: 33.0 }
+    - { id: buybacks,          label: "Share buybacks",                      unit: millions, default: 22.0 }
+
+# ── Opening balance: the year end before the first actual year ───────────────
+# Only the balances the first actual year's opening-based ratios need (investment
+# yield, crediting rate, ROE). Filed figures, flattened to hist_open_<field>;
+# history_to_answers.py fills them from the history's prior year (IFRS 17: the
+# opening balance sheet where the report files one). Empty when the history holds
+# no earlier balance sheet: those ratios then read blank in the first actual year.
+# They never feed the forecast.
+opening:
+  fields:
+    - { id: fy,                label: "Fiscal year of that balance sheet",   unit: integer,  default: null }
+    - { id: investments,       label: "Investments, as filed or as the sum of the investment lines", unit: millions, default: null }
+    - { id: policyholder_account_balances, label: "Policyholder account balances, as tagged (life; 0 where not filed)", unit: millions, default: null }
+    - { id: equity_parent,     label: "Equity to owners (shareholders of the parent)", unit: millions, default: null }

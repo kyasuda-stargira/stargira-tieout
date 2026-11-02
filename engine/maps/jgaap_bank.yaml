@@ -1,0 +1,236 @@
+# J-GAAP element map for banks: EDINET jppfs_cor elements (銀行・信託業, the bk1
+# and bk2 sheets of the account list) -> Tie-Out's bank chart (docs/MODELS.md,
+# "Financial companies: standard chart"). Same keys as us_gaap_bank.yaml, so the
+# bank template reads one chart whatever the standard.
+#
+# Same format as jgaap.yaml: element names without "jppfs_cor:", first element
+# with a value wins, `parts` sums the parts that are tagged (a part with
+# `sign: -1` is subtracted), `derive` computes a line from other chart lines.
+# Every element below was checked against values in the MUFG (8306), Shizuoka FG
+# (5831) or SBI Shinsei (8303) reports, unless marked "not yet seen".
+# A wrong name never
+# matches, so it cannot pull in a wrong value.
+#
+# How a Japanese bank P&L differs from a US one, and what the chart does:
+# - 経常収益 (OrdinaryIncomeBNK) is gross revenue; 経常利益 (OrdinaryIncome) is
+#   ordinary PROFIT. The names are a trap.
+# - 資金利益 (net interest income) has no element: interest income less expense.
+# - 与信関係費用 (credit costs) has no element. `provision` sums the tagged
+#   parts: 貸倒引当金繰入額 + 貸出金償却 - 貸倒引当金戻入益 - 償却債権取立益.
+#   A bank that books write-offs inside その他の経常費用 without its own line
+#   shows them in non-interest income, not in `provision`.
+# - Net revenue (the chart's total_revenue) is not printed. It is derived so that
+#   pre-tax income = net revenue - provision - operating expenses + extraordinary
+#   items. Non-interest income is therefore everything else, net of its expense:
+#   fees net of fee expense, trust fees, trading, other business and other
+#   ordinary items (equity-method income, gains on shares).
+# - Profit before tax includes 特別利益 / 特別損失 (extraordinary items), which a
+#   US P&L does not have.
+
+meta:
+  standard: J-GAAP (jppfs_cor)
+  sector: bank
+  prefix: "jppfs_cor:"
+  facts_key: jp
+  unit: JPY
+  forms: ["有価証券報告書"]
+  flow_days: [350, 380]
+  max_years: 10
+  min_years: 3
+  period_tags: [NetCashProvidedByUsedInOperatingActivities, ProfitLoss, OrdinaryIncomeBNK]
+  cash_gap_reason: >-
+    the cash flow statement closes on 現金及び現金同等物 (%s) and the balance sheet shows
+    現金預け金, which here includes deposits with banks that the bank does not count as
+    cash equivalents; the filing gives no tagged reconciliation and its text note could
+    not be read or does not foot, so the gap of %s is not reconciled from the data
+  chart_notes:
+    - "total_revenue is net revenue, derived: 経常利益 + 営業経費 + credit costs. 経常収益 (gross ordinary income) is kept in revenue_tagged for reference."
+    - "net_interest_income is derived (資金運用収益 - 資金調達費用); J-GAAP has no 資金利益 element."
+    - "provision is credit costs (与信関係費用), the sum of the tagged parts: 貸倒引当金繰入額 + 貸出金償却 - 貸倒引当金戻入益 - 償却債権取立益. A net release is negative."
+    - "noninterest_income is derived (net revenue - net interest income): fees, trust fees, trading, other business and other ordinary items, each net of its own expense."
+    - "pretax_income includes extraordinary items (extraordinary_income, extraordinary_loss); a forecast normally sets them to zero."
+    - "loans is 貸出金 before the allowance, as printed; loan_allowance is the single 貸倒引当金 line, which also covers assets other than loans."
+    - "deposits is 預金 as printed; negotiable certificates of deposit (譲渡性預金) are the separate line negotiable_cds."
+    - "cash is 現金預け金 (cash and due from banks). At some banks part of it is not a cash equivalent; the tie-out then uses the filing's own reconciliation note only if it foots, else flags."
+    - "equity_parent is derived (株主資本 + その他の包括利益累計額); J-GAAP has no single equity-to-owners total."
+
+lines:
+  # Profit and loss (損益計算書) ---------------------------------------------------
+  interest_income:
+    {statement: pl, kind: flow, label: Interest income (資金運用収益), tags: [InterestIncomeOIBNK]}
+  interest_expense:
+    {statement: pl, kind: flow, label: Interest expense (資金調達費用), tags: [InterestExpensesOEBNK]}
+  net_interest_income:
+    {statement: pl, kind: flow, label: Net interest income (資金利益; derived), tags: [],
+     derive: {plus: [interest_income], minus: [interest_expense]}}
+  fee_income:
+    {statement: pl, kind: flow, label: Fees and commissions received (役務取引等収益; detail, gross),
+     tags: [FeesAndCommissionsOIBNK]}
+  other_income:
+    {statement: pl, kind: flow, label: Other business income (その他業務収益; detail, gross),
+     tags: [OtherOrdinaryIncomeOIBNK]}
+  revenue_tagged:
+    {statement: pl, kind: flow, label: Ordinary income (経常収益; gross, reference only),
+     tags: [OrdinaryIncomeBNK]}
+  ordinary_expenses:
+    {statement: pl, kind: flow, label: Ordinary expenses (経常費用), tags: [OrdinaryExpensesBNK]}
+  provision:
+    # 与信関係費用 has no element: the tagged parts are summed, reversals and
+    # recoveries (filed on the income side) subtracted.
+    {statement: pl, kind: flow, label: Credit costs (与信関係費用; sum of tagged parts), tags: [],
+     parts: [[ProvisionOfAllowanceForLoanLossesOEBNK],
+             [WrittenOffOfLoansOEBNK],      # seen only in 8303's non-consolidated (個別) statements
+             {tags: [ReversalOfAllowanceForLoanLossesOIBNK], sign: -1},
+             {tags: [RecoveriesOfWrittenOffClaimsOIBNK], sign: -1}]}
+  opex:
+    {statement: pl, kind: flow, label: Operating expenses (営業経費),
+     tags: [GeneralAndAdministrativeExpensesOEBNK]}
+  noninterest_income:
+    # = 経常収益 - 経常費用 + 営業経費 + credit costs - 資金利益.
+    {statement: pl, kind: flow, label: Non-interest income, net (derived), tags: [],
+     derive: {plus: [revenue_tagged, interest_expense, opex, provision],
+              minus: [interest_income, ordinary_expenses],
+              require: [revenue_tagged, ordinary_expenses, interest_income, interest_expense, opex]}}
+  total_revenue:
+    {statement: pl, kind: flow, label: "Net revenue (derived; net interest income + non-interest income)", tags: [],
+     derive: {plus: [net_interest_income, noninterest_income]}}
+  ordinary_profit:
+    {statement: pl, kind: flow, label: Ordinary profit (経常利益), tags: [OrdinaryIncome]}
+  extraordinary_income:
+    {statement: pl, kind: flow, label: Extraordinary income (特別利益), tags: [ExtraordinaryIncome]}
+  extraordinary_loss:
+    {statement: pl, kind: flow, label: Extraordinary losses (特別損失), tags: [ExtraordinaryLoss]}
+  pretax_income:
+    {statement: pl, kind: flow, label: Income before tax (税金等調整前当期純利益),
+     tags: [IncomeBeforeIncomeTaxes]}
+  tax:
+    {statement: pl, kind: flow, label: Income taxes (法人税等合計), tags: [IncomeTaxes]}
+  net_income_incl_nci:
+    {statement: pl, kind: flow, label: Net income incl. non-controlling interests (当期純利益),
+     tags: [ProfitLoss]}
+  net_income_nci:
+    {statement: pl, kind: flow, label: Net income to non-controlling interests,
+     tags: [ProfitLossAttributableToNonControllingInterests]}
+  net_income:
+    {statement: pl, kind: flow, label: Net income to owners of the parent (親会社株主に帰属する当期純利益),
+     tags: [ProfitLossAttributableToOwnersOfParent, ProfitLoss]}
+
+  # Balance sheet (貸借対照表) ------------------------------------------------------
+  cash:
+    # 現金預け金. At MUFG it equals 現金及び現金同等物; at banks whose cash
+    # equivalents leave out some 預け金 it does not, and the tie-out uses the
+    # filing's own note only if it foots (filings_map.cash_bridge), else flags.
+    {statement: bs, kind: stock, label: Cash and due from banks (現金預け金),
+     tags: [CashAndDueFromBanksAssetsBNK]}
+  reverse_repos:
+    {statement: bs, kind: stock, label: Call loans and reverse repos (コールローン及び買入手形 + 買現先勘定),
+     tags: [], parts: [[CallLoansAndBillsBoughtAssetsBNK], [ReceivablesUnderResaleAgreementsAssetsBNK]]}
+  trading_assets:
+    {statement: bs, kind: stock, label: Trading assets (特定取引資産), tags: [TradingAssetsAssetsBNK]}
+  securities:
+    {statement: bs, kind: stock, label: Securities (有価証券), tags: [SecuritiesAssetsBNK]}
+  loans:
+    {statement: bs, kind: stock, label: Loans and bills discounted (貸出金; before the allowance),
+     tags: [LoansAndBillsDiscountedAssetsBNK]}
+  loan_allowance:
+    # Filed as a negative number on the asset side.
+    {statement: bs, kind: stock, label: Allowance for loan losses (貸倒引当金; positive), sign: -1,
+     tags: [AllowanceForLoanLossesAssetsBNK]}
+  total_assets:
+    {statement: bs, kind: stock, label: Total assets (資産の部合計), tags: [Assets]}
+  deposits:
+    {statement: bs, kind: stock, label: Deposits (預金), tags: [DepositsLiabilitiesBNK]}
+  negotiable_cds:
+    {statement: bs, kind: stock, label: Negotiable certificates of deposit (譲渡性預金),
+     tags: [NegotiableCertificatesOfDepositLiabilitiesBNK]}
+  repo_borrowings:
+    {statement: bs, kind: stock, label: Call money and repos (コールマネー及び売渡手形 + 売現先勘定),
+     tags: [], parts: [[CallMoneyAndBillsSoldLiabilitiesBNK], [PayablesUnderRepurchaseAgreementsLiabilitiesBNK]]}
+  short_term_borrowings:
+    {statement: bs, kind: stock, label: Commercial paper and short-term bonds (コマーシャル・ペーパー + 短期社債),
+     tags: [], parts: [[CommercialPapersLiabilities], [ShortTermBondsPayable]]}
+  long_term_debt:
+    # 借用金 is borrowed money of all maturities; J-GAAP banks do not split it.
+    {statement: bs, kind: stock, label: Borrowed money and bonds (借用金 + 社債),
+     tags: [], parts: [[BorrowedMoneyLiabilitiesBNK], [BondsPayable]]}
+  total_liabilities:
+    {statement: bs, kind: stock, label: Total liabilities (負債の部合計), tags: [Liabilities]}
+  shareholders_equity:
+    {statement: bs, kind: stock, label: Shareholders' equity (株主資本), tags: [ShareholdersEquity]}
+  accumulated_oci:
+    {statement: bs, kind: stock, label: Accumulated other comprehensive income (その他の包括利益累計額),
+     tags: [ValuationAndTranslationAdjustments]}
+  share_options:
+    {statement: bs, kind: stock, label: Share acquisition rights (新株予約権), tags: [SubscriptionRightsToShares]}
+  equity_parent:
+    {statement: bs, kind: stock, label: Equity to owners (株主資本 + その他の包括利益累計額; derived), tags: [],
+     derive: {plus: [shareholders_equity, accumulated_oci], require: [shareholders_equity]}}
+  nci:
+    {statement: bs, kind: stock, label: Non-controlling interests (非支配株主持分),
+     tags: [NonControllingInterests]}
+  total_equity:
+    {statement: bs, kind: stock, label: Net assets (純資産の部合計), tags: [NetAssets]}
+  liabilities_and_equity:
+    {statement: bs, kind: stock, label: Total liabilities and net assets (負債及び純資産の部合計),
+     tags: [LiabilitiesAndNetAssets]}
+  retained_earnings:
+    {statement: bs, kind: stock, label: Retained earnings (利益剰余金), tags: [RetainedEarnings]}
+
+  # Cash flow (same elements as jgaap.yaml) -------------------------------------------
+  cfo:
+    {statement: cf, kind: flow, label: Cash from operations (営業活動によるキャッシュ・フロー),
+     tags: [NetCashProvidedByUsedInOperatingActivities]}
+  capex:
+    {statement: cf, kind: flow, label: Capital expenditure (有形固定資産の取得による支出), sign: -1,
+     tags: [PurchaseOfPropertyPlantAndEquipmentInvCF]}
+  cfi:
+    {statement: cf, kind: flow, label: Cash from investing (投資活動によるキャッシュ・フロー),
+     tags: [NetCashProvidedByUsedInInvestmentActivities]}
+  dividends_paid:
+    {statement: cf, kind: flow, label: Dividends paid (配当金の支払額), sign: -1,
+     tags: [CashDividendsPaidFinCF]}
+  buybacks:
+    {statement: cf, kind: flow, label: Share buybacks (自己株式の取得による支出), sign: -1,
+     tags: [PurchaseOfTreasuryStockFinCF]}
+  cff:
+    {statement: cf, kind: flow, label: Cash from financing (財務活動によるキャッシュ・フロー),
+     tags: [NetCashProvidedByUsedInFinancingActivities]}
+  fx_effect:
+    {statement: cf, kind: flow, label: Exchange-rate effect on cash (現金及び現金同等物に係る換算差額),
+     tags: [EffectOfExchangeRateChangeOnCashAndCashEquivalents]}
+  net_change_cash:
+    {statement: cf, kind: flow, label: Net change in cash (現金及び現金同等物の増減額),
+     tags: [NetIncreaseDecreaseInCashAndCashEquivalents]}
+  other_cash_change:
+    # Changes below the net-change line: newly consolidated or excluded subsidiaries.
+    {statement: cf, kind: flow, label: Other changes in cash (連結範囲の変動等), tags: [],
+     parts: [[IncreaseInCashAndCashEquivalentsFromNewlyConsolidatedSubsidiaryCCE],
+             [DecreaseInCashAndCashEquivalentsResultingFromExclusionOfSubsidiariesFromConsolidationCCE],
+             [IncreaseDecreaseInCashAndCashEquivalentsResultingFromChangeOfScopeOfConsolidationCCE]]}
+  end_cash_cf:
+    {statement: cf, kind: stock, label: Closing cash (現金及び現金同等物の期末残高, cash flow statement),
+     tags: [CashAndCashEquivalents]}
+
+# P&L arithmetic checks (see us_gaap_bank.yaml). The first two use filed totals
+# only, so they are real checks and flag the year when they miss.
+footings:
+  - {name: "経常収益 - 経常費用 = 経常利益 (ordinary income - ordinary expenses = ordinary profit)",
+     result: ordinary_profit, plus: [revenue_tagged], minus: [ordinary_expenses], fail: true}
+  - {name: "経常利益 + 特別利益 - 特別損失 = 税金等調整前当期純利益 (ordinary profit + extraordinary items = pre-tax income)",
+     result: pretax_income, plus: [ordinary_profit, extraordinary_income], minus: [extraordinary_loss],
+     optional: [extraordinary_income, extraordinary_loss], fail: true}
+  # Holds by construction once the first footing holds (net revenue is derived
+  # from the same totals); reported so the chart's identity is visible.
+  - {name: "pre-tax income = net revenue - provision - operating expenses + extraordinary items",
+     result: pretax_income, plus: [total_revenue, extraordinary_income],
+     minus: [provision, opex, extraordinary_loss],
+     optional: [provision, extraordinary_income, extraordinary_loss]}
+  - {name: "pre-tax income - tax = net income incl. NCI (or net income where no NCI is tagged)",
+     result: [net_income_incl_nci, net_income], fallback_unless: [net_income_nci],
+     plus: [pretax_income], minus: [tax]}
+  - {name: "net assets = equity to owners + share options + NCI",
+     result: total_equity, plus: [equity_parent, share_options, nci], optional: [share_options, nci]}
+
+dividends_declared_tags: [DividendsFromSurplus]
+dividends_declared_sign: -1
+anchors: {pl: net_income, bs: total_assets, cf: cfo}

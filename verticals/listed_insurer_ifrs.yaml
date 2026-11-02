@@ -1,0 +1,61 @@
+# Listed insurer, IFRS 17, 2 actual years — extends listed_insurer.yaml, v1.0
+#
+# For Japanese non-life groups that report under IFRS 17 (Tokio Marine 8766, SOMPO
+# 8630, MS&AD 8725, from the year to March 2026). Their IFRS report holds only 2
+# years of P&L and cash flow, so they are built with 2 actual years.
+# history_to_answers.py picks this file ONLY for a history with
+# basis ifrs17 (maps/ifrs_insurer.yaml); every other insurer keeps the 3-year
+# listed_insurer.yaml, and this file refuses any other history.
+#
+# Same template and formulas as listed_insurer.yaml (engine/vertical_insurer.py),
+# with three differences (meta.basis: ifrs17):
+#   - 2 actual years instead of 3;
+#   - the IFRS 17 labels: insurance revenue in place of premiums, insurance service
+#     expenses in place of claims, the net financial result in place of net
+#     investment income, insurance contract liabilities (incl. the CSM) in place
+#     of policy reserves;
+#   - one more cost line and driver: the net expense from reinsurance contracts
+#     held (hist_<n>_reinsurance_expense, ins_reinsurance_pct).
+#
+# Build:  python engine/history_to_answers.py output/filings/8766_history.json
+#         python engine/build_model.py verticals/listed_insurer_ifrs.yaml \
+#                output/filings/8766_insurer_filings.yaml output/filings/8766_insurer_model.xlsx
+#
+# Merge rules: engine/schemas.py (an id in the base is updated; a new id goes after `after:`).
+
+extends: listed_insurer.yaml
+
+meta:
+  vertical: listed_insurer_ifrs
+  basis: ifrs17
+
+assumptions:
+  - { id: ins_premium_growth,   label: "Insurance revenue growth per year (IFRS 17)" }
+  - { id: ins_loss_ratio,       label: "Insurance service expense ratio: insurance service expenses / insurance revenue" }
+  - { id: ins_reinsurance_pct,  after: ins_loss_ratio, label: "Net reinsurance expense / insurance revenue (reinsurance contracts held)", section: "3. Underwriting", unit: percent, default: 0.05 }   # placeholder; from history: sum(net expense from reinsurance contracts held) / sum(insurance revenue)
+  - { id: ins_reserve_change_pct, label: "Reserve change / insurance revenue (IFRS 17 files no such line: 0)" }
+  - { id: ins_expense_ratio,    label: "Other expense ratio: non-attributable, other and finance costs / insurance revenue" }
+  - { id: ins_ph_dividend_pct,  label: "Policyholder dividends / insurance revenue (IFRS 17 non-life: 0)" }
+  - { id: ins_investment_yield, label: "Net financial result (investment result less insurance finance expenses) / opening investments" }
+  - { id: ins_inv_gains_pct,    label: "Investment gains / insurance revenue (IFRS: inside the investment result; 0)" }
+  - { id: ins_other_income_pct, label: "Other income / insurance revenue (projected; set 0 to leave it out)" }
+  - { id: ins_reserve_rollforward, label: "Reserve method: 0 = hold insurance contract liabilities / insurance revenue (IFRS 17 has no reserve-change line: keep 0)" }
+  - { id: ins_reserves_pct_premiums, label: "Insurance contract liabilities (incl. the CSM) / insurance revenue" }
+
+history:
+  years: 2                    # these groups build with 2 actual years
+  fields:
+    - { id: premiums,          label: "Insurance revenue (IFRS 17)" }
+    - { id: investment_income, label: "Net investment result as filed (IFRS: interest + gains - investment expenses)" }
+    - { id: investment_expenses, label: "Net insurance finance expenses (IFRS 17; positive = expense, after reinsurance finance income)" }
+    - { id: investment_gains,  label: "Investment gains (IFRS: inside the investment result, 0)" }
+    - { id: other_income,      label: "Other income (その他の収益 + その他の営業収益 + equity-method share)" }
+    - { id: claims,            label: "Insurance service expenses (IFRS 17)" }
+    - { id: reinsurance_expense, after: claims, label: "Net expense from reinsurance contracts held (IFRS 17; positive = cost)", unit: millions, default: 50.0 }
+    - { id: opex,              label: "Other expenses: non-attributable G&A + other expenses + finance costs" }
+    - { id: claims_reserve,    label: "Claims reserve (IFRS 17: inside insurance contract liabilities, 0)" }
+    - { id: unearned_premiums, label: "Unearned premiums (IFRS 17: inside insurance contract liabilities, 0)" }
+    - { id: underwriting_reserve, label: "Japan J-GAAP 責任準備金 (IFRS: 0)" }
+    - { id: dividend_reserve,  label: "Japan J-GAAP life 契約者配当準備金 (IFRS: 0)" }
+    - { id: policy_reserves,   label: "Insurance contract liabilities incl. the CSM (保険契約負債)" }
+    - { id: debt,              label: "Bonds and borrowings (社債及び借入金)" }

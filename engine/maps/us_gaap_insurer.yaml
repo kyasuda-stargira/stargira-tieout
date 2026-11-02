@@ -1,0 +1,272 @@
+# US-GAAP tag map for insurers (non-life and life): SEC companyfacts tags ->
+# Tie-Out's standard chart for financial companies (insurer chart).
+#
+# Same format and rules as us_gaap.yaml and us_gaap_bank.yaml (`parts`, `derive`,
+# `footings`). The line-of-business premium and benefit tags (PremiumsEarnedNetLife,
+# ...PropertyAndCasualty, PolicyholderBenefitsAndClaimsIncurredLifeAndAnnuity, ...)
+# are deprecated in the 2026 taxonomy, so only the main tags are mapped.
+# Every tag below was checked against values in TRV or MET filings.
+#
+# THE INSURER CHART (one line per key; the J-GAAP and IFRS insurer maps fill the same keys)
+# P&L
+#   premiums              premiums earned, net of reinsurance (J-GAAP non-life files
+#                         written premiums only; that map says so)
+#   fee_income            insurance commissions and fees (life)
+#   investment_income     net investment income
+#   investment_gains      net realised / investment gains (losses)
+#   derivative_gains      net derivative gains (losses) (life)
+#   other_income          other revenues
+#   total_revenue         total revenues, as filed
+#   claims                benefits and claims incurred, net (US GAAP includes the
+#                         change in reserves here). Where no claims tag has a value
+#                         that year, derived (see the line below)
+#   reserve_change        change in policy reserves, only where filed as its own P&L
+#                         line (J-GAAP 責任準備金等繰入額). Not in this map: US GAAP
+#                         has no such line
+#   interest_credited     interest credited to policyholder account balances (life)
+#   policyholder_dividends policyholder dividends (life)
+#   acquisition_costs     amortisation of deferred acquisition costs (detail only;
+#                         it is inside opex)
+#   opex                  all other expenses = total_expenses - claims -
+#                         interest_credited - policyholder_dividends (derived);
+#                         holds acquisition costs and other operating expenses
+#   total_expenses        total benefits, losses and expenses, as filed
+#   other_cost_and_expense operating costs and expenses (helper: kept only when
+#                         the claims fallback uses it)
+#   interest_expense      interest expense on debt (helper, as above)
+#   gain_on_disposal      gain (loss) on disposal of operations, outside revenues
+#                         and expenses (left out when not filed)
+#   pretax_income         profit before tax
+#   tax                   income tax
+#   net_income_incl_nci   net income including non-controlling interests
+#   net_income_nci        net income to non-controlling interests
+#   net_income            net income to the parent's shareholders
+# Balance sheet
+#   cash                  cash and cash equivalents
+#   investments           total investments, as filed
+#   total_assets          total assets
+#   claims_reserve        unpaid claims and claim adjustment expenses (gross)
+#   unearned_premiums     unearned premiums
+#   future_policy_benefits future policy benefits (life)
+#   policyholder_account_balances policyholder account balances (life)
+#   policy_reserves       claims_reserve + unearned_premiums + future_policy_benefits
+#                         + policyholder_account_balances, those filed (derived)
+#   debt                  short-term + long-term debt, as one filed total
+#   total_liabilities     total liabilities
+#   temporary_equity      mezzanine equity
+#   equity_parent         shareholders' equity
+#   nci                   non-controlling interests
+#   total_equity          total equity incl. non-controlling interests
+#   liabilities_and_equity total liabilities and equity
+#   retained_earnings     retained earnings
+# Cash flow: the corporate keys (cfo, capex, cfi, dividends_paid, buybacks, cff,
+#   fx_effect, net_change_cash, end_cash_cf).
+
+meta:
+  standard: us-gaap
+  sector: insurer
+  unit: USD
+  forms: ["10-K", "10-K/A"]
+  flow_days: [350, 380]
+  max_years: 10
+  min_years: 3
+
+lines:
+  # Profit and loss ------------------------------------------------------------
+  premiums:
+    {statement: pl, kind: flow, label: Premiums earned (net), tags: [PremiumsEarnedNet]}
+  fee_income:
+    {statement: pl, kind: flow, label: Insurance commissions and fees,
+     tags: [InsuranceCommissionsAndFees]}
+  investment_income:
+    {statement: pl, kind: flow, label: Net investment income, tags: [NetInvestmentIncome]}
+  investment_gains:
+    # MET's statement line is GainLossOnInvestments (its RealizedInvestmentGainsLosses
+    # is a narrower note figure); TRV files only RealizedInvestmentGainsLosses.
+    {statement: pl, kind: flow, label: Net investment gains (losses),
+     tags: [GainLossOnInvestments, RealizedInvestmentGainsLosses]}
+  derivative_gains:
+    {statement: pl, kind: flow, label: Net derivative gains (losses),
+     tags: [GainLossOnDerivativeInstrumentsNetPretax]}
+  other_income:
+    {statement: pl, kind: flow, label: Other revenues, tags: [OtherIncome]}
+  total_revenue:
+    {statement: pl, kind: flow, label: Total revenues, tags: [Revenues]}
+  claims:
+    # Fallback when no claims tag has a value that year. Allstate files P&C claims
+    # under this tag only with a ProductOrServiceAxis member, and A&H benefits under
+    # its own element, so companyfacts holds neither. Its FY2025 10-K (0000899051-
+    # 26-000031): 56,132 - 8,389 - 8,977 - 399 = 38,367 = claims 37,454 + A&H
+    # benefits 656 + pension remeasurement (35) + restructuring 61 + intangibles
+    # amortisation 231.
+    # Interest credited and policyholder dividends are taken out too, so that opex
+    # (total - claims - those two) holds exactly DAC amortisation + operating costs
+    # + interest expense.
+    {statement: pl, kind: flow, label: Benefits and claims incurred (net),
+     tags: [PolicyholderBenefitsAndClaimsIncurredNet],
+     derive: {plus: [total_expenses],
+              minus: [acquisition_costs, other_cost_and_expense, interest_expense,
+                      interest_credited, policyholder_dividends],
+              require: [total_expenses, acquisition_costs, other_cost_and_expense,
+                        interest_expense],
+              label: "claims and other costs, DERIVED: total benefits, losses and expenses less DAC amortisation, operating costs and expenses, interest expense, interest credited and policyholder dividends. It includes small other expense lines the filing prints apart (e.g. restructuring, amortisation of purchased intangibles, pension remeasurement), so it is slightly above claims and benefits as printed",
+              notes_by_cik:
+                {"899051": "Allstate tags its printed 'Property and casualty insurance claims and claims expense' as PolicyholderBenefitsAndClaimsIncurredNet only with the member srt:ProductOrServiceAxis=PropertyLiabilityAndCasualtyInsuranceSegmentMember, and 'Accident, health and other policy benefits' under its own element all:AccidentAndHealthInsuranceContractBenefitsNetOfReinsuranceRecoveries; companyfacts holds neither (it has undimensioned standard tags only). FY2025 check against the 10-K (0000899051-26-000031): derived 38,367 = claims 37,454 + A&H benefits 656 + pension remeasurement (35) + restructuring 61 + intangibles amortisation 231"}}}
+  interest_credited:
+    {statement: pl, kind: flow, label: Interest credited to policyholder accounts,
+     tags: [InterestCreditedToPolicyholdersAccountBalances]}
+  policyholder_dividends:
+    {statement: pl, kind: flow, label: Policyholder dividends, tags: [PolicyholderDividends]}
+  acquisition_costs:
+    {statement: pl, kind: flow, label: Amortisation of deferred acquisition costs,
+     tags: [DeferredPolicyAcquisitionCostAmortizationExpense]}
+  total_expenses:
+    {statement: pl, kind: flow, label: Total benefits, losses and expenses,
+     tags: [BenefitsLossesAndExpenses]}
+  other_cost_and_expense:
+    {statement: pl, kind: flow, label: Operating costs and expenses, helper: true,
+     tags: [OtherCostAndExpenseOperating]}
+  interest_expense:
+    {statement: pl, kind: flow, label: Interest expense, helper: true,
+     tags: [InterestExpenseOperating, InterestExpense]}
+  gain_on_disposal:
+    # Allstate FY2025 10-K: "Gain on disposition of operations" 1,603, printed
+    # between total costs and expenses and income before tax.
+    {statement: pl, kind: flow, label: Gain (loss) on disposal of operations,
+     omit_if_empty: true, tags: [DisposalGroupNotDiscontinuedOperationGainLossOnDisposal]}
+  opex:
+    {statement: pl, kind: flow, label: Other expenses (incl. acquisition costs), tags: [],
+     derive: {plus: [total_expenses], minus: [claims, interest_credited, policyholder_dividends],
+              require: [total_expenses, claims]}}
+  pretax_income:
+    {statement: pl, kind: flow, label: Income before tax,
+     tags: [IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest,
+            IncomeLossFromContinuingOperationsBeforeIncomeTaxesMinorityInterestAndIncomeLossFromEquityMethodInvestments]}
+  tax:
+    {statement: pl, kind: flow, label: Income tax, tags: [IncomeTaxExpenseBenefit]}
+  net_income_incl_nci:
+    {statement: pl, kind: flow, label: Net income incl. non-controlling interests,
+     tags: [ProfitLoss]}
+  net_income_nci:
+    {statement: pl, kind: flow, label: Net income to non-controlling interests,
+     tags: [NetIncomeLossAttributableToNoncontrollingInterest]}
+  net_income:
+    {statement: pl, kind: flow, label: Net income to shareholders,
+     tags: [NetIncomeLoss, NetIncomeLossAvailableToCommonStockholdersBasic]}
+
+  # Balance sheet ----------------------------------------------------------------
+  cash:
+    {statement: bs, kind: stock, label: Cash and cash equivalents,
+     tags: [CashAndCashEquivalentsAtCarryingValue, Cash]}
+  investments:
+    {statement: bs, kind: stock, label: Total investments, tags: [Investments]}
+  total_assets:
+    {statement: bs, kind: stock, label: Total assets, tags: [Assets]}
+  claims_reserve:
+    {statement: bs, kind: stock, label: Claims and claim adjustment expense reserves,
+     tags: [LiabilityForClaimsAndClaimsAdjustmentExpense]}
+  unearned_premiums:
+    {statement: bs, kind: stock, label: Unearned premiums, tags: [UnearnedPremiums]}
+  future_policy_benefits:
+    {statement: bs, kind: stock, label: Future policy benefits,
+     tags: [LiabilityForFuturePolicyBenefits]}
+  policyholder_account_balances:
+    {statement: bs, kind: stock, label: Policyholder account balances,
+     tags: [PolicyholderContractDeposits, PolicyholderFunds]}
+  policy_reserves:
+    {statement: bs, kind: stock, label: Policy reserves (sum of the four lines above that are filed),
+     tags: [],
+     derive: {plus: [claims_reserve, unearned_premiums, future_policy_benefits,
+                     policyholder_account_balances], require: []}}
+  debt:
+    {statement: bs, kind: stock, label: Debt (short and long term),
+     tags: [DebtLongtermAndShorttermCombinedAmount, DebtAndCapitalLeaseObligations]}
+  total_liabilities:
+    {statement: bs, kind: stock, label: Total liabilities, tags: [Liabilities]}
+  temporary_equity:
+    {statement: bs, kind: stock, label: Temporary (mezzanine) equity,
+     tags: [RedeemableNoncontrollingInterestEquityCarryingAmount]}
+  equity_parent:
+    {statement: bs, kind: stock, label: Shareholders' equity, tags: [StockholdersEquity]}
+  nci:
+    {statement: bs, kind: stock, label: Non-controlling interests, tags: [MinorityInterest]}
+  total_equity:
+    {statement: bs, kind: stock, label: Total equity incl. non-controlling interests,
+     tags: [StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest]}
+  liabilities_and_equity:
+    {statement: bs, kind: stock, label: Total liabilities and equity,
+     tags: [LiabilitiesAndStockholdersEquity]}
+  retained_earnings:
+    {statement: bs, kind: stock, label: Retained earnings, tags: [RetainedEarningsAccumulatedDeficit]}
+
+  # Cash flow (same as us_gaap.yaml) -------------------------------------------------
+  cfo:
+    {statement: cf, kind: flow, label: Cash from operations,
+     tags: [NetCashProvidedByUsedInOperatingActivities,
+            NetCashProvidedByUsedInOperatingActivitiesContinuingOperations]}
+  capex:
+    {statement: cf, kind: flow, label: Capital expenditure,
+     tags: [PaymentsToAcquirePropertyPlantAndEquipment, PaymentsToAcquireProductiveAssets]}
+  cfi:
+    {statement: cf, kind: flow, label: Cash from investing,
+     tags: [NetCashProvidedByUsedInInvestingActivities,
+            NetCashProvidedByUsedInInvestingActivitiesContinuingOperations]}
+  dividends_paid:
+    {statement: cf, kind: flow, label: Dividends paid,
+     tags: [PaymentsOfDividends, PaymentsOfDividendsCommonStock]}
+  buybacks:
+    {statement: cf, kind: flow, label: Share buybacks, tags: [PaymentsForRepurchaseOfCommonStock]}
+  cff:
+    {statement: cf, kind: flow, label: Cash from financing,
+     tags: [NetCashProvidedByUsedInFinancingActivities,
+            NetCashProvidedByUsedInFinancingActivitiesContinuingOperations]}
+  fx_effect:
+    {statement: cf, kind: flow, label: Exchange-rate effect on cash,
+     tags: [EffectOfExchangeRateOnCashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents,
+            EffectOfExchangeRateOnCashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsIncludingDisposalGroupAndDiscontinuedOperations,
+            EffectOfExchangeRateOnCashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsDisposalGroupIncludingDiscontinuedOperations,
+            EffectOfExchangeRateOnCashAndCashEquivalents,
+            EffectOfExchangeRateOnCashAndCashEquivalentsContinuingOperations,
+            EffectOfExchangeRateOnCash]}
+  net_change_cash:
+    {statement: cf, kind: flow, label: Net change in cash,
+     tags: [CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffect,
+            CashAndCashEquivalentsPeriodIncreaseDecrease, CashPeriodIncreaseDecrease]}
+  end_cash_cf:
+    {statement: cf, kind: stock, label: Closing cash (cash flow statement),
+     tags: [CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents,
+            CashAndCashEquivalentsAtCarryingValue]}
+
+footings:
+  - {name: "pre-tax income = total revenues - total benefits, losses and expenses",
+     result: pretax_income, plus: [total_revenue, gain_on_disposal], minus: [total_expenses],
+     optional: [gain_on_disposal], fail: true,
+     name_extra: {gain_on_disposal: " + gain on disposal of operations"}}
+  - {name: "total revenues = premiums + fees + investment income + investment and derivative gains + other revenues",
+     result: total_revenue,
+     plus: [premiums, fee_income, investment_income, investment_gains, derivative_gains, other_income],
+     optional: [fee_income, investment_gains, derivative_gains, other_income]}
+  # Where neither net income incl. NCI nor an NCI share is tagged, net income
+  # to shareholders is the whole of it. Discontinued operations break this
+  # footing, so it is reported, not failed.
+  - {name: "pre-tax income - tax = net income incl. NCI (or net income where no NCI is tagged)",
+     result: [net_income_incl_nci, net_income], fallback_unless: [net_income_nci],
+     plus: [pretax_income], minus: [tax]}
+
+dividends_declared_tags: [DividendsCommonStockCash, DividendsCommonStock, DividendsCash, Dividends]
+restricted_cash:
+  total: [RestrictedCash, RestrictedCashAndCashEquivalents]
+  parts:
+    - [RestrictedCashAndCashEquivalentsAtCarryingValue]
+    - [RestrictedCashAndCashEquivalentsNoncurrent]
+# The balance sheet's source filing is the latest 10-K that tags the
+# liabilities-and-equity total, a tag used only on the balance sheet's face.
+# Assets also turns up in later 10-Ks' notes for older years (JPM's FY2021 10-K
+# carries a FY2019 Assets figure of 2,686,477 against 2,687,379 on the balance
+# sheet), so anchoring on it can mix two filings in one balance sheet.
+anchors: {pl: net_income, bs: liabilities_and_equity, cf: cfo}
+# Cash held in a disposal group (held for sale) sits outside balance-sheet cash
+# but inside the cash flow statement's opening or closing cash. The roll-forward
+# uses these tags only when they make the year tie, and says so.
+disposal_group_cash: [DisposalGroupIncludingDiscontinuedOperationCashAndCashEquivalents,
+                      DisposalGroupIncludingDiscontinuedOperationCash]

@@ -1,0 +1,121 @@
+# Listed bank — vertical schema template, v1.0
+#
+# Archetype: listed_bank (a forward model of a bank, or a securities firm filed on
+# the bank chart, seeded from its own filed history). Same grammar as
+# listed_corporate.yaml: annual periods, the last `history.years` actual years as
+# inputs (hist_<n>_<field>), then g_forecast_years forecast years.
+#
+# A bank earns a spread: interest on loans and securities less interest on
+# deposits and borrowings. So the drivers are balance-sheet growth, the yield on
+# earning assets, the cost of funds, fees, costs and credit losses, and the
+# valuation is a residual-income value (book equity plus the present value of
+# profit above the cost of equity), not a free-cash-flow DCF: deposits are the
+# bank's raw material, not its debt.
+#
+# The defaults below are a placeholder bank. A real case comes from
+# engine/history_to_answers.py (it picks this template when the history's
+# sector is "bank"), which derives every driver from the company's own last
+# three years and comments how.
+#
+# Build:  python engine/history_to_answers.py output/filings/JPM_history.json
+#         python engine/build_model.py verticals/listed_bank.yaml \
+#                output/filings/jpm_bank_filings.yaml output/filings/jpm_bank_model.xlsx
+#
+# Currency-neutral: amounts are in millions of the reporting currency.
+
+meta:
+  schema_version: "1.0"
+  vertical: listed_bank
+  archetypes: [listed_bank]
+  modules: [history_actuals, balance_sheet_growth, spread_income, credit_cost,
+            capital_check, dividends_buybacks, valuation_residual_income]
+  note_keys: [data_notes]     # free-text lines for the Data notes sheet (not inputs)
+
+assumptions:
+
+  # ── 1. Entity ───────────────────────────────────────────────────────────────
+  - { id: g_entity_name,        label: "Company name",                          section: "1. Entity",   unit: text,     default: "Example Bank" }
+  - { id: g_ticker,             label: "Ticker or securities code",            section: "1. Entity",   unit: text,     default: "EXBK" }
+  - { id: g_reporting_ccy,      label: "Reporting currency",                    section: "1. Entity",   unit: text,     default: "USD" }
+  - { id: g_data_source,        label: "Source of the actuals",                 section: "1. Entity",   unit: text,     default: "placeholder (no filing loaded)" }
+  - { id: g_tax_rate,           label: "Tax rate on pre-tax profit",            section: "1. Entity",   unit: percent,  default: 0.21 }       # placeholder; history_to_answers.py replaces it with the 3-year effective rate
+
+  # ── 2. Timeline ─────────────────────────────────────────────────────────────
+  - { id: g_forecast_years,     label: "Forecast years after the last actual (5-10)", section: "2. Timeline", unit: integer, default: 5 }
+
+  # ── 3. Balance sheet growth ────────────────────────────────────────────────
+  - { id: bk_loan_growth,       label: "Loan growth per year (net loans)",      section: "3. Balance sheet", unit: percent, default: 0.04 }  # placeholder; from history: 3-year CAGR of net loans
+  - { id: bk_deposit_growth,    label: "Deposit growth per year (deposits incl. negotiable CDs)", section: "3. Balance sheet", unit: percent, default: 0.03 }  # placeholder; from history: 3-year CAGR of deposits
+
+  # ── 4. Spread, fees, costs and credit ──────────────────────────────────────
+  - { id: bk_asset_yield,       label: "Yield on interest-earning assets (on the opening balance)", section: "4. Earnings", unit: percent, default: 0.045 }   # placeholder; from history: sum(interest income) / sum(opening loans + liquid assets)
+  - { id: bk_funding_cost,      label: "Cost of interest-bearing liabilities (on the opening balance)", section: "4. Earnings", unit: percent, default: 0.020 }  # placeholder; from history: sum(interest expense) / sum(opening deposits + borrowings)
+  - { id: bk_fee_income_pct_assets, label: "Noninterest income (% of opening total assets)", section: "4. Earnings", unit: percent, default: 0.010 }  # placeholder; from history: sum(noninterest income) / sum(opening total assets)
+  - { id: bk_cost_income,       label: "Cost-to-income ratio (operating costs / net revenue)", section: "4. Earnings", unit: percent, default: 0.58 }   # placeholder; from history: sum(opex) / sum(net revenue)
+  - { id: bk_credit_cost,       label: "Credit cost (provision / opening net loans)", section: "4. Earnings", unit: percent, default: 0.004 }  # placeholder; from history: sum(provision) / sum(opening net loans)
+  - { id: bk_nci_share,         label: "Non-controlling interests' share of net income", section: "4. Earnings", unit: percent, default: 0.0 }   # placeholder; from history: sum(NCI share) / sum(net income incl. NCI)
+
+  # ── 5. Capital and distributions ───────────────────────────────────────────
+  - { id: fin_dividend_payout,  label: "Dividend payout (% of net income to owners)", section: "5. Capital", unit: percent, default: 0.30 }   # placeholder; from history: sum(dividends paid) / sum(net income to owners)
+  - { id: fin_buyback_pct_ni,   label: "Share buybacks (% of net income to owners)", section: "5. Capital", unit: percent, default: 0.20 }   # placeholder; from history: sum(buybacks) / sum(net income to owners)
+  - { id: bk_target_equity_assets, label: "Target equity to assets (owners' equity / total assets; a check, not a driver)", section: "5. Capital", unit: percent, default: 0.08 }  # typed in (source: user); default = the last actual year's ratio. Regulatory ratios such as CET1 are not in the filing data
+
+  # ── 6. Valuation (the user types the price; the tool never fetches one) ────
+  - { id: val_share_price,      label: "Share price (typed by the user; 0 = not entered)", section: "6. Valuation", unit: ratio, default: 0.0 }
+  - { id: val_price_date,       label: "Date of that share price",              section: "6. Valuation", unit: date,    default: "2026-01-01" }
+  - { id: val_price_source,     label: "Price source label",                    section: "6. Valuation", unit: text,    default: "user" }
+  - { id: val_shares_diluted,   label: "Shares (millions; default: basic count in the latest annual filing)", section: "6. Valuation", unit: millions, default: 100.0 }
+  - { id: val_shares_source,    label: "Share count source label",              section: "6. Valuation", unit: text,    default: "filing" }
+  - { id: val_cost_of_equity,   label: "Cost of equity (discount rate for residual income)", section: "6. Valuation", unit: percent, default: 0.10 }   # placeholder, not derived from the filing or market data; set your own
+  - { id: val_terminal_growth,  label: "Long-run growth of residual income after the last forecast year", section: "6. Valuation", unit: percent, default: 0.02 }  # placeholder, not derived from the filing; must be below the cost of equity
+
+# ── History block: one input per (actual year, field) ─────────────────────────
+# Amounts in millions of the reporting currency. Outflows (dividends, buybacks)
+# are positive numbers. A line the filing does not tag is 0 and listed on Data_Notes.
+history:
+  years: 3                    # actual years shown, as in the listed model
+  fields:
+    - { id: fy,                label: "Fiscal year",                         unit: integer,  default: 2025 }
+    - { id: end,               label: "Fiscal year end",                     unit: date,     default: "2025-12-31" }
+    - { id: form,              label: "Filing type",                         unit: text,     default: "placeholder" }
+    - { id: accn,              label: "Filing ID (accession / document ID)", unit: text,     default: "n/a" }
+    - { id: status,            label: "History tie-out status",              unit: text,     default: "not checked" }
+    - { id: interest_income,   label: "Interest income",                     unit: millions, default: 450.0 }
+    - { id: interest_expense,  label: "Interest expense",                    unit: millions, default: 180.0 }
+    - { id: noninterest_income, label: "Noninterest income (net revenue less net interest income)", unit: millions, default: 100.0 }
+    - { id: opex,              label: "Operating (noninterest) expenses",    unit: millions, default: 216.0 }
+    - { id: provision,         label: "Provision for credit losses (credit costs)", unit: millions, default: 24.0 }
+    - { id: pretax,            label: "Income before tax",                   unit: millions, default: 130.0 }
+    - { id: tax,               label: "Income tax",                          unit: millions, default: 27.3 }
+    - { id: net_income_total,  label: "Net income incl. non-controlling interests", unit: millions, default: 102.7 }
+    - { id: net_income,        label: "Net income to owners",                unit: millions, default: 102.7 }
+    - { id: cash,              label: "Cash and due from banks",             unit: millions, default: 800.0 }
+    - { id: reverse_repos,     label: "Reverse repos / cash lent against securities", unit: millions, default: 200.0 }
+    - { id: trading_assets,    label: "Trading assets",                      unit: millions, default: 0.0 }
+    - { id: securities,        label: "Investment securities",               unit: millions, default: 2000.0 }
+    - { id: loans,             label: "Loans as filed (US: net of allowance; Japan: before the allowance)", unit: millions, default: 6000.0 }
+    - { id: loan_allowance_netted, label: "Allowance deducted to reach net loans (0 where loans are filed net)", unit: millions, default: 0.0 }
+    - { id: total_assets,      label: "Total assets",                        unit: millions, default: 10000.0 }
+    - { id: deposits,          label: "Deposits incl. negotiable certificates of deposit", unit: millions, default: 8000.0 }
+    - { id: borrowings,        label: "Borrowings: repos + short-term borrowings + long-term debt", unit: millions, default: 700.0 }
+    - { id: total_liabilities, label: "Total liabilities incl. mezzanine equity", unit: millions, default: 9200.0 }
+    - { id: equity_parent,     label: "Equity to owners (shareholders of the parent)", unit: millions, default: 800.0 }
+    - { id: total_equity,      label: "Total equity incl. non-controlling interests (and, in Japan, share options)", unit: millions, default: 800.0 }
+    - { id: dividends,         label: "Dividends paid",                      unit: millions, default: 30.8 }
+    - { id: buybacks,          label: "Share buybacks",                      unit: millions, default: 20.5 }
+
+# ── Opening balance: the year end before the first actual year ───────────────
+# Only the balances the first actual year's opening-based ratios need (yield,
+# cost of funds, NIM, NII margin, credit cost, ROE). Filed figures, flattened to
+# hist_open_<field>; history_to_answers.py fills them from the history's prior
+# year. Empty when the history holds no earlier balance sheet: those ratios then
+# read blank in the first actual year. They never feed the forecast.
+opening:
+  fields:
+    - { id: fy,                label: "Fiscal year of that balance sheet",   unit: integer,  default: null }
+    - { id: loans,             label: "Net loans (loans as filed less the allowance deducted)", unit: millions, default: null }
+    - { id: deposits,          label: "Deposits incl. negotiable certificates of deposit", unit: millions, default: null }
+    - { id: total_assets,      label: "Total assets",                        unit: millions, default: null }
+    - { id: earning,           label: "Interest-earning assets (net loans + liquid assets)", unit: millions, default: null }
+    - { id: ibl,               label: "Interest-bearing liabilities (deposits + borrowings)", unit: millions, default: null }
+    - { id: equity_parent,     label: "Equity to owners (shareholders of the parent)", unit: millions, default: null }
